@@ -7,11 +7,11 @@
 
 ### Puzzle Format
 
-- [ ] **FMT-01**: Puzzle definition encodes board shape as a text-grid (rows of character codes: `-`=empty, `x`=impassable, `G`=goal square, piece chars for pieces)
-- [ ] **FMT-02**: Puzzle definition encodes piece type, piece color (player/opponent), and for pawns an explicit direction property
-- [ ] **FMT-03**: Puzzle definition encodes goal type (capture-all-targets or reach-all-goal-squares)
-- [ ] **FMT-04**: Each puzzle has a stable opaque string ID (never an array index) used for localStorage keys
-- [ ] **FMT-05**: Puzzle format is versioned with a `schemaVersion` field
+- [x] **FMT-01**: Puzzle definition encodes board shape as a text-grid (rows of character codes: `-`=empty, `x`=impassable, `G`=goal square, piece chars for pieces)
+- [x] **FMT-02**: Puzzle definition encodes piece type, piece color (player/opponent), and for pawns an explicit direction property
+- [x] **FMT-03**: Puzzle definition encodes goal type (capture-all-targets or reach-all-goal-squares)
+- [x] **FMT-04**: Each puzzle has a stable opaque string ID (never an array index) used for localStorage keys
+- [x] **FMT-05**: Puzzle format is versioned with a `schemaVersion` field
 
 ### Puzzle Engine
 
@@ -116,11 +116,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FMT-01 | Phase 1 | Pending |
-| FMT-02 | Phase 1 | Pending |
-| FMT-03 | Phase 1 | Pending |
-| FMT-04 | Phase 1 | Pending |
-| FMT-05 | Phase 1 | Pending |
+| FMT-01 | Phase 1 | Complete |
+| FMT-02 | Phase 1 | Complete |
+| FMT-03 | Phase 1 | Complete |
+| FMT-04 | Phase 1 | Complete |
+| FMT-05 | Phase 1 | Complete |
 | ENG-01 | Phase 1 | Pending |
 | ENG-02 | Phase 1 | Pending |
 | ENG-03 | Phase 1 | Pending |

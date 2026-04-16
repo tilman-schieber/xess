@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-04-16T13:20:42.605Z"
-last_activity: 2026-04-16 — Roadmap created, all 42 v1 requirements mapped across 5 phases
+status: executing
+stopped_at: Completed 01-puzzle-format-and-engine/01-01-PLAN.md
+last_updated: "2026-04-16T21:05:52.303Z"
+last_activity: 2026-04-16
 progress:
   total_phases: 5
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 3
+  completed_plans: 1
+  percent: 33
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-16)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** Phase 1 — Puzzle Format and Engine
+**Current focus:** Phase 01 — puzzle-format-and-engine
 
 ## Current Position
 
-Phase: 1 of 5 (Puzzle Format and Engine)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-04-16 — Roadmap created, all 42 v1 requirements mapped across 5 phases
+Phase: 01 (puzzle-format-and-engine) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-04-16
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01-puzzle-format-and-engine P01 | 186s | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,9 @@ Recent decisions affecting current work:
 - Roadmap: No castling, no check/pin enforcement — king never appears on any Xess puzzle board (confirmed in ENG-04)
 - Roadmap: Pawn direction encoded per-piece in puzzle definition — never inferred from color or board orientation (FMT-02, ENG-03)
 - Roadmap: PWA configuration is last phase — precaching requires knowing the complete, stable asset set
+- [Phase 01-puzzle-format-and-engine]: passWithNoTests: true added to vitest.config.js — vitest 4.x exits 1 with no test files
+- [Phase 01-puzzle-format-and-engine]: T-01-03 mitigation: typeof rowStr !== 'string' guard in parsePuzzle for null grid rows
+- [Phase 01-puzzle-format-and-engine]: Board as Map<'col,row', Cell>: impassable squares absent from map, !board.has(key) means cannot enter for all pieces
 
 ### Pending Todos
 
@@ -82,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-16T13:20:42.595Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-puzzle-format-and-engine/01-CONTEXT.md
+Last session: 2026-04-16T21:05:52.290Z
+Stopped at: Completed 01-puzzle-format-and-engine/01-01-PLAN.md
+Resume file: None
