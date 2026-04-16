@@ -12,7 +12,7 @@ Xess is built bottom-up following the dependency graph: the puzzle engine is the
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Puzzle Format and Engine** - Define the versioned puzzle schema and build a fully-tested, pure-function chess engine for non-standard boards
+- [x] **Phase 1: Puzzle Format and Engine** - Define the versioned puzzle schema and build a fully-tested, pure-function chess engine for non-standard boards (completed 2026-04-16)
 - [ ] **Phase 2: Game Controller and Persistence** - Wire the engine into a complete move loop with localStorage-backed progress and sequential unlock logic
 - [ ] **Phase 3: Board Renderer and Core UI** - Build the SVG board renderer with two-tap interaction, legal move highlighting, and mobile-first layout
 - [ ] **Phase 4: Puzzle Content and Visual Polish** - Author the full puzzle catalogue, complete puzzle navigation UX, and apply the premium visual style
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Puzzle Format and Engine | 2/3 | In Progress|  |
+| 1. Puzzle Format and Engine | 3/3 | Complete   | 2026-04-16 |
 | 2. Game Controller and Persistence | 0/TBD | Not started | - |
 | 3. Board Renderer and Core UI | 0/TBD | Not started | - |
 | 4. Puzzle Content and Visual Polish | 0/TBD | Not started | - |

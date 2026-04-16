@@ -19,10 +19,10 @@
 - [x] **ENG-02**: Engine treats impassable squares as walls for all sliding pieces and as jumpable obstacles (cannot land) for knights
 - [x] **ENG-03**: Engine enforces pawn movement using per-piece direction property (not inferred from color or board orientation)
 - [x] **ENG-04**: Engine does not implement check, pin detection, or castling (no king-safety rules — king is never on the board in any puzzle)
-- [ ] **ENG-05**: Engine supports "capture-all-targets" win condition: all opponent pieces must be captured
-- [ ] **ENG-06**: Engine supports "reach-all-goal-squares" win condition: specified player pieces must occupy all goal squares
-- [ ] **ENG-07**: Engine exposes pure functions with no DOM or localStorage dependencies (testable in isolation with Vitest)
-- [ ] **ENG-08**: Undo is snapshot-based: each move stores the full board state; undo pops the stack (multi-level, no limit)
+- [x] **ENG-05**: Engine supports "capture-all-targets" win condition: all opponent pieces must be captured
+- [x] **ENG-06**: Engine supports "reach-all-goal-squares" win condition: specified player pieces must occupy all goal squares
+- [x] **ENG-07**: Engine exposes pure functions with no DOM or localStorage dependencies (testable in isolation with Vitest)
+- [x] **ENG-08**: Undo is snapshot-based: each move stores the full board state; undo pops the stack (multi-level, no limit)
 
 ### Game Interaction
 
@@ -125,10 +125,10 @@
 | ENG-02 | Phase 1 | Complete |
 | ENG-03 | Phase 1 | Complete |
 | ENG-04 | Phase 1 | Complete |
-| ENG-05 | Phase 1 | Pending |
-| ENG-06 | Phase 1 | Pending |
-| ENG-07 | Phase 1 | Pending |
-| ENG-08 | Phase 1 | Pending |
+| ENG-05 | Phase 1 | Complete |
+| ENG-06 | Phase 1 | Complete |
+| ENG-07 | Phase 1 | Complete |
+| ENG-08 | Phase 1 | Complete |
 | INT-01 | Phase 3 | Pending |
 | INT-02 | Phase 3 | Pending |
 | INT-03 | Phase 2 | Pending |

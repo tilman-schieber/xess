@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 01-puzzle-format-and-engine/01-02-PLAN.md
-last_updated: "2026-04-16T21:12:55.053Z"
+status: verifying
+stopped_at: Completed 01-puzzle-format-and-engine/01-03-PLAN.md
+last_updated: "2026-04-16T21:16:34.538Z"
 last_activity: 2026-04-16
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
-  percent: 67
+  completed_plans: 3
+  percent: 100
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 
 Phase: 01 (puzzle-format-and-engine) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-16
 
 Progress: [░░░░░░░░░░] 0%
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 01-puzzle-format-and-engine P01 | 186s | 2 tasks | 10 files |
 | Phase 01-puzzle-format-and-engine P02 | 285s | 2 tasks | 14 files |
+| Phase 01-puzzle-format-and-engine P03 | 118s | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,9 @@ Recent decisions affecting current work:
 - [Phase 01-puzzle-format-and-engine]: Board as Map<'col,row', Cell>: impassable squares absent from map, !board.has(key) means cannot enter for all pieces
 - [Phase 01-puzzle-format-and-engine]: walkRay exported from rook.js and imported by bishop.js and queen.js — single source of truth for ray walking logic
 - [Phase 01-puzzle-format-and-engine]: Pawn captures derived by 90-degree rotation of direction vector [dc,dr] -> offsets [dr,dc] and [-dr,-dc] — direction-agnostic, no hardcoded 'up'
+- [Phase 01-puzzle-format-and-engine]: structuredClone used for board snapshot — not JSON.stringify/parse which silently loses Map type (ENG-08)
+- [Phase 01-puzzle-format-and-engine]: applyMove calls checkWin internally — Phase 2 cannot bypass win detection
+- [Phase 01-puzzle-format-and-engine]: Caller-managed undo stack: applyMove returns new board, caller pushes old board; undo by history.pop()
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-16T21:12:55.042Z
-Stopped at: Completed 01-puzzle-format-and-engine/01-02-PLAN.md
+Last session: 2026-04-16T21:16:34.522Z
+Stopped at: Completed 01-puzzle-format-and-engine/01-03-PLAN.md
 Resume file: None
