@@ -15,10 +15,10 @@
 
 ### Puzzle Engine
 
-- [ ] **ENG-01**: Engine generates legal moves for all 6 piece types (King, Queen, Rook, Bishop, Knight, Pawn) following standard chess movement rules
-- [ ] **ENG-02**: Engine treats impassable squares as walls for all sliding pieces and as jumpable obstacles (cannot land) for knights
-- [ ] **ENG-03**: Engine enforces pawn movement using per-piece direction property (not inferred from color or board orientation)
-- [ ] **ENG-04**: Engine does not implement check, pin detection, or castling (no king-safety rules — king is never on the board in any puzzle)
+- [x] **ENG-01**: Engine generates legal moves for all 6 piece types (King, Queen, Rook, Bishop, Knight, Pawn) following standard chess movement rules
+- [x] **ENG-02**: Engine treats impassable squares as walls for all sliding pieces and as jumpable obstacles (cannot land) for knights
+- [x] **ENG-03**: Engine enforces pawn movement using per-piece direction property (not inferred from color or board orientation)
+- [x] **ENG-04**: Engine does not implement check, pin detection, or castling (no king-safety rules — king is never on the board in any puzzle)
 - [ ] **ENG-05**: Engine supports "capture-all-targets" win condition: all opponent pieces must be captured
 - [ ] **ENG-06**: Engine supports "reach-all-goal-squares" win condition: specified player pieces must occupy all goal squares
 - [ ] **ENG-07**: Engine exposes pure functions with no DOM or localStorage dependencies (testable in isolation with Vitest)
@@ -121,10 +121,10 @@
 | FMT-03 | Phase 1 | Complete |
 | FMT-04 | Phase 1 | Complete |
 | FMT-05 | Phase 1 | Complete |
-| ENG-01 | Phase 1 | Pending |
-| ENG-02 | Phase 1 | Pending |
-| ENG-03 | Phase 1 | Pending |
-| ENG-04 | Phase 1 | Pending |
+| ENG-01 | Phase 1 | Complete |
+| ENG-02 | Phase 1 | Complete |
+| ENG-03 | Phase 1 | Complete |
+| ENG-04 | Phase 1 | Complete |
 | ENG-05 | Phase 1 | Pending |
 | ENG-06 | Phase 1 | Pending |
 | ENG-07 | Phase 1 | Pending |
