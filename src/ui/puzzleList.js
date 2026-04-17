@@ -58,23 +58,35 @@ export function renderPuzzleList({ list, currentId, onSelect, onClose }) {
     statusSpan.className = 'puzzle-list-status'
 
     if (item.status === 'solved') {
-      statusSpan.textContent = '✓'
+      const symbol = document.createElement('span')
+      symbol.setAttribute('aria-hidden', 'true')
+      symbol.textContent = '✓'
       const srLabel = document.createElement('span')
       srLabel.className = 'sr-only'
       srLabel.textContent = 'Solved'
-      statusSpan.append(srLabel)
+      statusSpan.append(symbol, srLabel)
     } else if (item.status === 'locked') {
-      statusSpan.textContent = '🔒'
+      const symbol = document.createElement('span')
+      symbol.setAttribute('aria-hidden', 'true')
+      symbol.textContent = '🔒'
       const srLabel = document.createElement('span')
       srLabel.className = 'sr-only'
       srLabel.textContent = 'Locked'
-      statusSpan.append(srLabel)
+      statusSpan.append(symbol, srLabel)
     }
 
     li.append(num, title, statusSpan)
 
     if (item.status !== 'locked') {
+      li.setAttribute('tabindex', '0')
+      li.setAttribute('role', 'button')
       li.addEventListener('pointerdown', () => onSelect(item.id))
+      li.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onSelect(item.id)
+        }
+      })
     }
 
     ul.append(li)

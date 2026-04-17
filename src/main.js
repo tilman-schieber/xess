@@ -11,6 +11,13 @@ import {
   getPieceInteractionClasses,
 } from './ui/interactionFeedback.js'
 import { getPrevId, getNextId, getPuzzlePosition } from './puzzles/nav.js'
+import catalogue from './puzzles/catalogue.js'
+
+let _domParser = null
+function getDomParser() {
+  if (!_domParser) _domParser = new DOMParser()
+  return _domParser
+}
 
 function chooseInitialPuzzleId(controller, preferredId) {
   if (preferredId) return preferredId
@@ -36,6 +43,7 @@ function buildInteractionRenderModel({ puzzle, board, renderBoardView, feedback 
 
   return {
     ...baseModel,
+    puzzle,
     puzzleTitle: puzzle?.title ?? 'Untitled puzzle',
     objectiveText: getPuzzleObjectiveText(puzzle),
     boardClasses: getBoardInteractionClasses(snapshot),
@@ -255,7 +263,7 @@ function renderToDom(root, model) {
       winBanner.append(solvedSpan, nextPuzzleBtn)
     } else {
       // End of catalogue — count total puzzles from position string
-      const total = model.puzzleId ? (getPuzzlePosition(model.puzzleId) ?? '').split('/')[1]?.trim() : null
+      const total = catalogue.length
       const endSpan = document.createElement('span')
       endSpan.textContent = total ? `All ${total} puzzles solved! 🎉` : 'All puzzles solved! 🎉'
       winBanner.append(endSpan)
@@ -280,7 +288,7 @@ function renderToDom(root, model) {
       const pieceEl = document.createElement('span')
       pieceEl.className = ['piece', ...cell.pieceClasses].join(' ').trim()
       pieceEl.setAttribute('data-piece-key', cell.piece.svgKey)
-      const svgDoc = new DOMParser().parseFromString(cell.piece.svg, 'image/svg+xml')
+      const svgDoc = getDomParser().parseFromString(cell.piece.svg, 'image/svg+xml')
       const svgEl = svgDoc.documentElement
       svgEl.querySelectorAll('script, foreignObject').forEach(n => n.remove())
       pieceEl.append(svgEl)
@@ -325,7 +333,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
     const model = ui.getRenderModel()
     const extModel = {
       ...model,
-      puzzle: ui.getState().board ? model.puzzle : null,
       puzzleId: currentPuzzleId,
       prevId: getPrevId(currentPuzzleId),
       nextId: getNextId(currentPuzzleId),
