@@ -62,7 +62,11 @@ Plans:
   3. All pieces and squares are touch-accessible at 375px viewport width with minimum 44px touch targets
   4. Goal squares are visually distinct from empty squares; all squares are uniform (no alternating chess colors)
   5. Win state is presented clearly to the player immediately after the winning move
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [x] 03-01-PLAN.md — Board renderer contract for irregular geometry and SVG pieces
+- [ ] 03-02-PLAN.md — Two-tap interaction wiring with legal highlights and win feedback
+- [ ] 03-03-PLAN.md — Mobile-first responsive CSS and touch-target hardening
 **UI hint**: yes
 
 ### Phase 4: Puzzle Content and Visual Polish

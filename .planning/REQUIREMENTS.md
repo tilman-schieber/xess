@@ -50,10 +50,10 @@
 
 ### Board Rendering
 
-- [ ] **RND-01**: Board renders correctly for any board shape: variable dimensions, non-rectangular grids, impassable squares
-- [ ] **RND-02**: All squares are visually uniform (no alternating chess colors); goal squares are distinctly highlighted (e.g. green)
+- [x] **RND-01**: Board renders correctly for any board shape: variable dimensions, non-rectangular grids, impassable squares
+- [x] **RND-02**: All squares are visually uniform (no alternating chess colors); goal squares are distinctly highlighted (e.g. green)
 - [ ] **RND-03**: Board and pieces are readable at 375px viewport width; minimum touch target per piece is 44px
-- [ ] **RND-04**: Piece rendering uses SVG; board layout uses CSS Grid driven by puzzle definition dimensions
+- [x] **RND-04**: Piece rendering uses SVG; board layout uses CSS Grid driven by puzzle definition dimensions
 
 ### Visual Design
 
@@ -144,10 +144,10 @@
 | PRS-02 | Phase 2 | Complete |
 | PRS-03 | Phase 2 | Complete |
 | PRS-04 | Phase 2 | Complete |
-| RND-01 | Phase 3 | Pending |
-| RND-02 | Phase 3 | Pending |
+| RND-01 | Phase 3 | Complete |
+| RND-02 | Phase 3 | Complete |
 | RND-03 | Phase 3 | Pending |
-| RND-04 | Phase 3 | Pending |
+| RND-04 | Phase 3 | Complete |
 | VIS-01 | Phase 4 | Pending |
 | VIS-02 | Phase 3 | Pending |
 | SND-01 | Phase 5 | Pending |
