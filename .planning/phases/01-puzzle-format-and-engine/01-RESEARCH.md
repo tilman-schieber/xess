@@ -630,22 +630,22 @@ describe('catalogue', () => {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Goal square occupancy for `reach-all-goal-squares`**
    - What we know: Win when pieces reach all `G` squares
    - What's unclear: Must ALL goal squares be occupied, or a specific subset? And by which color?
-   - Recommendation: Implement as "ALL goal squares must be occupied by any piece" (A3). Confirm with puzzle authors in Phase 4.
+   - RESOLVED: Implement as "ALL goal squares must be occupied by any piece" (A3). Confirm with puzzle authors in Phase 4.
 
 2. **Pawn direction for sideways/diagonal movement**
    - What we know: Direction is `[dc, dr]` in grid coords
    - What's unclear: Are diagonal pawn directions (e.g. `[1,-1]`) in scope for puzzle designs?
-   - Recommendation: Engine should handle any `[dc, dr]` — don't restrict to cardinal only. Capture derivation via 90° rotation handles diagonals correctly.
+   - RESOLVED: Engine handles any `[dc, dr]` — not restricted to cardinal only. Capture derivation via 90° rotation handles diagonals correctly.
 
 3. **King piece in puzzles**
    - What we know: ENG-04 says king is never on any puzzle board; no check detection needed
    - What's unclear: Should the engine still implement king move generation for completeness/future use?
-   - Recommendation: Implement king moves (1 square, 8 directions) since it's trivial and makes the engine spec-complete per ENG-01. Just don't call any check-detection logic.
+   - RESOLVED: Implement king moves (1 square, 8 directions) — trivial and makes the engine spec-complete per ENG-01. No check-detection logic called.
 
 ---
 
