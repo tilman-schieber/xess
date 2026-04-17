@@ -154,6 +154,7 @@ export function createController() {
      * @returns {{ board }}
      */
     reset() {
+      if (!state.puzzle) return { error: 'no_puzzle' }
       const fresh = parsePuzzle(_rawEntry(state.puzzle.id))
       state.board = fresh.board
       state.undoStack = []
