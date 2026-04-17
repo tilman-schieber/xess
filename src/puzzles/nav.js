@@ -6,19 +6,15 @@
 import _catalogue from './catalogue.js'
 
 /**
- * Returns string[] of all currently unlocked puzzle IDs.
- * - Index 0 is always included.
- * - Index i is included iff catalogue[i-1].id is in solvedIds.
+ * Returns string[] of all selectable puzzle IDs.
+ * Progress gating is disabled for now, so every catalogue entry is unlocked.
  *
  * @param {Set<string>|string[]} solvedIds
  * @param {object[]} [catalogue]
  * @returns {string[]}
  */
 export function getUnlockedIds(solvedIds, catalogue = _catalogue) {
-  const solved = new Set(solvedIds)
-  return catalogue
-    .filter((entry, i) => i === 0 || solved.has(catalogue[i - 1].id))
-    .map(e => e.id)
+  return catalogue.map(e => e.id)
 }
 
 /**
@@ -49,20 +45,19 @@ export function getPuzzlePosition(puzzleId, catalogue = _catalogue) {
 
 /**
  * Returns the catalogue as an array with a computed status field for each entry.
- * Status: 'solved' if in solvedIds, 'unlocked' if unlocked but not solved, 'locked' otherwise.
+ * Status: 'solved' if in solvedIds, otherwise 'unlocked'.
  * Preserves catalogue order (NAV-05).
  *
  * @param {Set<string>|string[]} solvedIds
  * @param {object[]} [catalogue]
- * @returns {{ id: string, title: string, status: 'solved'|'unlocked'|'locked' }[]}
+ * @returns {{ id: string, title: string, status: 'solved'|'unlocked' }[]}
  */
 export function getPuzzleList(solvedIds, catalogue = _catalogue) {
   const solved = new Set(solvedIds)
-  const unlocked = new Set(getUnlockedIds(solvedIds, catalogue))
   return catalogue.map(e => ({
     id: e.id,
     title: e.title,
-    status: solved.has(e.id) ? 'solved' : unlocked.has(e.id) ? 'unlocked' : 'locked',
+    status: solved.has(e.id) ? 'solved' : 'unlocked',
   }))
 }
 

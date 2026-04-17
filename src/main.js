@@ -175,6 +175,14 @@ export function createGameUiController({
 
   return {
     tapCell,
+    restart() {
+      const result = controller.reset()
+      if (result.error) return getRenderModel()
+      state.board = result.board
+      feedback.applyMove(null, false)
+      _lastMoveResult = null
+      return getRenderModel()
+    },
     getRenderModel,
     getLastMoveResult() {
       return _lastMoveResult
@@ -330,7 +338,14 @@ function renderToDom(root, model) {
   if (!model.nextId) nextNavBtn.setAttribute('aria-disabled', 'true')
   nextNavBtn.textContent = '→'
 
-  nav.append(prevBtn, nextNavBtn)
+  const restartBtn = document.createElement('button')
+  restartBtn.type = 'button'
+  restartBtn.className = 'nav-btn'
+  restartBtn.setAttribute('data-restart-puzzle', 'true')
+  restartBtn.setAttribute('aria-label', 'Restart puzzle')
+  restartBtn.textContent = '↺'
+
+  nav.append(prevBtn, restartBtn, nextNavBtn)
   app.append(nav)
 
   // Win banner
@@ -470,6 +485,10 @@ export function mountGameUi(root = document.querySelector('#app')) {
     })
     root.querySelector('[data-next-puzzle]')?.addEventListener('pointerdown', () => {
       if (extModel.nextId) loadPuzzle(extModel.nextId)
+    })
+    root.querySelector('[data-restart-puzzle]')?.addEventListener('pointerdown', () => {
+      ui.restart()
+      rerender()
     })
     root.querySelector('[data-open-list]')?.addEventListener('pointerdown', () => {
       showingList = true

@@ -96,6 +96,26 @@ describe('main UI interaction flow', () => {
     expect(model.boardClasses).toContain('is-won')
     expect(ui.getState().won).toBe(true)
   })
+
+  it('restart resets board state and clears win/selection feedback', () => {
+    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+
+    ui.tapCell('0,0')
+    ui.tapCell('0,2')
+    ui.tapCell('0,2')
+    ui.tapCell('2,2')
+    expect(ui.getState().won).toBe(true)
+
+    ui.restart()
+
+    const model = ui.getRenderModel()
+    const cells = byKey(model)
+    expect(cells.get('0,0').piece).toMatchObject({ type: 'r', color: 'white' })
+    expect(cells.get('2,2').piece).toBeNull()
+    expect(model.boardClasses).not.toContain('is-won')
+    expect(ui.getState().selectedKey).toBeNull()
+    expect(ui.getLastMoveResult()).toBeNull()
+  })
 })
 
 describe('responsive layout and touch target contracts', () => {

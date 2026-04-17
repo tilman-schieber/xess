@@ -6,7 +6,7 @@
  * Builds and returns the puzzle list screen element.
  *
  * @param {object} options
- * @param {{ id: string, title: string, status: 'solved'|'unlocked'|'locked' }[]} options.list
+ * @param {{ id: string, title: string, status: 'solved'|'unlocked' }[]} options.list
  * @param {string} options.currentId — the currently active puzzle id
  * @param {(id: string) => void} options.onSelect — called with puzzle id when user selects one
  * @param {() => void} options.onClose — called when user dismisses the list
@@ -43,7 +43,6 @@ export function renderPuzzleList({ list, currentId, onSelect, onClose }) {
     const li = document.createElement('li')
     li.className = 'puzzle-list-item'
     if (item.id === currentId) li.classList.add('is-current')
-    if (item.status === 'locked') li.classList.add('is-locked')
     li.setAttribute('data-puzzle-id', item.id)
 
     const num = document.createElement('span')
@@ -65,29 +64,19 @@ export function renderPuzzleList({ list, currentId, onSelect, onClose }) {
       srLabel.className = 'sr-only'
       srLabel.textContent = 'Solved'
       statusSpan.append(symbol, srLabel)
-    } else if (item.status === 'locked') {
-      const symbol = document.createElement('span')
-      symbol.setAttribute('aria-hidden', 'true')
-      symbol.textContent = '🔒'
-      const srLabel = document.createElement('span')
-      srLabel.className = 'sr-only'
-      srLabel.textContent = 'Locked'
-      statusSpan.append(symbol, srLabel)
     }
 
     li.append(num, title, statusSpan)
 
-    if (item.status !== 'locked') {
-      li.setAttribute('tabindex', '0')
-      li.setAttribute('role', 'button')
-      li.addEventListener('pointerdown', () => onSelect(item.id))
-      li.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onSelect(item.id)
-        }
-      })
-    }
+    li.setAttribute('tabindex', '0')
+    li.setAttribute('role', 'button')
+    li.addEventListener('pointerdown', () => onSelect(item.id))
+    li.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        onSelect(item.id)
+      }
+    })
 
     ul.append(li)
   })

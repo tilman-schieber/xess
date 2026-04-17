@@ -9,17 +9,17 @@ const mockCatalogue = [
 ]
 
 describe('getUnlockedIds', () => {
-  it('with empty solvedIds: returns only first puzzle id', () => {
+  it('with empty solvedIds: returns all puzzle ids', () => {
     const result = getUnlockedIds([], mockCatalogue)
-    expect(result).toEqual(['p1'])
+    expect(result).toEqual(['p1', 'p2', 'p3'])
   })
 
-  it('with first puzzle solved: returns first two ids', () => {
+  it('with first puzzle solved: still returns all ids', () => {
     const result = getUnlockedIds(['p1'], mockCatalogue)
-    expect(result).toEqual(['p1', 'p2'])
+    expect(result).toEqual(['p1', 'p2', 'p3'])
   })
 
-  it('with first two solved: returns first three ids', () => {
+  it('with first two solved: still returns all ids', () => {
     const result = getUnlockedIds(['p1', 'p2'], mockCatalogue)
     expect(result).toEqual(['p1', 'p2', 'p3'])
   })
@@ -36,15 +36,15 @@ describe('getUnlockedIds', () => {
 })
 
 describe('isUnlocked', () => {
-  it('first puzzle is unlocked even with empty solvedIds', () => {
+  it('first puzzle is unlocked with empty solvedIds', () => {
     expect(isUnlocked('p1', [], mockCatalogue)).toBe(true)
   })
 
-  it('second puzzle is locked with empty solvedIds', () => {
-    expect(isUnlocked('p2', [], mockCatalogue)).toBe(false)
+  it('second puzzle is unlocked with empty solvedIds', () => {
+    expect(isUnlocked('p2', [], mockCatalogue)).toBe(true)
   })
 
-  it('second puzzle is unlocked after first is solved', () => {
+  it('second puzzle is still unlocked after first is solved', () => {
     expect(isUnlocked('p2', ['p1'], mockCatalogue)).toBe(true)
   })
 
@@ -80,10 +80,10 @@ describe('getPuzzleList', () => {
     expect(entry.status).toBe('unlocked')
   })
 
-  it('entry for locked puzzle has status "locked"', () => {
+  it('entry for unsolved puzzle has status "unlocked"', () => {
     const list = getPuzzleList([], mockCatalogue)
     const entry = list.find(e => e.id === 'p2')
-    expect(entry.status).toBe('locked')
+    expect(entry.status).toBe('unlocked')
   })
 
   it('all entries have id and title fields', () => {
