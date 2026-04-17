@@ -246,6 +246,15 @@ function animatePieceMove(root, fromKey, toKey, renderFn) {
     ],
     { duration: 180, easing: 'ease-out', fill: 'none' },
   )
+
+  // Elevate the piece above sibling cells for the duration of the animation
+  // so it isn't clipped or occluded by adjacent cells during the FLIP.
+  toPiece.style.position = 'relative'
+  toPiece.style.zIndex = '10'
+  setTimeout(() => {
+    toPiece.style.position = ''
+    toPiece.style.zIndex = ''
+  }, 180)
 }
 
 function renderToDom(root, model) {
