@@ -35,18 +35,18 @@
 
 ### Puzzle Navigation
 
-- [ ] **NAV-01**: Player sees a list of all puzzles; solved puzzles are marked; unsolved future puzzles are locked
-- [ ] **NAV-02**: Puzzles unlock sequentially — a puzzle is unlocked only when the previous one is solved
-- [ ] **NAV-03**: Current puzzle position is displayed ("7 / 42")
+- [x] **NAV-01**: Player sees a list of all puzzles; solved puzzles are marked; unsolved future puzzles are locked
+- [x] **NAV-02**: Puzzles unlock sequentially — a puzzle is unlocked only when the previous one is solved
+- [x] **NAV-03**: Current puzzle position is displayed ("7 / 42")
 - [ ] **NAV-04**: Each puzzle displays its goal type and target clearly before and during play
-- [ ] **NAV-05**: Puzzles are ordered by implied difficulty (easier first, harder later) with no explicit difficulty labels
+- [x] **NAV-05**: Puzzles are ordered by implied difficulty (easier first, harder later) with no explicit difficulty labels
 
 ### Persistence
 
-- [ ] **PRS-01**: Solved puzzle IDs are persisted in localStorage and survive browser close/reopen
-- [ ] **PRS-02**: Active puzzle state (piece positions, move history for undo) is persisted in localStorage and restored on revisit
-- [ ] **PRS-03**: localStorage schema includes a version field; migrations are handled gracefully
-- [ ] **PRS-04**: State is written on every move (debounced) and synchronously on `visibilitychange: hidden`
+- [x] **PRS-01**: Solved puzzle IDs are persisted in localStorage and survive browser close/reopen
+- [x] **PRS-02**: Active puzzle state (piece positions, move history for undo) is persisted in localStorage and restored on revisit
+- [x] **PRS-03**: localStorage schema includes a version field; migrations are handled gracefully
+- [x] **PRS-04**: State is written on every move (debounced) and synchronously on `visibilitychange: hidden`
 
 ### Board Rendering
 
@@ -135,15 +135,15 @@
 | INT-04 | Phase 2 | Pending |
 | INT-05 | Phase 3 | Pending |
 | INT-06 | Phase 2 | Pending |
-| NAV-01 | Phase 2 | Pending |
-| NAV-02 | Phase 2 | Pending |
-| NAV-03 | Phase 2 | Pending |
+| NAV-01 | Phase 2 | Complete |
+| NAV-02 | Phase 2 | Complete |
+| NAV-03 | Phase 2 | Complete |
 | NAV-04 | Phase 4 | Pending |
-| NAV-05 | Phase 2 | Pending |
-| PRS-01 | Phase 2 | Pending |
-| PRS-02 | Phase 2 | Pending |
-| PRS-03 | Phase 2 | Pending |
-| PRS-04 | Phase 2 | Pending |
+| NAV-05 | Phase 2 | Complete |
+| PRS-01 | Phase 2 | Complete |
+| PRS-02 | Phase 2 | Complete |
+| PRS-03 | Phase 2 | Complete |
+| PRS-04 | Phase 2 | Complete |
 | RND-01 | Phase 3 | Pending |
 | RND-02 | Phase 3 | Pending |
 | RND-03 | Phase 3 | Pending |

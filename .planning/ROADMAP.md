@@ -49,7 +49,7 @@ Plans:
 **Plans**: 3 plans
 Plans:
 - [x] 02-01-PLAN.md — localStorage persistence layer (store.js)
-- [ ] 02-02-PLAN.md — Catalogue navigation helpers (nav.js)
+- [x] 02-02-PLAN.md — Catalogue navigation helpers (nav.js)
 - [ ] 02-03-PLAN.md — Game controller wiring engine + persistence + navigation
 
 ### Phase 3: Board Renderer and Core UI
@@ -97,7 +97,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Puzzle Format and Engine | 3/3 | Complete   | 2026-04-16 |
-| 2. Game Controller and Persistence | 0/3 | Not started | - |
+| 2. Game Controller and Persistence | 2/3 | In Progress|  |
 | 3. Board Renderer and Core UI | 0/TBD | Not started | - |
 | 4. Puzzle Content and Visual Polish | 0/TBD | Not started | - |
 | 5. PWA and Launch Readiness | 0/TBD | Not started | - |
