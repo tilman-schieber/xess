@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-board-renderer-and-core-ui-01-PLAN.md
-last_updated: "2026-04-17T08:58:01.861Z"
+stopped_at: Completed 03-board-renderer-and-core-ui-02-PLAN.md
+last_updated: "2026-04-17T09:04:03.224Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 9
-  completed_plans: 7
-  percent: 78
+  completed_plans: 8
+  percent: 89
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 ## Current Position
 
 Phase: 03 (board-renderer-and-core-ui) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-04-17
 
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-game-controller-and-persistence P02 | 240 | 2 tasks | 2 files |
 | Phase 02-game-controller-and-persistence P03 | 2 min | 2 tasks | 2 files |
 | Phase 03-board-renderer-and-core-ui P01 | 2 min | 2 tasks | 3 files |
+| Phase 03-board-renderer-and-core-ui P02 | 3 min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,8 @@ Recent decisions affecting current work:
 - [Phase 02-game-controller-and-persistence]: Store re-hydration failures fall back to a fresh parsed puzzle state.
 - [Phase 03-board-renderer-and-core-ui]: Renderer emits row-major cell descriptors with class-state metadata for UI wiring
 - [Phase 03-board-renderer-and-core-ui]: pieces.js enforces static SVG whitelist and rejects unknown piece keys
+- [Phase 03-board-renderer-and-core-ui]: Moved tap-handling into createGameUiController for deterministic Node-based interaction tests.
+- [Phase 03-board-renderer-and-core-ui]: UI gates move attempts by current legal key set before makeMove, preserving controller legality as second line.
 
 ### Pending Todos
 
@@ -105,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T08:58:01.855Z
-Stopped at: Completed 03-board-renderer-and-core-ui-01-PLAN.md
+Last session: 2026-04-17T09:04:03.205Z
+Stopped at: Completed 03-board-renderer-and-core-ui-02-PLAN.md
 Resume file: None

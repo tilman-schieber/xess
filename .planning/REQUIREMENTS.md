@@ -26,11 +26,11 @@
 
 ### Game Interaction
 
-- [ ] **INT-01**: Player selects a piece by tapping/clicking it; legal destination squares are highlighted
-- [ ] **INT-02**: Player completes a move by tapping/clicking a highlighted destination; illegal taps are ignored with visual feedback
+- [x] **INT-01**: Player selects a piece by tapping/clicking it; legal destination squares are highlighted
+- [x] **INT-02**: Player completes a move by tapping/clicking a highlighted destination; illegal taps are ignored with visual feedback
 - [x] **INT-03**: Player can undo any number of moves back to the puzzle start state
 - [x] **INT-04**: Player can reset the puzzle to its initial state with a single action
-- [ ] **INT-05**: Piece movement is animated with a smooth CSS transition (150–200ms)
+- [x] **INT-05**: Piece movement is animated with a smooth CSS transition (150–200ms)
 - [x] **INT-06**: Win state is detected immediately after each move and presented clearly to the player
 
 ### Puzzle Navigation
@@ -129,11 +129,11 @@
 | ENG-06 | Phase 1 | Complete |
 | ENG-07 | Phase 1 | Complete |
 | ENG-08 | Phase 1 | Complete |
-| INT-01 | Phase 3 | Pending |
-| INT-02 | Phase 3 | Pending |
+| INT-01 | Phase 3 | Complete |
+| INT-02 | Phase 3 | Complete |
 | INT-03 | Phase 2 | Complete |
 | INT-04 | Phase 2 | Complete |
-| INT-05 | Phase 3 | Pending |
+| INT-05 | Phase 3 | Complete |
 | INT-06 | Phase 2 | Complete |
 | NAV-01 | Phase 2 | Complete |
 | NAV-02 | Phase 2 | Complete |
