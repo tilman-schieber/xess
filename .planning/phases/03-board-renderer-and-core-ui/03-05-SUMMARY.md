@@ -80,7 +80,7 @@ Each task was committed atomically:
 1. **Task 1: Add failing contract tests for curated SVG asset mapping** - `e939617` (test)
 2. **Task 2: Replace inline placeholder SVGs with open-licensed curated assets + attribution** - `2196f4a` (feat)
 
-**Plan metadata:** _(pending)_
+**Plan metadata:** `4a623e7` (docs: complete plan)
 
 ## Files Created/Modified
 - `src/ui/pieces.test.js` - Contract tests for whitelist coverage, unknown-key rejection, and SVG payload invariants.
