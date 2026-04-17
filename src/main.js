@@ -33,6 +33,8 @@ function buildInteractionRenderModel({ puzzle, board, renderBoardView, feedback 
 
   return {
     ...baseModel,
+    puzzleTitle: puzzle?.title ?? 'Untitled puzzle',
+    objectiveText: getPuzzleObjectiveText(puzzle),
     boardClasses: getBoardInteractionClasses(snapshot),
     animationMs: MOVE_TRANSITION_MS,
     cells: baseModel.cells.map(cell => ({
@@ -41,6 +43,25 @@ function buildInteractionRenderModel({ puzzle, board, renderBoardView, feedback 
       pieceClasses: cell.piece ? getPieceInteractionClasses(snapshot, cell.key) : [],
     })),
   }
+}
+
+export function getPuzzleObjectiveText(puzzle) {
+  if (!puzzle || typeof puzzle !== 'object') {
+    return 'Solve the puzzle objective.'
+  }
+
+  if (puzzle.goalType === 'capture-all-targets') {
+    const targetColor = typeof puzzle.targetColor === 'string' && puzzle.targetColor.length > 0
+      ? puzzle.targetColor
+      : 'target'
+    return `Capture all ${targetColor} targets.`
+  }
+
+  if (puzzle.goalType === 'reach-all-goal-squares') {
+    return 'Move all white pieces onto goal squares.'
+  }
+
+  return 'Solve the puzzle objective.'
 }
 
 /**
@@ -134,6 +155,23 @@ function renderToDom(root, model) {
 
   const app = document.createElement('section')
   app.className = 'xess-ui'
+
+  const meta = document.createElement('header')
+  meta.className = 'puzzle-meta'
+  meta.setAttribute('data-puzzle-meta', 'true')
+
+  const title = document.createElement('h1')
+  title.className = 'puzzle-title'
+  title.setAttribute('data-puzzle-title', 'true')
+  title.textContent = model.puzzleTitle
+
+  const objective = document.createElement('p')
+  objective.className = 'puzzle-objective'
+  objective.setAttribute('data-puzzle-objective', 'true')
+  objective.textContent = model.objectiveText
+
+  meta.append(title, objective)
+  app.append(meta)
 
   const status = document.createElement('p')
   status.setAttribute('data-win-banner', 'true')

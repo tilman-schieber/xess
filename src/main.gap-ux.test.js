@@ -33,6 +33,17 @@ describe('gap UX regressions: objective context + static square geometry', () =>
 
     expect(model.puzzleTitle).toBe('Find the Square')
     expect(model.objectiveText).toBe('Move all white pieces onto goal squares.')
+
+    const captureUi = createGameUiController({ puzzleId: 'xk3m9pq2' })
+    const captureModel = captureUi.getRenderModel()
+    expect(captureModel.puzzleTitle).toBe('Corner Trap')
+    expect(captureModel.objectiveText).toBe('Capture all black targets.')
+
+    const mainSource = getCssFile('./main.js')
+    expect(mainSource.exists).toBe(true)
+    expect(mainSource.content).toMatch(/data-puzzle-title/)
+    expect(mainSource.content).toMatch(/data-puzzle-objective/)
+    expect(mainSource.content).toMatch(/objective\.textContent\s*=\s*model\.objectiveText/)
   })
 
   it('board css enforces static square geometry for empty and occupied playable cells', () => {
