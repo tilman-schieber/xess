@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 06 (drag-and-drop-interaction-and-square-cell-layout) — COMPLETE
 Plan: 2 of 2
 Status: Phase 6 complete and verified (UAT 8/8 passed)
-Last activity: 2026-04-17 - Completed quick task 260417-r18: implement a way to easily restart a puzzle and remove progress blocking so puzzles are freely selectable
+Last activity: 2026-04-17 - Completed quick task 260417-ugk: show ghost target piece on goal squares for reach puzzles; update encoding if needed and simplify to one piece to one goal if necessary
 
 Progress: [██████████] 100%
 
@@ -115,6 +115,7 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260417-r18 | implement a way to easily restart a puzzle and remove progress blocking so puzzles are freely selectable | 2026-04-17 | 0d67da5 | [260417-r18-implement-a-way-to-easily-restart-a-puzz](./quick/260417-r18-implement-a-way-to-easily-restart-a-puzz/) |
+| 260417-ugk | show ghost target piece on goal squares for reach puzzles; update encoding if needed and simplify to one piece to one goal if necessary | 2026-04-17 | affac9a | [260417-ugk-show-ghost-target-piece-on-goal-squares-](./quick/260417-ugk-show-ghost-target-piece-on-goal-squares-/) |
 
 ## Deferred Items
 
