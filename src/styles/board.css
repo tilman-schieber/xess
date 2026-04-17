@@ -32,7 +32,7 @@
 .cell--playable {
   aspect-ratio: 1 / 1;
   background: linear-gradient(180deg, var(--cell-playable-start) 0%, var(--cell-playable-end) 100%);
-  color: #111728;
+  color: var(--surface-bg);
 }
 
 .cell--goal {

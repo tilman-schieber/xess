@@ -176,7 +176,7 @@ body {
 
 .btn-next-puzzle {
   background: var(--accent);
-  color: #090d16;
+  color: var(--surface-bg);
   border: none;
   border-radius: 0.5rem;
   padding: var(--space-sm) var(--space-md);
