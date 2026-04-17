@@ -195,7 +195,10 @@ function renderToDom(root, model) {
       const pieceEl = document.createElement('span')
       pieceEl.className = ['piece', ...cell.pieceClasses].join(' ').trim()
       pieceEl.setAttribute('data-piece-key', cell.piece.svgKey)
-      pieceEl.innerHTML = cell.piece.svg
+      const svgDoc = new DOMParser().parseFromString(cell.piece.svg, 'image/svg+xml')
+      const svgEl = svgDoc.documentElement
+      svgEl.querySelectorAll('script, foreignObject').forEach(n => n.remove())
+      pieceEl.append(svgEl)
       cellEl.append(pieceEl)
     }
 

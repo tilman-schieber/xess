@@ -42,6 +42,19 @@ export function createBoardRenderModel({
       }
 
       const cell = board.get(key)
+      if (!cell || typeof cell !== 'object') {
+        cells.push({
+          key,
+          col,
+          row,
+          isVoid: false,
+          isPlayable: true,
+          isGoal: false,
+          piece: null,
+          classes: ['cell', 'cell--playable'],
+        })
+        continue
+      }
       const classes = ['cell', 'cell--playable']
 
       if (cell.isGoal) classes.push('cell--goal')
