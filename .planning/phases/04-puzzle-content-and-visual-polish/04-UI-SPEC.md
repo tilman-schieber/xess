@@ -54,13 +54,16 @@ Exceptions:
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body / objective | 16px (1rem) | 400 | 1.5 |
-| Label / nav badge | 14px (0.875rem) | 500 | 1.4 |
-| Heading / puzzle title | 18px (1.125rem) | 650 | 1.3 |
+| Label / nav badge | 14px (0.875rem) | 600 | 1.4 |
+| Heading / puzzle title | 18px (1.125rem) | 600 | 1.3 |
 | Display / win banner | 20px (1.25rem) | 600 | 1.2 |
+
+Declared weights: **400** (body) and **600** (labels, headings, display — all non-body).
 
 > Source: Existing `app.css` declares `puzzle-title` at `1rem / 650` and `puzzle-objective` at `0.9rem`.
 > Phase 4 polish lifts body to a clean 16px baseline and promotes display to 20px for win state.
-> Maximum 4 sizes, 3 weights (400 / 500 / 600-650) — within constraint.
+> The former 650 weight is normalised to 600 (standard Inter semibold step); 500 label weight is removed.
+> Exactly 4 sizes, 2 weights — within constraint.
 
 ---
 
@@ -103,6 +106,10 @@ Additional palette tokens for Phase 4:
 
 ### New UI surfaces introduced in Phase 4
 
+**Primary visual anchor — Game screen:** The puzzle board (`<div class="board">`) is the primary focal point. It occupies the dominant viewport area; all other elements (puzzle-meta, nav controls) are subordinate chrome around it.
+
+**Primary visual anchor — Puzzle List screen:** The puzzle grid (scrollable list of puzzle items) is the primary focal point. The "Puzzles" heading and any toolbar are subordinate navigation chrome.
+
 #### 1. Puzzle List Screen
 - Triggered by: a list/menu button visible during play (top-left or bottom toolbar)
 - Layout: full-screen overlay or dedicated screen (not a modal popup — mobile-first swipe/tap navigation)
@@ -117,7 +124,7 @@ Additional palette tokens for Phase 4:
 #### 2. Puzzle Position Indicator (in-game)
 - Format: `"7 / 42"` (current / total)
 - Location: puzzle-meta card, inline with puzzle title
-- Typography: Label / 14px / weight 500 / `--text-muted`
+- Typography: Label / 14px / weight 600 / `--text-muted`
 - Already partially implemented (NAV-03 complete); Phase 4 confirms the visual treatment
 
 #### 3. Goal Type Badge (NAV-04)
@@ -125,13 +132,14 @@ Additional palette tokens for Phase 4:
 - Two variants:
   - **Capture** — label: `"Capture all targets"` — icon: ✕ or crosshair SVG in `--text-secondary`
   - **Reach** — label: `"Reach the goal squares"` — icon: ◎ or target SVG in `--text-secondary`
-- Typography: Label / 14px / weight 500 / `--text-secondary`
+- Typography: Label / 14px / weight 600 / `--text-secondary`
 - The icon and label remain visible throughout play (persistent, not dismissible)
 
 #### 4. Navigation Controls (prev / next puzzle)
 - Two icon-only buttons: ← previous, → next
+- `aria-label="Previous puzzle"` on the ← button; `aria-label="Next puzzle"` on the → button (mandatory — icon-only buttons have no visible text label)
 - Visible in puzzle-meta or a bottom toolbar
-- Locked/non-navigable state: opacity 0.35, pointer-events none
+- Locked/non-navigable state: opacity 0.35, pointer-events none, `aria-disabled="true"`
 - Touch target: 44×44px minimum
 
 ---
@@ -140,7 +148,7 @@ Additional palette tokens for Phase 4:
 
 | Element | Copy |
 |---------|------|
-| Primary CTA (start play) | "Play" (puzzle list → game) |
+| Primary CTA (start play) | "Play Puzzle" (puzzle list → game; must include noun to stand alone without adjacent puzzle title context) |
 | Puzzle list heading | "Puzzles" |
 | Locked puzzle label | "Locked" (screen-reader only; visual: lock icon) |
 | Solved puzzle label | "Solved" (screen-reader only; visual: checkmark) |
@@ -188,7 +196,7 @@ Phase 4 must replace all placeholder/rough styles with the following refined tre
 1. **No standard chess aesthetics**: No green/brown board squares, no Wikipedia piece style — confirmed. Existing light-on-dark with blue-tinted cells is the correct direction; maintain and refine.
 2. **Piece set**: Cburnett SVG set is already in use (Phase 3). No change to pieces in Phase 4 — polish is palette and typography, not the piece art.
 3. **Board**: Existing dark navy + frosted glass style is the premium direction. Ensure CSS custom properties are consistent — no hardcoded hex values outside `:root`.
-4. **Typography**: Promote all `px`-based font sizes to `rem`. Use exactly 4 size steps. Remove fractional weights (650 → 600 or confirm 650 is intentional and document it).
+4. **Typography**: Promote all `px`-based font sizes to `rem`. Use exactly 4 size steps and exactly 2 weights (400 body, 600 everything else). Replace any `650` weight references with `600` and remove any `500` weight references.
 5. **Color custom properties**: Audit `board.css` and `app.css` — extract all hardcoded hex values into `:root` tokens. Phase 4 delivers a complete token set.
 6. **Spacing**: Audit all `rem`-based gaps — align to the 4px scale. Replace `0.875rem` app-gap with `1rem` (16px).
 
