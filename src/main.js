@@ -13,7 +13,11 @@ import {
 import { getPrevId, getNextId, getPuzzlePosition } from './puzzles/nav.js'
 import catalogue from './puzzles/catalogue.js'
 import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
+import { initPwaPrompts } from './ui/pwaPrompts.js'
 
+if (typeof window !== 'undefined') {
+  initPwaPrompts()
+}
 initSound()
 
 let _domParser = null

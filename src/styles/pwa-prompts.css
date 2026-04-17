@@ -1,0 +1,120 @@
+/* ─── shared banner base ─────────────────────────────────────────────────── */
+.pwa-ios-banner,
+.pwa-update-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--surface-card, rgba(12, 18, 34, 0.95));
+  border-top: 1px solid var(--border-subtle, #2a365d);
+  padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--text-primary, #f5f7ff);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  /* Prevent layout shift — slide up from below/top */
+  animation: pwa-slide-in 0.25s ease-out;
+}
+
+@keyframes pwa-slide-in {
+  from { opacity: 0; transform: translateY(100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── iOS install banner (bottom) ───────────────────────────────────────── */
+.pwa-ios-banner {
+  bottom: 0;
+  /* Extra padding for iOS home indicator bar */
+  padding-bottom: calc(var(--space-sm, 0.5rem) + env(safe-area-inset-bottom, 0px));
+}
+
+.pwa-ios-banner__content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm, 0.5rem);
+  max-width: var(--app-max-width-desktop, 960px);
+  margin: 0 auto;
+}
+
+.pwa-ios-banner__icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.pwa-ios-banner__text {
+  margin: 0;
+  flex: 1;
+  color: var(--text-secondary, #c7d2f4);
+  line-height: 1.4;
+}
+
+.pwa-ios-banner__share-icon {
+  color: var(--accent, #61d9a7);
+  font-size: 1rem;
+}
+
+.pwa-ios-banner__close {
+  background: none;
+  border: none;
+  color: var(--text-muted, #6b7aa3);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: var(--space-xs, 0.25rem);
+  line-height: 1;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 4px;
+}
+
+.pwa-ios-banner__close:hover {
+  color: var(--text-primary, #f5f7ff);
+}
+
+/* ─── SW update banner (top) ────────────────────────────────────────────── */
+.pwa-update-banner {
+  top: 0;
+  border-top: none;
+  border-bottom: 1px solid var(--border-subtle, #2a365d);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md, 1rem);
+  max-width: 100%;
+}
+
+@keyframes pwa-slide-in-top {
+  from { opacity: 0; transform: translateY(-100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pwa-update-banner {
+  animation: pwa-slide-in-top 0.25s ease-out;
+}
+
+.pwa-update-banner__text {
+  margin: 0;
+  color: var(--text-secondary, #c7d2f4);
+}
+
+.pwa-update-banner__reload {
+  background: var(--accent, #61d9a7);
+  color: #090d16;
+  border: none;
+  border-radius: 4px;
+  padding: 0.375rem var(--space-md, 1rem);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 36px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pwa-update-banner__reload:hover {
+  filter: brightness(1.1);
+}
