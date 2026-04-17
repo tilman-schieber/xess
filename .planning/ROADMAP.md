@@ -68,7 +68,7 @@ Plans:
 - [x] 03-02-PLAN.md — Two-tap interaction wiring with legal highlights and win feedback
 - [x] 03-03-PLAN.md — Mobile-first responsive CSS and touch-target hardening
 - [x] 03-04-PLAN.md — Gap closure: static square sizing + puzzle objective context UI
-- [ ] 03-05-PLAN.md — Gap closure: curated open-licensed SVG piece set + attribution
+- [x] 03-05-PLAN.md — Gap closure: curated open-licensed SVG piece set + attribution
 **UI hint**: yes
 
 ### Phase 4: Puzzle Content and Visual Polish
