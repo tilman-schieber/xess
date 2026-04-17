@@ -1,4 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { existsSync, readFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 vi.mock('./store/store.js', () => ({
   loadStore: vi.fn(() => ({ schemaVersion: 1, solvedIds: [], activeState: null })),
@@ -12,6 +15,15 @@ import { createGameUiController } from './main.js'
 
 function byKey(model) {
   return new Map(model.cells.map(cell => [cell.key, cell]))
+}
+
+function getCssFile(relativePath) {
+  const filePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), relativePath)
+  return {
+    filePath,
+    exists: existsSync(filePath),
+    content: existsSync(filePath) ? readFileSync(filePath, 'utf8') : '',
+  }
 }
 
 describe('main UI interaction flow', () => {
@@ -83,5 +95,29 @@ describe('main UI interaction flow', () => {
 
     expect(model.boardClasses).toContain('is-won')
     expect(ui.getState().won).toBe(true)
+  })
+})
+
+describe('responsive layout and touch target contracts', () => {
+  it('375px viewport contract keeps board shell and controls visible (VIS-02)', () => {
+    const appCss = getCssFile('./styles/app.css')
+    const boardCss = getCssFile('./styles/board.css')
+
+    expect(appCss.exists).toBe(true)
+    expect(boardCss.exists).toBe(true)
+
+    expect(appCss.content).toMatch(/\.xess-ui/)
+    expect(appCss.content).toMatch(/max-width:\s*375px|inline-size:\s*min\(100vw,\s*375px\)/)
+    expect(appCss.content).toMatch(/@media\s*\(min-width:\s*768px\)/)
+  })
+
+  it('board cell and piece targets enforce >=44px minimum touch size (RND-03)', () => {
+    const boardCss = getCssFile('./styles/board.css')
+    expect(boardCss.exists).toBe(true)
+
+    expect(boardCss.content).toMatch(/min-(width|inline-size):\s*44px/)
+    expect(boardCss.content).toMatch(/min-(height|block-size):\s*44px/)
+    expect(boardCss.content).toMatch(/\.cell/)
+    expect(boardCss.content).toMatch(/\.piece/)
   })
 })
