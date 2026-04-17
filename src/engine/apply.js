@@ -27,6 +27,9 @@ function applyMove(board, from, to, puzzle) {
   const newBoard = structuredClone(board)  // ENG-08: deep clone — Map<string,Cell> is cloneable
   const fromCell = newBoard.get(from)
   const toCell = newBoard.get(to)
+  if (!fromCell || !toCell) {
+    throw new Error(`applyMove: invalid key — from="${from}" to="${to}"`)
+  }
   const captured = toCell.piece ?? null
   newBoard.set(to, { ...toCell, piece: fromCell.piece })
   newBoard.set(from, { ...fromCell, piece: null })
