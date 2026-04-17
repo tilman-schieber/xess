@@ -19,12 +19,36 @@ function _defaultStore() {
 /**
  * Load and parse the store from localStorage.
  *
- * Returns the raw parsed object. Callers that need Map objects must re-hydrate:
+ * Returns a sanitized object. Callers that need Map objects must re-hydrate:
  *   - Board: new Map(activeState.boardEntries)
  *   - Undo stack: activeState.undoEntries.map(e => new Map(e))
  *
  * @returns {{ schemaVersion: number, solvedIds: string[], activeState: Object|null }}
  */
+function _sanitizeActiveState(activeState) {
+  if (!activeState || typeof activeState !== 'object') return null
+
+  const puzzleId = typeof activeState.puzzleId === 'string' ? activeState.puzzleId : null
+  if (!puzzleId) return null
+
+  const boardEntries = Array.isArray(activeState.boardEntries) ? activeState.boardEntries : []
+  const undoEntries = Array.isArray(activeState.undoEntries) ? activeState.undoEntries : []
+
+  return { puzzleId, boardEntries, undoEntries }
+}
+
+function _sanitizeStore(parsed) {
+  const solvedIds = Array.isArray(parsed?.solvedIds)
+    ? [...new Set(parsed.solvedIds.filter(id => typeof id === 'string'))]
+    : []
+
+  return {
+    schemaVersion: CURRENT_SCHEMA_VERSION,
+    solvedIds,
+    activeState: _sanitizeActiveState(parsed?.activeState),
+  }
+}
+
 export function loadStore() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
@@ -34,7 +58,7 @@ export function loadStore() {
       // T-02-02: schema version mismatch — wipe stale data
       return _defaultStore()
     }
-    return parsed
+    return _sanitizeStore(parsed)
   } catch {
     // T-02-01: malformed JSON — return safe default
     return _defaultStore()
