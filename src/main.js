@@ -1,6 +1,8 @@
 import { createController } from './controller.js'
 import { createBoardRenderModel } from './ui/boardRenderer.js'
+import { renderPuzzleList } from './ui/puzzleList.js'
 import './styles/app.css'
+import './styles/puzzle-list.css'
 import {
   MOVE_TRANSITION_MS,
   createInteractionFeedback,
@@ -8,6 +10,7 @@ import {
   getCellInteractionClasses,
   getPieceInteractionClasses,
 } from './ui/interactionFeedback.js'
+import { getPrevId, getNextId, getPuzzlePosition } from './puzzles/nav.js'
 
 function chooseInitialPuzzleId(controller, preferredId) {
   if (preferredId) return preferredId
@@ -62,6 +65,13 @@ export function getPuzzleObjectiveText(puzzle) {
   }
 
   return 'Solve the puzzle objective.'
+}
+
+export function getGoalBadgeData(puzzle) {
+  if (!puzzle) return { label: 'Solve the puzzle objective.', type: 'unknown' }
+  if (puzzle.goalType === 'capture-all-targets') return { label: 'Capture all targets', type: 'capture' }
+  if (puzzle.goalType === 'reach-all-goal-squares') return { label: 'Reach the goal squares', type: 'reach' }
+  return { label: 'Solve the puzzle objective.', type: 'unknown' }
 }
 
 /**
@@ -145,6 +155,7 @@ export function createGameUiController({
         ...snapshot,
         puzzleId: state.puzzleId,
         board: state.board,
+        puzzleList: controller.getPuzzleList(),
       }
     },
   }
@@ -160,24 +171,98 @@ function renderToDom(root, model) {
   meta.className = 'puzzle-meta'
   meta.setAttribute('data-puzzle-meta', 'true')
 
+  // Meta top row: title + list button
+  const metaTop = document.createElement('div')
+  metaTop.className = 'puzzle-meta-top'
+
   const title = document.createElement('h1')
   title.className = 'puzzle-title'
   title.setAttribute('data-puzzle-title', 'true')
   title.textContent = model.puzzleTitle
+
+  const listBtn = document.createElement('button')
+  listBtn.type = 'button'
+  listBtn.className = 'nav-btn'
+  listBtn.setAttribute('data-open-list', 'true')
+  listBtn.setAttribute('aria-label', 'Puzzle list')
+  listBtn.textContent = '☰'
+
+  metaTop.append(title, listBtn)
 
   const objective = document.createElement('p')
   objective.className = 'puzzle-objective'
   objective.setAttribute('data-puzzle-objective', 'true')
   objective.textContent = model.objectiveText
 
-  meta.append(title, objective)
+  // Goal badge
+  const badge = getGoalBadgeData(model.puzzle)
+  const goalBadge = document.createElement('div')
+  goalBadge.className = 'goal-badge'
+  goalBadge.setAttribute('data-goal-type', badge.type)
+  const badgeLabel = document.createElement('span')
+  badgeLabel.className = 'goal-badge-label'
+  badgeLabel.textContent = badge.label
+  goalBadge.append(badgeLabel)
+
+  // Position indicator
+  const position = model.puzzleId ? getPuzzlePosition(model.puzzleId) : null
+  const posSpan = document.createElement('span')
+  posSpan.className = 'puzzle-position'
+  posSpan.setAttribute('data-puzzle-position', 'true')
+  posSpan.textContent = position ?? ''
+
+  meta.append(metaTop, objective, goalBadge, posSpan)
   app.append(meta)
 
-  const status = document.createElement('p')
-  status.setAttribute('data-win-banner', 'true')
-  status.className = model.boardClasses.includes('is-won') ? 'win-banner is-won' : 'win-banner'
-  status.textContent = model.boardClasses.includes('is-won') ? 'Puzzle solved!' : ''
-  app.append(status)
+  // Nav controls
+  const nav = document.createElement('div')
+  nav.className = 'puzzle-nav'
+
+  const prevBtn = document.createElement('button')
+  prevBtn.type = 'button'
+  prevBtn.className = 'nav-btn'
+  prevBtn.setAttribute('data-prev-puzzle', 'true')
+  prevBtn.setAttribute('aria-label', 'Previous puzzle')
+  if (!model.prevId) prevBtn.setAttribute('aria-disabled', 'true')
+  prevBtn.textContent = '←'
+
+  const nextNavBtn = document.createElement('button')
+  nextNavBtn.type = 'button'
+  nextNavBtn.className = 'nav-btn'
+  nextNavBtn.setAttribute('data-next-puzzle', 'true')
+  nextNavBtn.setAttribute('aria-label', 'Next puzzle')
+  if (!model.nextId) nextNavBtn.setAttribute('aria-disabled', 'true')
+  nextNavBtn.textContent = '→'
+
+  nav.append(prevBtn, nextNavBtn)
+  app.append(nav)
+
+  // Win banner
+  const isWon = model.boardClasses.includes('is-won')
+  const winBanner = document.createElement('div')
+  winBanner.setAttribute('data-win-banner', 'true')
+  winBanner.className = isWon ? 'win-banner is-won' : 'win-banner'
+
+  if (isWon) {
+    if (model.nextId) {
+      const solvedSpan = document.createElement('span')
+      solvedSpan.textContent = 'Puzzle solved!'
+      const nextPuzzleBtn = document.createElement('button')
+      nextPuzzleBtn.type = 'button'
+      nextPuzzleBtn.className = 'btn-next-puzzle'
+      nextPuzzleBtn.setAttribute('data-win-next-puzzle', 'true')
+      nextPuzzleBtn.textContent = 'Next Puzzle'
+      winBanner.append(solvedSpan, nextPuzzleBtn)
+    } else {
+      // End of catalogue — count total puzzles from position string
+      const total = model.puzzleId ? (getPuzzlePosition(model.puzzleId) ?? '').split('/')[1]?.trim() : null
+      const endSpan = document.createElement('span')
+      endSpan.textContent = total ? `All ${total} puzzles solved! 🎉` : 'All puzzles solved! 🎉'
+      winBanner.append(endSpan)
+    }
+  }
+
+  app.append(winBanner)
 
   const board = document.createElement('div')
   board.className = ['board', ...model.boardClasses].join(' ').trim()
@@ -214,20 +299,77 @@ export function mountGameUi(root = document.querySelector('#app')) {
     throw new Error('Missing #app mount node')
   }
 
-  const ui = createGameUiController()
+  const controller = createController()
 
-  const rerender = () => renderToDom(root, ui.getRenderModel())
-  rerender()
+  // Navigation state
+  let currentPuzzleId = null
+  let ui = null
+  let showingList = false
+
+  function loadPuzzle(puzzleId) {
+    ui = createGameUiController({ controller, puzzleId })
+    currentPuzzleId = puzzleId
+    showingList = false
+    rerender()
+  }
+
+  function rerender() {
+    if (showingList) {
+      renderListScreen()
+    } else {
+      renderGameScreen()
+    }
+  }
+
+  function renderGameScreen() {
+    const model = ui.getRenderModel()
+    const extModel = {
+      ...model,
+      puzzle: ui.getState().board ? model.puzzle : null,
+      puzzleId: currentPuzzleId,
+      prevId: getPrevId(currentPuzzleId),
+      nextId: getNextId(currentPuzzleId),
+    }
+    renderToDom(root, extModel)
+
+    root.querySelector('[data-prev-puzzle]')?.addEventListener('pointerdown', () => {
+      if (extModel.prevId) loadPuzzle(extModel.prevId)
+    })
+    root.querySelector('[data-next-puzzle]')?.addEventListener('pointerdown', () => {
+      if (extModel.nextId) loadPuzzle(extModel.nextId)
+    })
+    root.querySelector('[data-open-list]')?.addEventListener('pointerdown', () => {
+      showingList = true
+      rerender()
+    })
+    root.querySelector('[data-win-next-puzzle]')?.addEventListener('pointerdown', () => {
+      if (extModel.nextId) loadPuzzle(extModel.nextId)
+    })
+  }
+
+  function renderListScreen() {
+    const listData = controller.getPuzzleList()
+    const listEl = renderPuzzleList({
+      list: listData,
+      currentId: currentPuzzleId,
+      onSelect(id) { loadPuzzle(id) },
+      onClose() { showingList = false; rerender() },
+    })
+    root.innerHTML = ''
+    root.append(listEl)
+  }
+
+  loadPuzzle(chooseInitialPuzzleId(controller))
 
   root.addEventListener('pointerdown', (event) => {
+    if (showingList) return
     const cell = event.target.closest?.('[data-cell-key]')
     if (!cell) return
-
     ui.tapCell(cell.dataset.cellKey)
     rerender()
   })
 
-  return ui
+  return { loadPuzzle, rerender }
 }
 
 if (typeof document !== 'undefined') {
