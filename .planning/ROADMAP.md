@@ -99,7 +99,7 @@ Plans:
   5. Optional sound feedback (off by default) plays on piece moves and puzzle solve; the preference persists across sessions
 **Plans**: 3 plans
 Plans:
-- [ ] 05-01-PLAN.md — PWA manifest, icons, and service worker config (PWA-01, PWA-02)
+- [x] 05-01-PLAN.md — PWA manifest, icons, and service worker config (PWA-01, PWA-02)
 - [ ] 05-02-PLAN.md — SW update flow + iOS install prompt (PWA-03, PWA-04)
 - [ ] 05-03-PLAN.md — Sound feedback system (SND-01)
 
