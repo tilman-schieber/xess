@@ -33,6 +33,9 @@ export default [
       '-x-',
       '--G',
     ],
+    goalTargets: {
+      '2,2': 'r',
+    },
   },
   {
     // Puzzle 3 — Knight Leap
@@ -59,6 +62,9 @@ export default [
       '---',
       '--G',
     ],
+    goalTargets: {
+      '2,2': 'r',
+    },
   },
   {
     // Puzzle 5 — Bishop Hop

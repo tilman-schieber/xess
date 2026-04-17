@@ -36,6 +36,7 @@ export function createBoardRenderModel({
           isPlayable: false,
           isGoal: false,
           piece: null,
+          goalGhost: null,
           classes: ['cell', 'cell--void'],
         })
         continue
@@ -51,6 +52,7 @@ export function createBoardRenderModel({
           isPlayable: true,
           isGoal: false,
           piece: null,
+          goalGhost: null,
           classes: ['cell', 'cell--playable'],
         })
         continue
@@ -71,6 +73,16 @@ export function createBoardRenderModel({
         }
         : null
 
+      const goalTarget = puzzle.goalTargets?.get?.(key)
+      const goalGhost = cell.isGoal && !piece && goalTarget
+        ? {
+          type: goalTarget.type,
+          color: goalTarget.color,
+          svgKey: getPieceSvgKey(goalTarget),
+          svg: getPieceSvg(goalTarget),
+        }
+        : null
+
       cells.push({
         key,
         col,
@@ -79,6 +91,7 @@ export function createBoardRenderModel({
         isPlayable: true,
         isGoal: !!cell.isGoal,
         piece,
+        goalGhost,
         classes,
       })
     }

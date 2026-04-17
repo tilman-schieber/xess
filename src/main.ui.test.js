@@ -116,6 +116,24 @@ describe('main UI interaction flow', () => {
     expect(ui.getState().selectedKey).toBeNull()
     expect(ui.getLastMoveResult()).toBeNull()
   })
+
+  it('reach puzzles expose a goal ghost for the required target piece before completion', () => {
+    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const model = ui.getRenderModel()
+    const cells = byKey(model)
+
+    expect(cells.get('2,2').goalGhost).toMatchObject({ type: 'r', color: 'white' })
+
+    ui.tapCell('0,0')
+    ui.tapCell('0,2')
+    ui.tapCell('0,2')
+    ui.tapCell('2,2')
+
+    const solvedModel = ui.getRenderModel()
+    const solvedCells = byKey(solvedModel)
+    expect(solvedCells.get('2,2').piece).toMatchObject({ type: 'r', color: 'white' })
+    expect(solvedCells.get('2,2').goalGhost).toBeNull()
+  })
 })
 
 describe('responsive layout and touch target contracts', () => {

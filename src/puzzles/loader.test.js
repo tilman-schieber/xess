@@ -154,4 +154,35 @@ describe('parsePuzzle', () => {
     expect(result.board.has('0,0')).toBe(true)
     expect(result.board.has('0,2')).toBe(true)
   })
+
+  it('parses goalTargets mapping into piece requirements keyed by goal position', () => {
+    const raw = makeRaw(['r-G'], {
+      goalType: 'reach-all-goal-squares',
+      targetColor: null,
+      goalTargets: { '2,0': 'r' },
+    })
+
+    const puzzle = parsePuzzle(raw)
+    expect(puzzle.goalTargets.get('2,0')).toEqual({ type: 'r', color: 'white' })
+  })
+
+  it('throws when goalTargets points to a non-goal square', () => {
+    const raw = makeRaw(['r--'], {
+      goalType: 'reach-all-goal-squares',
+      targetColor: null,
+      goalTargets: { '0,0': 'r' },
+    })
+
+    expect(() => parsePuzzle(raw)).toThrow('goalTargets key "0,0" must reference a G square')
+  })
+
+  it('throws when goalTargets uses an unknown piece character', () => {
+    const raw = makeRaw(['--G'], {
+      goalType: 'reach-all-goal-squares',
+      targetColor: null,
+      goalTargets: { '2,0': 'z' },
+    })
+
+    expect(() => parsePuzzle(raw)).toThrow('goalTargets key "2,0" has invalid piece "z"')
+  })
 })

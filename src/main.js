@@ -397,6 +397,16 @@ function renderToDom(root, model) {
       svgEl.querySelectorAll('script, foreignObject').forEach(n => n.remove())
       pieceEl.append(svgEl)
       cellEl.append(pieceEl)
+    } else if (cell.goalGhost) {
+      const ghostEl = document.createElement('span')
+      ghostEl.className = 'piece piece--ghost'
+      ghostEl.setAttribute('aria-hidden', 'true')
+      ghostEl.setAttribute('data-goal-ghost-key', cell.goalGhost.svgKey)
+      const svgDoc = getDomParser().parseFromString(cell.goalGhost.svg, 'image/svg+xml')
+      const svgEl = svgDoc.documentElement
+      svgEl.querySelectorAll('script, foreignObject').forEach(n => n.remove())
+      ghostEl.append(svgEl)
+      cellEl.append(ghostEl)
     }
 
     board.append(cellEl)

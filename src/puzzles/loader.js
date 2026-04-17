@@ -13,6 +13,7 @@ export const parseKey = (key) => key.split(',').map(Number)
  * @param {Object} raw - Object from catalogue.js
  * @returns {{ id: string, schemaVersion: number, title: string, goalType: string,
  *             targetColor: string|null, board: Map<string, {piece: Object|null, isGoal: boolean}>,
+ *             goalTargets: Map<string, {type: string, color: string}>,
  *             width: number, height: number }}
  */
 export function parsePuzzle(raw) {
@@ -46,6 +47,24 @@ export function parsePuzzle(raw) {
   const stringRows = rows.filter(r => typeof r === 'string')
   const width = stringRows.length > 0 ? Math.max(...stringRows.map(r => r.length)) : 0
 
+  const goalTargets = new Map()
+  if (raw.goalTargets && typeof raw.goalTargets === 'object') {
+    for (const [key, pieceChar] of Object.entries(raw.goalTargets)) {
+      if (!board.has(key) || !board.get(key)?.isGoal) {
+        throw new Error(`Puzzle "${raw.id}": goalTargets key "${key}" must reference a G square`)
+      }
+      if (!PIECE_CHARS.has(pieceChar)) {
+        throw new Error(`Puzzle "${raw.id}": goalTargets key "${key}" has invalid piece "${pieceChar}"`)
+      }
+
+      const color = pieceChar === pieceChar.toLowerCase() ? 'white' : 'black'
+      goalTargets.set(key, {
+        type: pieceChar.toLowerCase(),
+        color,
+      })
+    }
+  }
+
   if (raw.goalType === 'reach-all-goal-squares') {
     const goalCount = [...board.values()].filter(c => c.isGoal).length
     if (goalCount === 0) throw new Error(`Puzzle "${raw.id}": reach-all-goal-squares requires at least one G square`)
@@ -58,6 +77,7 @@ export function parsePuzzle(raw) {
     goalType: raw.goalType,
     targetColor: raw.targetColor ?? null,
     board,
+    goalTargets,
     width,
     height: rows.length,
   }

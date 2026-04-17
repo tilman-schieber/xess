@@ -90,4 +90,26 @@ describe('createBoardRenderModel', () => {
       svg: getPieceSvg({ type: 'q', color: 'white' }),
     })
   })
+
+  it('adds goal ghost piece metadata for empty goal squares with explicit targets', () => {
+    const puzzle = makePuzzle({
+      width: 2,
+      height: 1,
+      goalTargets: new Map([['1,0', { type: 'r', color: 'white' }]]),
+    })
+    const board = new Map([
+      ['0,0', { piece: { type: 'r', color: 'white' }, isGoal: false }],
+      ['1,0', { piece: null, isGoal: true }],
+    ])
+
+    const { cells } = createBoardRenderModel({ puzzle, board })
+    const goalCell = cells.find(cell => cell.key === '1,0')
+
+    expect(goalCell.goalGhost).toEqual({
+      type: 'r',
+      color: 'white',
+      svgKey: getPieceSvgKey({ type: 'r', color: 'white' }),
+      svg: getPieceSvg({ type: 'r', color: 'white' }),
+    })
+  })
 })

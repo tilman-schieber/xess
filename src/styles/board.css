@@ -73,6 +73,11 @@
   block-size: 100%;
 }
 
+.piece--ghost {
+  opacity: 0.28;
+  filter: saturate(0.35);
+}
+
 .board.is-moving .piece.is-moving {
   transition: transform var(--piece-move-ms, 180ms) ease;
 }
