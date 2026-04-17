@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Game Controller and Persistence** - Wire the engine into a complete move loop with localStorage-backed progress and sequential unlock logic (completed 2026-04-17)
 - [x] **Phase 3: Board Renderer and Core UI** - Build the SVG board renderer with two-tap interaction, legal move highlighting, and mobile-first layout (completed 2026-04-17)
 - [x] **Phase 4: Puzzle Content and Visual Polish** - Author the full puzzle catalogue, complete puzzle navigation UX, and apply the premium visual style (completed 2026-04-17)
-- [ ] **Phase 5: PWA and Launch Readiness** - Configure service worker precaching, offline support, PWA installability, and optional sound feedback
+- [x] **Phase 5: PWA and Launch Readiness** - Configure service worker precaching, offline support, PWA installability, and optional sound feedback (completed 2026-04-17)
 
 ## Phase Details
 
@@ -100,7 +100,7 @@ Plans:
 **Plans**: 3 plans
 Plans:
 - [x] 05-01-PLAN.md — PWA manifest, icons, and service worker config (PWA-01, PWA-02)
-- [ ] 05-02-PLAN.md — SW update flow + iOS install prompt (PWA-03, PWA-04)
+- [x] 05-02-PLAN.md — SW update flow + iOS install prompt (PWA-03, PWA-04)
 - [x] 05-03-PLAN.md — Sound feedback system (SND-01)
 
 ## Progress
@@ -114,4 +114,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Game Controller and Persistence | 3/3 | Complete | 2026-04-17 |
 | 3. Board Renderer and Core UI | 5/5 | Complete | 2026-04-17 |
 | 4. Puzzle Content and Visual Polish | 3/3 | Complete   | 2026-04-17 |
-| 5. PWA and Launch Readiness | 0/TBD | Not started | - |
+| 5. PWA and Launch Readiness | 3/3 | Complete   | 2026-04-17 |

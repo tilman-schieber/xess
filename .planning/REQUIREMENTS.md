@@ -69,8 +69,8 @@
 
 - [x] **PWA-01**: App is installable as a PWA: valid Web App Manifest with required icon sizes (192, 512, 180 Apple Touch), standalone display mode
 - [x] **PWA-02**: App works fully offline after first load: service worker precaches all static assets and all puzzle data at install time
-- [ ] **PWA-03**: New app versions activate immediately using `skipWaiting` + `clients.claim`; a reload prompt is shown to the player
-- [ ] **PWA-04**: iOS Safari users who haven't installed see a persistent "Add to Home Screen" instruction (conditioned on iOS UA + `navigator.standalone !== true`)
+- [x] **PWA-03**: New app versions activate immediately using `skipWaiting` + `clients.claim`; a reload prompt is shown to the player
+- [x] **PWA-04**: iOS Safari users who haven't installed see a persistent "Add to Home Screen" instruction (conditioned on iOS UA + `navigator.standalone !== true`)
 
 ### Content
 
@@ -154,8 +154,8 @@
 | SND-02 | Phase 5 | Pending |
 | PWA-01 | Phase 5 | Complete |
 | PWA-02 | Phase 5 | Complete |
-| PWA-03 | Phase 5 | Pending |
-| PWA-04 | Phase 5 | Pending |
+| PWA-03 | Phase 5 | Complete |
+| PWA-04 | Phase 5 | Complete |
 | CNT-01 | Phase 4 | Pending |
 | CNT-02 | Phase 4 | Pending |
 

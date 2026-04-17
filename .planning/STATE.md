@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-04-17T14:15:49.376Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-04-17T14:21:24.024Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 17
-  completed_plans: 16
-  percent: 94
+  completed_plans: 17
+  percent: 100
 ---
 
 # Project State
@@ -99,6 +99,7 @@ Recent decisions affecting current work:
 - [Phase 03-board-renderer-and-core-ui]: Board geometry now uses grid-auto-rows plus playable-cell aspect-ratio to prevent moved-from empty cell collapse.
 - [Phase 03-board-renderer-and-core-ui]: Adopted open-licensed Cburnett SVG chess set from Wikimedia as local static assets.
 - [Phase 03-board-renderer-and-core-ui]: Piece rendering continues to use strict color-type whitelist with static imports only (no dynamic lookup).
+- [Phase 05-02]: Used registerSW from virtual:pwa-register (not virtual:pwa-register/vanilla — subpath doesn't exist in vite-plugin-pwa 1.2.0)
 
 ### Pending Todos
 
@@ -117,6 +118,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T12:50:57.022Z
-Stopped at: Phase 4 UI-SPEC approved
-Resume file: .planning/phases/04-puzzle-content-and-visual-polish/04-UI-SPEC.md
+Last session: 2026-04-17T14:21:24.009Z
+Stopped at: Completed 05-02-PLAN.md
+Resume file: None
