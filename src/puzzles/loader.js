@@ -46,6 +46,11 @@ export function parsePuzzle(raw) {
   const stringRows = rows.filter(r => typeof r === 'string')
   const width = stringRows.length > 0 ? Math.max(...stringRows.map(r => r.length)) : 0
 
+  if (raw.goalType === 'reach-all-goal-squares') {
+    const goalCount = [...board.values()].filter(c => c.isGoal).length
+    if (goalCount === 0) throw new Error(`Puzzle "${raw.id}": reach-all-goal-squares requires at least one G square`)
+  }
+
   return {
     id: raw.id,
     schemaVersion: raw.schemaVersion,
