@@ -66,7 +66,7 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — Board renderer contract for irregular geometry and SVG pieces
 - [x] 03-02-PLAN.md — Two-tap interaction wiring with legal highlights and win feedback
-- [ ] 03-03-PLAN.md — Mobile-first responsive CSS and touch-target hardening
+- [x] 03-03-PLAN.md — Mobile-first responsive CSS and touch-target hardening
 **UI hint**: yes
 
 ### Phase 4: Puzzle Content and Visual Polish
