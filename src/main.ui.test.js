@@ -49,6 +49,9 @@ describe('main UI interaction flow', () => {
     expect(cells.get('0,0').piece).toBeNull()
     expect(cells.get('0,2').piece).toMatchObject({ type: 'r', color: 'white' })
     expect(selectedOrLegal).toHaveLength(0)
+    expect(model.animationMs).toBeGreaterThanOrEqual(150)
+    expect(model.animationMs).toBeLessThanOrEqual(200)
+    expect(model.animationMs).toBe(180)
     expect(ui.getState().selectedKey).toBeNull()
   })
 
