@@ -12,6 +12,7 @@
   border: 1px solid var(--border-board);
   background: var(--surface-board);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
+  touch-action: none; /* prevent browser scroll/zoom from hijacking pointer events during drag */
 }
 
 .cell {

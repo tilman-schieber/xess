@@ -34,6 +34,13 @@ export function initDragDrop(boardEl, { onDragStart, onDrop, onCancel }) {
     const pieceEl = cellEl.querySelector('.piece')
     if (!pieceEl) return
 
+    // Release implicit pointer capture that browsers assign to <button> elements.
+    // Without this, pointermove fires on the button (not boardEl) and the board
+    // listener never sees the movement needed to cross the drag threshold.
+    if (event.target.hasPointerCapture?.(event.pointerId)) {
+      event.target.releasePointerCapture(event.pointerId)
+    }
+
     dragState = {
       pointerId: event.pointerId,
       fromKey: cellEl.dataset.cellKey,
