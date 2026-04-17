@@ -1,5 +1,6 @@
 import { createController } from './controller.js'
 import { createBoardRenderModel } from './ui/boardRenderer.js'
+import './styles/app.css'
 import {
   MOVE_TRANSITION_MS,
   createInteractionFeedback,

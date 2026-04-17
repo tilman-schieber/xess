@@ -1,0 +1,73 @@
+@import './board.css';
+
+:root {
+  --touch-target-min: 44px;
+  --app-max-width-mobile: 375px;
+  --app-max-width-desktop: 960px;
+  --board-max-size-mobile: 360px;
+  --board-max-size-desktop: 720px;
+  --app-gap: 0.875rem;
+  --surface-bg: #090d16;
+  --text-primary: #f5f7ff;
+  --accent-win: #61d9a7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: radial-gradient(circle at top, #1a2338 0%, #090d16 62%);
+  color: var(--text-primary);
+}
+
+#app {
+  min-height: 100vh;
+  display: grid;
+  place-items: start center;
+  padding: 0.75rem;
+}
+
+.xess-ui {
+  inline-size: min(100vw, 375px);
+  max-width: 375px;
+  display: grid;
+  justify-items: center;
+  gap: var(--app-gap);
+}
+
+.win-banner {
+  margin: 0;
+  min-height: 1.5rem;
+  width: 100%;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #aab5d5;
+}
+
+.win-banner.is-won {
+  color: var(--accent-win);
+}
+
+@media (min-width: 768px) {
+  #app {
+    padding: 1.5rem;
+  }
+
+  .xess-ui {
+    inline-size: min(92vw, var(--app-max-width-desktop));
+    max-width: var(--app-max-width-desktop);
+  }
+
+  .win-banner {
+    font-size: 1.05rem;
+  }
+}

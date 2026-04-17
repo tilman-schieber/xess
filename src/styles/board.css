@@ -1,0 +1,89 @@
+.board {
+  --board-edge: min(100vw - 1.5rem, 100svh - 7.5rem, var(--board-max-size-mobile));
+
+  inline-size: var(--board-edge);
+  max-inline-size: var(--board-edge);
+  aspect-ratio: 1 / 1;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(var(--touch-target-min), 1fr));
+  gap: 0.15rem;
+  padding: 0.15rem;
+  border-radius: 0.75rem;
+  border: 1px solid #273155;
+  background: rgba(15, 22, 38, 0.9);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
+}
+
+.cell {
+  position: relative;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  border: 0;
+  margin: 0;
+  border-radius: 0.45rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.cell--playable {
+  background: linear-gradient(180deg, #e7ecff 0%, #d2dbf6 100%);
+  color: #111728;
+}
+
+.cell--goal {
+  outline: 2px solid #52d6a2;
+  outline-offset: -3px;
+  background: linear-gradient(180deg, #f6ffe9 0%, #dff7cd 100%);
+}
+
+.cell--void {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.cell.is-selected {
+  box-shadow: inset 0 0 0 3px #4a6fff;
+}
+
+.cell.is-legal {
+  box-shadow: inset 0 0 0 3px #61d9a7;
+}
+
+.cell.is-illegal-feedback {
+  box-shadow: inset 0 0 0 3px #ff6f7a;
+}
+
+.piece {
+  inline-size: 72%;
+  block-size: 72%;
+  min-inline-size: 24px;
+  min-block-size: 24px;
+  display: inline-grid;
+  place-items: center;
+  transform-origin: center;
+}
+
+.piece svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.board.is-moving .piece.is-moving {
+  transition: transform var(--piece-move-ms, 180ms) ease;
+}
+
+.board.is-won {
+  border-color: #4fcf99;
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.32),
+    0 0 0 2px rgba(79, 207, 153, 0.42);
+}
+
+@media (min-width: 768px) {
+  .board {
+    --board-edge: min(78vh, var(--board-max-size-desktop));
+    gap: 0.2rem;
+    padding: 0.2rem;
+  }
+}
