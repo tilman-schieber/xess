@@ -13,8 +13,8 @@ Xess is built bottom-up following the dependency graph: the puzzle engine is the
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Puzzle Format and Engine** - Define the versioned puzzle schema and build a fully-tested, pure-function chess engine for non-standard boards (completed 2026-04-16)
-- [ ] **Phase 2: Game Controller and Persistence** - Wire the engine into a complete move loop with localStorage-backed progress and sequential unlock logic
-- [ ] **Phase 3: Board Renderer and Core UI** - Build the SVG board renderer with two-tap interaction, legal move highlighting, and mobile-first layout
+- [x] **Phase 2: Game Controller and Persistence** - Wire the engine into a complete move loop with localStorage-backed progress and sequential unlock logic (completed 2026-04-17)
+- [x] **Phase 3: Board Renderer and Core UI** - Build the SVG board renderer with two-tap interaction, legal move highlighting, and mobile-first layout (completed 2026-04-17)
 - [ ] **Phase 4: Puzzle Content and Visual Polish** - Author the full puzzle catalogue, complete puzzle navigation UX, and apply the premium visual style
 - [ ] **Phase 5: PWA and Launch Readiness** - Configure service worker precaching, offline support, PWA installability, and optional sound feedback
 
@@ -80,7 +80,11 @@ Plans:
   2. The puzzle list shows solved puzzles as marked and future locked puzzles as locked; the current position indicator ("7 / 42") is visible during play
   3. Each puzzle clearly displays its goal type and target before and during play
   4. The visual style is premium and distinctive — custom piece SVGs, refined color palette, considered typography — with no standard chess clichés
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 04-01-PLAN.md — Puzzle catalogue: 40 curated puzzles (CNT-01, CNT-02)
+- [ ] 04-02-PLAN.md — CSS design token system + Inter font bundling (VIS-01 foundation)
+- [ ] 04-03-PLAN.md — Puzzle list screen, nav controls, goal badge, position indicator (NAV-04, VIS-01)
 **UI hint**: yes
 
 ### Phase 5: PWA and Launch Readiness
@@ -103,7 +107,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Puzzle Format and Engine | 3/3 | Complete   | 2026-04-16 |
-| 2. Game Controller and Persistence | 2/3 | In Progress|  |
-| 3. Board Renderer and Core UI | 0/TBD | Not started | - |
-| 4. Puzzle Content and Visual Polish | 0/TBD | Not started | - |
+| 2. Game Controller and Persistence | 3/3 | Complete | 2026-04-17 |
+| 3. Board Renderer and Core UI | 5/5 | Complete | 2026-04-17 |
+| 4. Puzzle Content and Visual Polish | 0/3 | Not started | - |
 | 5. PWA and Launch Readiness | 0/TBD | Not started | - |
