@@ -10,8 +10,8 @@
   gap: 0.15rem;
   padding: 0.15rem;
   border-radius: 0.75rem;
-  border: 1px solid #273155;
-  background: rgba(15, 22, 38, 0.9);
+  border: 1px solid var(--border-board);
+  background: var(--surface-board);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.32);
 }
 
@@ -31,14 +31,14 @@
 
 .cell--playable {
   aspect-ratio: 1 / 1;
-  background: linear-gradient(180deg, #e7ecff 0%, #d2dbf6 100%);
+  background: linear-gradient(180deg, var(--cell-playable-start) 0%, var(--cell-playable-end) 100%);
   color: #111728;
 }
 
 .cell--goal {
-  outline: 2px solid #52d6a2;
+  outline: 2px solid var(--accent-goal);
   outline-offset: -3px;
-  background: linear-gradient(180deg, #f6ffe9 0%, #dff7cd 100%);
+  background: linear-gradient(180deg, var(--cell-goal-start) 0%, var(--cell-goal-end) 100%);
 }
 
 .cell--void {
@@ -47,15 +47,15 @@
 }
 
 .cell.is-selected {
-  box-shadow: inset 0 0 0 3px #4a6fff;
+  box-shadow: inset 0 0 0 3px var(--selected-ring);
 }
 
 .cell.is-legal {
-  box-shadow: inset 0 0 0 3px #61d9a7;
+  box-shadow: inset 0 0 0 3px var(--accent);
 }
 
 .cell.is-illegal-feedback {
-  box-shadow: inset 0 0 0 3px #ff6f7a;
+  box-shadow: inset 0 0 0 3px var(--destructive);
 }
 
 .piece {
@@ -78,7 +78,7 @@
 }
 
 .board.is-won {
-  border-color: #4fcf99;
+  border-color: var(--accent);
   box-shadow:
     0 14px 32px rgba(0, 0, 0, 0.32),
     0 0 0 2px rgba(79, 207, 153, 0.42);
