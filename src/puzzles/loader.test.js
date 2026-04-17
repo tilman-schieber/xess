@@ -147,8 +147,11 @@ describe('parsePuzzle', () => {
       grid: ['-', null, '-'],
     }
     // Should not throw — null rows are skipped
-    expect(() => parsePuzzle(raw)).not.toThrow()
-    // First and third rows are valid
-    expect(puzzle => puzzle).toBeDefined()
+    let result
+    expect(() => { result = parsePuzzle(raw) }).not.toThrow()
+    expect(result).toBeDefined()
+    // Row 0 and row 2 are valid strings — their cells should be present
+    expect(result.board.has('0,0')).toBe(true)
+    expect(result.board.has('0,2')).toBe(true)
   })
 })
