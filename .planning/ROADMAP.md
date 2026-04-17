@@ -83,7 +83,7 @@ Plans:
 **Plans**: 3 plans
 Plans:
 - [ ] 04-01-PLAN.md — Puzzle catalogue: 40 curated puzzles (CNT-01, CNT-02)
-- [ ] 04-02-PLAN.md — CSS design token system + Inter font bundling (VIS-01 foundation)
+- [x] 04-02-PLAN.md — CSS design token system + Inter font bundling (VIS-01 foundation)
 - [ ] 04-03-PLAN.md — Puzzle list screen, nav controls, goal badge, position indicator (NAV-04, VIS-01)
 **UI hint**: yes
 
@@ -109,5 +109,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Puzzle Format and Engine | 3/3 | Complete   | 2026-04-16 |
 | 2. Game Controller and Persistence | 3/3 | Complete | 2026-04-17 |
 | 3. Board Renderer and Core UI | 5/5 | Complete | 2026-04-17 |
-| 4. Puzzle Content and Visual Polish | 0/3 | Not started | - |
+| 4. Puzzle Content and Visual Polish | 1/3 | In Progress|  |
 | 5. PWA and Launch Readiness | 0/TBD | Not started | - |
