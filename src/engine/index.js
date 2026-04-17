@@ -1,7 +1,7 @@
 // src/engine/index.js
 // Public API for all engine consumers (Phase 2 game controller, tests)
 
-export { getLegalMoves } from './moves/index.js'
+export { getLegalMoves } from './moves.js'
 export { applyMove } from './apply.js'
 export { checkWin } from './win.js'
 
