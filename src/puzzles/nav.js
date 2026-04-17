@@ -65,3 +65,29 @@ export function getPuzzleList(solvedIds, catalogue = _catalogue) {
     status: solved.has(e.id) ? 'solved' : unlocked.has(e.id) ? 'unlocked' : 'locked',
   }))
 }
+
+/**
+ * Returns the id of the puzzle immediately before puzzleId in catalogue order.
+ * Returns null if puzzleId is first or not found.
+ *
+ * @param {string} puzzleId
+ * @param {object[]} [catalogue]
+ * @returns {string|null}
+ */
+export function getPrevId(puzzleId, catalogue = _catalogue) {
+  const idx = catalogue.findIndex(e => e.id === puzzleId)
+  return idx <= 0 ? null : catalogue[idx - 1].id
+}
+
+/**
+ * Returns the id of the puzzle immediately after puzzleId in catalogue order.
+ * Returns null if puzzleId is last or not found.
+ *
+ * @param {string} puzzleId
+ * @param {object[]} [catalogue]
+ * @returns {string|null}
+ */
+export function getNextId(puzzleId, catalogue = _catalogue) {
+  const idx = catalogue.findIndex(e => e.id === puzzleId)
+  return idx === -1 || idx === catalogue.length - 1 ? null : catalogue[idx + 1].id
+}
