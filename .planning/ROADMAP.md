@@ -48,7 +48,7 @@ Plans:
   5. The localStorage schema version field is present; a future schema change does not silently corrupt existing save data
 **Plans**: 3 plans
 Plans:
-- [ ] 02-01-PLAN.md — localStorage persistence layer (store.js)
+- [x] 02-01-PLAN.md — localStorage persistence layer (store.js)
 - [ ] 02-02-PLAN.md — Catalogue navigation helpers (nav.js)
 - [ ] 02-03-PLAN.md — Game controller wiring engine + persistence + navigation
 

@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 01-puzzle-format-and-engine/01-03-PLAN.md
-last_updated: "2026-04-16T21:23:53.092Z"
-last_activity: 2026-04-16
+status: executing
+stopped_at: Completed 02-game-controller-and-persistence/02-01-PLAN.md
+last_updated: "2026-04-17T06:38:29.849Z"
+last_activity: 2026-04-17
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
-  percent: 100
+  total_plans: 6
+  completed_plans: 4
+  percent: 67
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-16)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** Phase 01 — puzzle-format-and-engine
+**Current focus:** Phase 02 — game-controller-and-persistence
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-04-16
+Phase: 02 (game-controller-and-persistence) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-04-17
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-puzzle-format-and-engine P01 | 186s | 2 tasks | 10 files |
 | Phase 01-puzzle-format-and-engine P02 | 285s | 2 tasks | 14 files |
 | Phase 01-puzzle-format-and-engine P03 | 118s | 2 tasks | 6 files |
+| Phase 02-game-controller-and-persistence P01 | 86 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,7 @@ Recent decisions affecting current work:
 - [Phase 01-puzzle-format-and-engine]: structuredClone used for board snapshot — not JSON.stringify/parse which silently loses Map type (ENG-08)
 - [Phase 01-puzzle-format-and-engine]: applyMove calls checkWin internally — Phase 2 cannot bypass win detection
 - [Phase 01-puzzle-format-and-engine]: Caller-managed undo stack: applyMove returns new board, caller pushes old board; undo by history.pop()
+- [Phase 02-game-controller-and-persistence]: Map serialized as Array.from(entries) — JSON.stringify(Map) silently produces {}; callers re-hydrate with new Map(entries)
 
 ### Pending Todos
 
@@ -93,6 +95,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-16T21:16:34.522Z
-Stopped at: Completed 01-puzzle-format-and-engine/01-03-PLAN.md
+Last session: 2026-04-17T06:38:29.834Z
+Stopped at: Completed 02-game-controller-and-persistence/02-01-PLAN.md
 Resume file: None
