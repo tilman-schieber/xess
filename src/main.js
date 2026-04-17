@@ -209,6 +209,45 @@ function renderSoundToggle() {
   return btn
 }
 
+/**
+ * Animate a piece sliding from its old screen position to its new one.
+ * Uses the FLIP technique: capture old rect before render, then animate
+ * the new element from the old position to its natural (new) position.
+ *
+ * @param {HTMLElement} root    — mount root (for querying before/after)
+ * @param {string|null} fromKey — cell key the piece moved FROM
+ * @param {string|null} toKey   — cell key the piece moved TO
+ * @param {function}    renderFn — zero-arg function that rebuilds the DOM
+ */
+function animatePieceMove(root, fromKey, toKey, renderFn) {
+  // Capture old rect of the moving piece before re-render
+  let fromRect = null
+  if (fromKey) {
+    const fromPiece = root.querySelector(`[data-cell-key="${CSS.escape(fromKey)}"] .piece`)
+    if (fromPiece) fromRect = fromPiece.getBoundingClientRect()
+  }
+
+  renderFn()
+
+  if (!fromRect || !toKey) return
+
+  const toPiece = root.querySelector(`[data-cell-key="${CSS.escape(toKey)}"] .piece`)
+  if (!toPiece) return
+
+  const toRect = toPiece.getBoundingClientRect()
+  const dx = fromRect.left - toRect.left
+  const dy = fromRect.top - toRect.top
+  if (dx === 0 && dy === 0) return
+
+  toPiece.animate(
+    [
+      { transform: `translate(${dx}px, ${dy}px)`, offset: 0 },
+      { transform: 'translate(0, 0)', offset: 1 },
+    ],
+    { duration: 180, easing: 'ease-out', fill: 'none' },
+  )
+}
+
 function renderToDom(root, model) {
   root.innerHTML = ''
 
@@ -391,15 +430,19 @@ export function mountGameUi(root = document.querySelector('#app')) {
         onDragStart(fromKey) {
           _isDragging = true
           ui.tapCell(fromKey)   // selects the piece, shows legal move highlights
-          rerender()
+          // Do NOT rerender here — rebuilding the DOM would destroy the board element
+          // and kill the in-flight drag state (ghost + pointer capture).
+          // Selection highlight is intentionally deferred to onDrop/onCancel.
         },
         onDrop(fromKey, toKey) {
           _isDragging = false
-          ui.tapCell(toKey)     // makes the move (or selects/illegal-flashes per tapCell logic)
-          const moveResult = ui.getLastMoveResult()
-          if (moveResult === 'win') playSolve()
-          else if (moveResult === 'move_made') playMove()
-          rerender()
+          animatePieceMove(root, fromKey, toKey, () => {
+            ui.tapCell(toKey)
+            const moveResult = ui.getLastMoveResult()
+            if (moveResult === 'win') playSolve()
+            else if (moveResult === 'move_made') playMove()
+            rerender()
+          })
         },
         onCancel(fromKey) {
           _isDragging = false
@@ -452,14 +495,18 @@ export function mountGameUi(root = document.querySelector('#app')) {
     if (_isDragging) return  // drag handled it; skip tap
     const cell = event.target.closest?.('[data-cell-key]')
     if (!cell) return
-    ui.tapCell(cell.dataset.cellKey)
+    const tapKey = cell.dataset.cellKey
+    // Capture selected key before tapCell mutates state (for FLIP animation)
+    const prevSelected = ui.getState().selectedKey
+    ui.tapCell(tapKey)
     const moveResult = ui.getLastMoveResult()
-    if (moveResult === 'win') {
-      playSolve()
-    } else if (moveResult === 'move_made') {
-      playMove()
+    if (moveResult === 'win' || moveResult === 'move_made') {
+      if (moveResult === 'win') playSolve()
+      else playMove()
+      animatePieceMove(root, prevSelected, tapKey, rerender)
+    } else {
+      rerender()
     }
-    rerender()
   })
 
   return { loadPuzzle, rerender }
