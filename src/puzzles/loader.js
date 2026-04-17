@@ -43,6 +43,9 @@ export function parsePuzzle(raw) {
     })
   })
 
+  const stringRows = rows.filter(r => typeof r === 'string')
+  const width = stringRows.length > 0 ? Math.max(...stringRows.map(r => r.length)) : 0
+
   return {
     id: raw.id,
     schemaVersion: raw.schemaVersion,
@@ -50,7 +53,7 @@ export function parsePuzzle(raw) {
     goalType: raw.goalType,
     targetColor: raw.targetColor ?? null,
     board,
-    width: Math.max(...rows.filter(r => typeof r === 'string').map(r => r.length)),
+    width,
     height: rows.length,
   }
 }
