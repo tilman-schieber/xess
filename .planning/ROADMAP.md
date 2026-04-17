@@ -30,7 +30,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Pawn movement is driven by the per-piece direction property — not inferred from position or color
   4. Both win conditions (capture-all-targets and reach-all-goal-squares) are detected correctly after `applyMove`
   5. Undo pops to the exact prior board state with no data mutation; Vitest suite passes with no failures
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [x] 01-01-PLAN.md — Scaffold Vite project and puzzle format layer
+- [x] 01-02-PLAN.md — Chess movement engine (all 6 piece types)
+- [x] 01-03-PLAN.md — applyMove, checkWin, and public engine API
 
 ### Phase 2: Game Controller and Persistence
 **Goal**: The complete game loop (select piece → move → validate → persist → detect win → unlock next) runs correctly without any UI
@@ -42,7 +46,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A new puzzle becomes available to play immediately after the previous one is solved, following sequential unlock order
   4. State is written on every move (debounced) and synchronously when the page hides — no progress is lost on tab switch or device sleep
   5. The localStorage schema version field is present; a future schema change does not silently corrupt existing save data
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 02-01-PLAN.md — localStorage persistence layer (store.js)
+- [ ] 02-02-PLAN.md — Catalogue navigation helpers (nav.js)
+- [ ] 02-03-PLAN.md — Game controller wiring engine + persistence + navigation
 
 ### Phase 3: Board Renderer and Core UI
 **Goal**: Players can interact with the game — select pieces, see legal moves, make moves, and receive immediate visual feedback — on any board shape at mobile size
@@ -89,7 +97,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Puzzle Format and Engine | 3/3 | Complete   | 2026-04-16 |
-| 2. Game Controller and Persistence | 0/TBD | Not started | - |
+| 2. Game Controller and Persistence | 0/3 | Not started | - |
 | 3. Board Renderer and Core UI | 0/TBD | Not started | - |
 | 4. Puzzle Content and Visual Polish | 0/TBD | Not started | - |
 | 5. PWA and Launch Readiness | 0/TBD | Not started | - |
