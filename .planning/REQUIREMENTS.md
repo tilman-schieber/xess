@@ -38,7 +38,7 @@
 - [x] **NAV-01**: Player sees a list of all puzzles; solved puzzles are marked; unsolved future puzzles are locked
 - [x] **NAV-02**: Puzzles unlock sequentially — a puzzle is unlocked only when the previous one is solved
 - [x] **NAV-03**: Current puzzle position is displayed ("7 / 42")
-- [ ] **NAV-04**: Each puzzle displays its goal type and target clearly before and during play
+- [x] **NAV-04**: Each puzzle displays its goal type and target clearly before and during play
 - [x] **NAV-05**: Puzzles are ordered by implied difficulty (easier first, harder later) with no explicit difficulty labels
 
 ### Persistence
@@ -57,7 +57,7 @@
 
 ### Visual Design
 
-- [ ] **VIS-01**: Visual style is elegant and premium — custom piece set, refined color palette, considered typography; no standard chess clichés
+- [x] **VIS-01**: Visual style is elegant and premium — custom piece set, refined color palette, considered typography; no standard chess clichés
 - [x] **VIS-02**: UI is mobile-first responsive and usable on both phone and desktop
 
 ### Sound
@@ -138,7 +138,7 @@
 | NAV-01 | Phase 2 | Complete |
 | NAV-02 | Phase 2 | Complete |
 | NAV-03 | Phase 2 | Complete |
-| NAV-04 | Phase 4 | Pending |
+| NAV-04 | Phase 4 | Complete |
 | NAV-05 | Phase 2 | Complete |
 | PRS-01 | Phase 2 | Complete |
 | PRS-02 | Phase 2 | Complete |
@@ -148,7 +148,7 @@
 | RND-02 | Phase 3 | Complete |
 | RND-03 | Phase 3 | Complete |
 | RND-04 | Phase 3 | Complete |
-| VIS-01 | Phase 4 | Pending |
+| VIS-01 | Phase 4 | Complete |
 | VIS-02 | Phase 3 | Complete |
 | SND-01 | Phase 5 | Pending |
 | SND-02 | Phase 5 | Pending |
