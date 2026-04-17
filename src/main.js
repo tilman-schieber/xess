@@ -12,6 +12,9 @@ import {
 } from './ui/interactionFeedback.js'
 import { getPrevId, getNextId, getPuzzlePosition } from './puzzles/nav.js'
 import catalogue from './puzzles/catalogue.js'
+import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
+
+initSound()
 
 let _domParser = null
 function getDomParser() {
@@ -101,6 +104,8 @@ export function createGameUiController({
     board: loaded.board,
   }
 
+  let _lastMoveResult = null
+
   const getRenderModel = () => buildInteractionRenderModel({
     puzzle: state.puzzle,
     board: state.board,
@@ -110,11 +115,15 @@ export function createGameUiController({
 
   const tapCell = (positionKey) => {
     if (typeof positionKey !== 'string' || positionKey.length === 0) {
+      _lastMoveResult = null
       return getRenderModel()
     }
 
     const snapshot = feedback.snapshot()
-    if (snapshot.won) return getRenderModel()
+    if (snapshot.won) {
+      _lastMoveResult = null
+      return getRenderModel()
+    }
 
     if (!snapshot.selectedKey) {
       const legal = controller.selectPiece(positionKey)
@@ -123,11 +132,13 @@ export function createGameUiController({
       } else {
         feedback.triggerIllegal(positionKey)
       }
+      _lastMoveResult = null
       return getRenderModel()
     }
 
     if (positionKey === snapshot.selectedKey) {
       feedback.clearSelection()
+      _lastMoveResult = null
       return getRenderModel()
     }
 
@@ -136,11 +147,13 @@ export function createGameUiController({
       const result = controller.makeMove(snapshot.selectedKey, positionKey)
       if (result.error) {
         feedback.triggerIllegal(positionKey)
+        _lastMoveResult = null
         return getRenderModel()
       }
 
       state.board = result.board
       feedback.applyMove(positionKey, result.won)
+      _lastMoveResult = result.won ? 'win' : 'move_made'
       return getRenderModel()
     }
 
@@ -150,6 +163,7 @@ export function createGameUiController({
     } else {
       feedback.triggerIllegal(positionKey)
     }
+    _lastMoveResult = null
 
     return getRenderModel()
   }
@@ -157,6 +171,9 @@ export function createGameUiController({
   return {
     tapCell,
     getRenderModel,
+    getLastMoveResult() {
+      return _lastMoveResult
+    },
     getState() {
       const snapshot = feedback.snapshot()
       return {
@@ -167,6 +184,24 @@ export function createGameUiController({
       }
     },
   }
+}
+
+function renderSoundToggle() {
+  const btn = document.createElement('button')
+  btn.className = 'sound-toggle'
+  btn.setAttribute('type', 'button')
+  btn.setAttribute('aria-label', isSoundEnabled() ? 'Mute sounds' : 'Unmute sounds')
+  btn.setAttribute('title', isSoundEnabled() ? 'Sound on' : 'Sound off')
+  btn.textContent = isSoundEnabled() ? '🔊' : '🔇'
+
+  btn.addEventListener('click', () => {
+    const enabled = toggleSound()
+    btn.textContent = enabled ? '🔊' : '🔇'
+    btn.setAttribute('aria-label', enabled ? 'Mute sounds' : 'Unmute sounds')
+    btn.setAttribute('title', enabled ? 'Sound on' : 'Sound off')
+  })
+
+  return btn
 }
 
 function renderToDom(root, model) {
@@ -195,7 +230,7 @@ function renderToDom(root, model) {
   listBtn.setAttribute('aria-label', 'Puzzle list')
   listBtn.textContent = '☰'
 
-  metaTop.append(title, listBtn)
+  metaTop.append(title, listBtn, renderSoundToggle())
 
   const objective = document.createElement('p')
   objective.className = 'puzzle-objective'
@@ -373,6 +408,12 @@ export function mountGameUi(root = document.querySelector('#app')) {
     const cell = event.target.closest?.('[data-cell-key]')
     if (!cell) return
     ui.tapCell(cell.dataset.cellKey)
+    const moveResult = ui.getLastMoveResult()
+    if (moveResult === 'win') {
+      playSolve()
+    } else if (moveResult === 'move_made') {
+      playMove()
+    }
     rerender()
   })
 

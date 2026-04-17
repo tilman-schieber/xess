@@ -221,3 +221,26 @@ body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 }
+
+/* ─── Sound toggle button ────────────────────────────────────────────────── */
+.sound-toggle {
+  background: none;
+  border: 1px solid var(--border-subtle, #2a365d);
+  border-radius: 6px;
+  color: var(--text-muted, #6b7aa3);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  min-width: var(--touch-target-min, 44px);
+  min-height: var(--touch-target-min, 44px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xs, 0.25rem);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.sound-toggle:hover {
+  color: var(--text-primary, #f5f7ff);
+  border-color: var(--accent, #61d9a7);
+}
