@@ -65,8 +65,8 @@ export function initDragDrop(boardEl, { onDragStart, onDrop, onCancel }) {
       boardEl.setPointerCapture(event.pointerId)
 
       // Create ghost
-      const rect = dragState.fromEl.getBoundingClientRect()
       const pieceEl = dragState.fromEl.querySelector('.piece')
+      const rect = pieceEl.getBoundingClientRect()
       const clone = pieceEl.cloneNode(true)
       const ghost = document.createElement('div')
       ghost.className = 'drag-ghost'

@@ -102,12 +102,9 @@
   position: fixed;
   pointer-events: none;
   z-index: 9999;
-  display: grid;
-  place-items: center;
-  border-radius: 0.45rem;
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.45),
-    0 2px 8px rgba(0, 0, 0, 0.3);
+  display: block;
+  border-radius: 0;
+  box-shadow: none;
   transform: scale(1.1);
   transform-origin: center;
   background: transparent;
@@ -115,10 +112,11 @@
 }
 
 .drag-ghost .piece {
-  inline-size: 72%;
-  block-size: 72%;
-  display: inline-grid;
-  place-items: center;
+  inline-size: 100%;
+  block-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 0;
+  display: block;
 }
 
 .drag-ghost .piece svg {
