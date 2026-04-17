@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 Phase: 06 (drag-and-drop-interaction-and-square-cell-layout) — COMPLETE
 Plan: 2 of 2
 Status: Phase 6 complete and verified (UAT 8/8 passed)
-Last activity: 2026-04-17
+Last activity: 2026-04-17 - Completed quick task 260417-r18: implement a way to easily restart a puzzle and remove progress blocking so puzzles are freely selectable
 
 Progress: [██████████] 100%
 
@@ -109,6 +109,12 @@ None yet.
 
 - Phase 5 (PWA): Verify current vite-plugin-pwa and Workbox versions on npm before implementation — training data has August 2025 cutoff
 - Phase 5 (PWA): Confirm current iOS Safari PWA behavior before finalizing install prompt strategy
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260417-r18 | implement a way to easily restart a puzzle and remove progress blocking so puzzles are freely selectable | 2026-04-17 | 0d67da5 | [260417-r18-implement-a-way-to-easily-restart-a-puzz](./quick/260417-r18-implement-a-way-to-easily-restart-a-puzz/) |
 
 ## Deferred Items
 
