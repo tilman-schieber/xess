@@ -121,10 +121,10 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 **Goal:** Pointer-based drag-and-drop piece movement and cells that are always square (board aspect ratio matches grid shape)
 **Requirements**: INT-DRG-01, INT-DRG-02
 **Depends on:** Phase 5
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
 - [x] 06-01-PLAN.md — Square cell layout fix (--rows CSS var, remove forced aspect-ratio)
-- [ ] 06-02-PLAN.md — Pointer-based drag-and-drop with ghost, dimming, and tap coexistence
+- [x] 06-02-PLAN.md — Pointer-based drag-and-drop with ghost, dimming, and tap coexistence
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 6 to break down)
+- [x] TBD (run /gsd-plan-phase 6 to break down) (completed 2026-04-17)
