@@ -17,6 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Board Renderer and Core UI** - Build the SVG board renderer with two-tap interaction, legal move highlighting, and mobile-first layout (completed 2026-04-17)
 - [x] **Phase 4: Puzzle Content and Visual Polish** - Author the full puzzle catalogue, complete puzzle navigation UX, and apply the premium visual style (completed 2026-04-17)
 - [x] **Phase 5: PWA and Launch Readiness** - Configure service worker precaching, offline support, PWA installability, and optional sound feedback (completed 2026-04-17)
+- [x] **Phase 6: Drag-and-Drop Interaction and Square Cell Layout** - Add pointer drag-and-drop piece movement and ensure board cells stay square across non-square grids (completed 2026-04-17)
 
 ## Phase Details
 
@@ -106,7 +107,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -115,6 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Board Renderer and Core UI | 5/5 | Complete | 2026-04-17 |
 | 4. Puzzle Content and Visual Polish | 3/3 | Complete   | 2026-04-17 |
 | 5. PWA and Launch Readiness | 3/3 | Complete   | 2026-04-17 |
+| 6. Drag-and-drop interaction and square cell layout | 2/2 | Complete | 2026-04-17 |
 
 ### Phase 6: Drag and drop interaction and square cell layout
 
@@ -125,6 +127,3 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 Plans:
 - [x] 06-01-PLAN.md — Square cell layout fix (--rows CSS var, remove forced aspect-ratio)
 - [x] 06-02-PLAN.md — Pointer-based drag-and-drop with ghost, dimming, and tap coexistence
-
-Plans:
-- [x] TBD (run /gsd-plan-phase 6 to break down) (completed 2026-04-17)
