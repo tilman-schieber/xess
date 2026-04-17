@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 4 UI-SPEC approved
-last_updated: "2026-04-17T13:27:32.008Z"
+status: planning
+stopped_at: Phase 4 complete — Phase 5 planning next
+last_updated: "2026-04-17T15:48:00.000Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 14
   completed_plans: 14
-  percent: 100
+  percent: 80
 ---
 
 # Project State
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-16)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** Phase 03 — board-renderer-and-core-ui
+**Current focus:** Phase 05 — pwa-and-launch-readiness
 
 ## Current Position
 
-Phase: 03 (board-renderer-and-core-ui) — EXECUTING
-Plan: 5 of 5
-Status: Phase complete — ready for verification
+Phase: 05 (pwa-and-launch-readiness) — PLANNING
+Plan: 0 of TBD
+Status: Phase 4 complete (verified + code review passed) — planning Phase 5
 Last activity: 2026-04-17
 
 Progress: [░░░░░░░░░░] 0%
