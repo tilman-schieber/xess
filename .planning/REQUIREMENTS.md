@@ -62,7 +62,7 @@
 
 ### Sound
 
-- [ ] **SND-01**: Optional sound feedback for piece moves and puzzle solve (off by default; preference persisted in localStorage)
+- [x] **SND-01**: Optional sound feedback for piece moves and puzzle solve (off by default; preference persisted in localStorage)
 - [ ] **SND-02**: Sound uses a single AudioContext with 3–4 short samples; no sound plays unless user has enabled it
 
 ### PWA
@@ -150,7 +150,7 @@
 | RND-04 | Phase 3 | Complete |
 | VIS-01 | Phase 4 | Complete |
 | VIS-02 | Phase 3 | Complete |
-| SND-01 | Phase 5 | Pending |
+| SND-01 | Phase 5 | Complete |
 | SND-02 | Phase 5 | Pending |
 | PWA-01 | Phase 5 | Complete |
 | PWA-02 | Phase 5 | Complete |
