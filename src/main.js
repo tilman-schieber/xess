@@ -315,6 +315,7 @@ function renderToDom(root, model) {
   board.className = ['board', ...model.boardClasses].join(' ').trim()
   board.setAttribute('data-board', 'true')
   board.style.setProperty('--cols', String(model.width))
+  board.style.setProperty('--rows', String(model.height))
   board.style.setProperty('--piece-move-ms', `${model.animationMs}ms`)
 
   model.cells.forEach(cell => {

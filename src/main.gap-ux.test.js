@@ -50,8 +50,8 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     const boardCss = getCssFile('./styles/board.css')
     expect(boardCss.exists).toBe(true)
 
-    expect(boardCss.content).toMatch(/grid-auto-rows:\s*1fr/)
-    expect(boardCss.content).toMatch(/\.cell--playable\s*\{[^}]*aspect-ratio:\s*1\s*\/\s*1/s)
+    expect(boardCss.content).toMatch(/grid-template-rows:\s*repeat\(var\(--rows\),\s*1fr\)/)
+    expect(boardCss.content).toMatch(/\.cell\s*\{[^}]*aspect-ratio:\s*1\s*\/\s*1/s)
     expect(boardCss.content).toMatch(/\.cell\s*\{[^}]*inline-size:\s*100%/s)
     expect(boardCss.content).toMatch(/\.cell\s*\{[^}]*block-size:\s*100%/s)
   })
