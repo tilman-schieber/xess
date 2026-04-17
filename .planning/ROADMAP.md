@@ -50,7 +50,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — localStorage persistence layer (store.js)
 - [x] 02-02-PLAN.md — Catalogue navigation helpers (nav.js)
-- [ ] 02-03-PLAN.md — Game controller wiring engine + persistence + navigation
+- [x] 02-03-PLAN.md — Game controller wiring engine + persistence + navigation
 
 ### Phase 3: Board Renderer and Core UI
 **Goal**: Players can interact with the game — select pieces, see legal moves, make moves, and receive immediate visual feedback — on any board shape at mobile size

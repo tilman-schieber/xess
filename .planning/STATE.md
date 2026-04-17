@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-game-controller-and-persistence/02-02-PLAN.md
-last_updated: "2026-04-17T06:40:54.666Z"
+stopped_at: Completed 02-game-controller-and-persistence/02-03-PLAN.md
+last_updated: "2026-04-17T08:11:05.556Z"
 last_activity: 2026-04-17
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 6
-  completed_plans: 5
-  percent: 83
+  completed_plans: 6
+  percent: 100
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-16)
 ## Current Position
 
 Phase: 02 (game-controller-and-persistence) — EXECUTING
-Plan: 3 of 3
+Plan: 2 of 3
 Status: Ready to execute
 Last activity: 2026-04-17
 
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-puzzle-format-and-engine P03 | 118s | 2 tasks | 6 files |
 | Phase 02-game-controller-and-persistence P01 | 86 | 2 tasks | 2 files |
 | Phase 02-game-controller-and-persistence P02 | 240 | 2 tasks | 2 files |
+| Phase 02-game-controller-and-persistence P03 | 2 min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,9 @@ Recent decisions affecting current work:
 - [Phase 02-game-controller-and-persistence]: Map serialized as Array.from(entries) — JSON.stringify(Map) silently produces {}; callers re-hydrate with new Map(entries)
 - [Phase 02-game-controller-and-persistence]: Optional catalogue parameter for test injection (no vi.mock needed)
 - [Phase 02-game-controller-and-persistence]: nav.js functions are fully pure (no localStorage, no DOM) — decoupled from store.js
+- [Phase 02-game-controller-and-persistence]: Controller validates legality before applyMove and returns illegal_move for invalid destinations.
+- [Phase 02-game-controller-and-persistence]: Winning moves persist solvedIds and clear active state instead of saving in-progress state.
+- [Phase 02-game-controller-and-persistence]: Store re-hydration failures fall back to a fresh parsed puzzle state.
 
 ### Pending Todos
 
@@ -98,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T06:40:54.650Z
-Stopped at: Completed 02-game-controller-and-persistence/02-02-PLAN.md
+Last session: 2026-04-17T08:11:05.552Z
+Stopped at: Completed 02-game-controller-and-persistence/02-03-PLAN.md
 Resume file: None
