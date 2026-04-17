@@ -37,8 +37,8 @@ files_reviewed_list:
 findings:
   critical: 0
   warning: 3
-  info: 3
-  total: 6
+  info: 4
+  total: 7
 status: issues_found
 ---
 
@@ -159,6 +159,12 @@ No action required in Phase 1 — log as a Phase 2/3 prerequisite.
 <!-- Replace with actual icon once available -->
 <link rel="icon" type="image/svg+xml" href="/icon.svg" />
 ```
+
+### IN-04: Move generators split across 6 individual files adds navigation overhead
+
+**Files:** `src/engine/moves/pawn.js`, `knight.js`, `bishop.js`, `rook.js`, `queen.js`, `king.js`
+**Issue:** Each piece type lives in its own module. For ~200 lines of logic total, this creates 6 imports in `moves/index.js`, 6 test files, and requires jumping between files to read related logic (e.g. `walkRay` is in `rook.js` but used by `bishop.js` and `queen.js`). The indirection adds cognitive overhead without a clear benefit at this scale.
+**Suggestion:** Consolidate all 6 generators plus `walkRay` into a single `src/engine/moves.js` (and a matching `moves.test.js`). The `getLegalMoves` dispatcher can move there too, eliminating the `moves/index.js` barrel entirely. This is a refactor — existing tests remain valid, only imports change.
 
 ---
 
