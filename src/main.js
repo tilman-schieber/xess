@@ -13,6 +13,7 @@ import {
 import { getPrevId, getNextId, getPuzzlePosition } from './puzzles/nav.js'
 import catalogue from './puzzles/catalogue.js'
 import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
+import { initDragDrop } from './ui/dragDrop.js'
 import { initPwaPrompts } from './ui/pwaPrompts.js'
 
 if (typeof window !== 'undefined') {
@@ -353,6 +354,8 @@ export function mountGameUi(root = document.querySelector('#app')) {
   let currentPuzzleId = null
   let ui = null
   let showingList = false
+  let _dragCleanup = null    // cleanup fn returned by initDragDrop
+  let _isDragging = false    // true once drag threshold exceeded this pointer sequence
 
   function loadPuzzle(puzzleId) {
     ui = createGameUiController({ controller, puzzleId })
@@ -378,6 +381,37 @@ export function mountGameUi(root = document.querySelector('#app')) {
       nextId: getNextId(currentPuzzleId),
     }
     renderToDom(root, extModel)
+
+    // Tear down previous drag listener if board was re-rendered
+    if (_dragCleanup) { _dragCleanup(); _dragCleanup = null }
+
+    const boardEl = root.querySelector('[data-board]')
+    if (boardEl) {
+      _dragCleanup = initDragDrop(boardEl, {
+        onDragStart(fromKey) {
+          _isDragging = true
+          ui.tapCell(fromKey)   // selects the piece, shows legal move highlights
+          rerender()
+        },
+        onDrop(fromKey, toKey) {
+          _isDragging = false
+          ui.tapCell(toKey)     // makes the move (or selects/illegal-flashes per tapCell logic)
+          const moveResult = ui.getLastMoveResult()
+          if (moveResult === 'win') playSolve()
+          else if (moveResult === 'move_made') playMove()
+          rerender()
+        },
+        onCancel(fromKey) {
+          _isDragging = false
+          // Deselect: tapCell with the currently-selected key toggles off
+          const snapshot = ui.getState()
+          if (snapshot.selectedKey === fromKey) {
+            ui.tapCell(fromKey)  // second tap on selected key → clearSelection
+          }
+          rerender()
+        },
+      })
+    }
 
     root.querySelector('[data-prev-puzzle]')?.addEventListener('pointerdown', () => {
       if (extModel.prevId) loadPuzzle(extModel.prevId)
@@ -410,6 +444,12 @@ export function mountGameUi(root = document.querySelector('#app')) {
 
   root.addEventListener('pointerdown', (event) => {
     if (showingList) return
+    _isDragging = false  // reset for this pointer sequence
+  })
+
+  root.addEventListener('pointerup', (event) => {
+    if (showingList) return
+    if (_isDragging) return  // drag handled it; skip tap
     const cell = event.target.closest?.('[data-cell-key]')
     if (!cell) return
     ui.tapCell(cell.dataset.cellKey)

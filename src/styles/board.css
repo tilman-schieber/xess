@@ -90,3 +90,37 @@
     padding: 0.2rem;
   }
 }
+
+/* ── Drag and Drop ────────────────────────────────────────── */
+
+.cell--dragging {
+  opacity: 0.35;
+}
+
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  border-radius: 0.45rem;
+  background: var(--cell-playable-start, #4a4a6a);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  transform: scale(1.1);
+  transform-origin: center;
+  /* width and height are set inline by dragDrop.js */
+}
+
+.drag-ghost .piece {
+  inline-size: 72%;
+  block-size: 72%;
+  display: inline-grid;
+  place-items: center;
+}
+
+.drag-ghost .piece svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
