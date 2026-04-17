@@ -115,3 +115,16 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Board Renderer and Core UI | 5/5 | Complete | 2026-04-17 |
 | 4. Puzzle Content and Visual Polish | 3/3 | Complete   | 2026-04-17 |
 | 5. PWA and Launch Readiness | 3/3 | Complete   | 2026-04-17 |
+
+### Phase 6: Drag and drop interaction and square cell layout
+
+**Goal:** Pointer-based drag-and-drop piece movement and cells that are always square (board aspect ratio matches grid shape)
+**Requirements**: INT-DRG-01, INT-DRG-02
+**Depends on:** Phase 5
+**Plans:** 2 plans
+Plans:
+- [ ] 06-01-PLAN.md — Square cell layout fix (--rows CSS var, remove forced aspect-ratio)
+- [ ] 06-02-PLAN.md — Pointer-based drag-and-drop with ghost, dimming, and tap coexistence
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 6 to break down)
