@@ -17,15 +17,18 @@ function makeAudioContext({
   resumeImpl,
 } = {}) {
   const scheduled = []
+  const stats = { instances: 0, resumeCalls: 0 }
   class MockAudioContext {
     constructor() {
       if (shouldThrowInCtor) throw new Error('ctor failed')
+      stats.instances += 1
       this.state = state
       this.currentTime = 1
       this.destination = {}
     }
 
     resume() {
+      stats.resumeCalls += 1
       if (resumeImpl) return resumeImpl()
       return Promise.resolve()
     }
@@ -64,7 +67,7 @@ function makeAudioContext({
     }
   }
 
-  return { MockAudioContext, scheduled }
+  return { MockAudioContext, scheduled, stats }
 }
 
 async function loadSoundModule() {
@@ -139,5 +142,38 @@ describe('sound contract', () => {
     sound = await loadSoundModule()
     expect(() => sound.playMove()).not.toThrow()
     expect(() => sound.playMove()).not.toThrow()
+  })
+
+  it('enabling sound primes shared context through gesture-safe lifecycle', async () => {
+    vi.stubGlobal('localStorage', makeStorage({ 'xess-sound-enabled': 'false' }))
+    const audio = makeAudioContext({ state: 'suspended' })
+    vi.stubGlobal('AudioContext', audio.MockAudioContext)
+
+    const sound = await loadSoundModule()
+    expect(sound.toggleSound()).toBe(true)
+
+    expect(audio.stats.instances).toBe(1)
+    expect(audio.stats.resumeCalls).toBe(1)
+  })
+
+  it('schedules deterministic move/solve tones only when enabled', async () => {
+    vi.stubGlobal('localStorage', makeStorage({ 'xess-sound-enabled': 'false' }))
+    const audio = makeAudioContext()
+    vi.stubGlobal('AudioContext', audio.MockAudioContext)
+
+    const sound = await loadSoundModule()
+    sound.playMove()
+    sound.playSolve()
+    expect(audio.scheduled).toHaveLength(0)
+
+    sound.toggleSound()
+    sound.playMove()
+    sound.playSolve()
+
+    const frequencies = audio.scheduled
+      .filter(event => event.kind === 'freq')
+      .map(event => event.freq)
+
+    expect(frequencies).toEqual([520, 523, 659, 784])
   })
 })
