@@ -1,0 +1,123 @@
+.track-browser {
+  inline-size: min(100vw, var(--app-max-width-mobile));
+  max-width: var(--app-max-width-mobile);
+  min-height: 100vh;
+  display: grid;
+  align-content: start;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-md);
+}
+
+.track-browser-header {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.track-browser-title {
+  margin: 0;
+  font-size: var(--text-heading);
+  color: var(--text-primary);
+}
+
+.track-browser-current {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--text-label);
+}
+
+.track-browser-back {
+  justify-self: start;
+  min-inline-size: var(--touch-target-min);
+  min-block-size: var(--touch-target-min);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.track-browser-list {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.track-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  background: var(--surface-card);
+  padding: var(--space-md);
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.track-card-title {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--text-heading);
+}
+
+.track-card-subtitle,
+.track-card-progress {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--text-label);
+}
+
+.track-card-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.track-action-open,
+.track-action-resume {
+  min-inline-size: var(--touch-target-min);
+  min-block-size: var(--touch-target-min);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--text-label);
+  cursor: pointer;
+}
+
+.track-action-open {
+  background: var(--accent);
+  color: var(--surface-bg);
+  border-color: transparent;
+}
+
+.track-action-resume {
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.track-puzzle-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.track-puzzle-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-card);
+  min-block-size: var(--touch-target-min);
+  align-items: center;
+  cursor: pointer;
+}
+
+.track-puzzle-position {
+  color: var(--text-muted);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+
+.track-puzzle-title {
+  color: var(--text-primary);
+  font-size: var(--text-body);
+}
