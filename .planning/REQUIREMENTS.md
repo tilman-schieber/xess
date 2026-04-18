@@ -13,10 +13,10 @@
 
 ### Tracks and Start Screen
 
-- [ ] **TRK-01**: User lands on a new start screen before entering puzzle play.
-- [ ] **TRK-02**: User sees puzzle tracks grouped as separate collections (not one flat list).
-- [ ] **TRK-03**: User can open a track and browse puzzles numbered within that track.
-- [ ] **TRK-04**: User can start or resume a puzzle from track context.
+- [x] **TRK-01**: User lands on a new start screen before entering puzzle play.
+- [x] **TRK-02**: User sees puzzle tracks grouped as separate collections (not one flat list).
+- [x] **TRK-03**: User can open a track and browse puzzles numbered within that track.
+- [x] **TRK-04**: User can start or resume a puzzle from track context.
 - [ ] **TRK-05**: Track metadata supports future mode entry points (random, guided, tutorial) without breaking current flow.
 - [ ] **TRK-06**: Existing solved/progress data remains compatible after migration to track-based indexing.
 
@@ -30,7 +30,7 @@
 
 - [ ] **UXP-01**: Primary controls meet mobile touch-target expectations (>= 44px interactive targets).
 - [ ] **UXP-02**: Puzzle completion message layout is corrected, including proper line breaks and spacing.
-- [ ] **UXP-03**: Start/list/play screens use consistent visual hierarchy and spacing.
+- [x] **UXP-03**: Start/list/play screens use consistent visual hierarchy and spacing.
 - [ ] **UXP-04**: Known interaction rough edges in the current UI are resolved for launch quality.
 
 ## v2 Requirements
@@ -61,10 +61,10 @@
 | CNT-01 | Phase 8 | Pending |
 | CNT-02 | Phase 8 | Pending |
 | SND-02 | Phase 10 | Pending |
-| TRK-01 | Phase 7 | Pending |
-| TRK-02 | Phase 7 | Pending |
-| TRK-03 | Phase 7 | Pending |
-| TRK-04 | Phase 7 | Pending |
+| TRK-01 | Phase 7 | Complete |
+| TRK-02 | Phase 7 | Complete |
+| TRK-03 | Phase 7 | Complete |
+| TRK-04 | Phase 7 | Complete |
 | TRK-05 | Phase 8 | Pending |
 | TRK-06 | Phase 8 | Pending |
 | TXT-01 | Phase 9 | Pending |
@@ -72,7 +72,7 @@
 | TXT-03 | Phase 9 | Pending |
 | UXP-01 | Phase 10 | Pending |
 | UXP-02 | Phase 10 | Pending |
-| UXP-03 | Phase 7 | Pending |
+| UXP-03 | Phase 7 | Complete |
 | UXP-04 | Phase 10 | Pending |
 
 **Coverage:**

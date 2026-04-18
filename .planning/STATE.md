@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.1
-milestone_name: ux-launch-polish
-status: planning
-stopped_at: Roadmap created for milestone v1.1; Phase 7 ready for planning
-last_updated: "2026-04-18T00:00:00Z"
-last_activity: 2026-04-18
+milestone_name: milestone
+status: executing
+stopped_at: Completed 07-03-PLAN.md
+last_updated: "2026-04-18T09:57:24.756Z"
+last_activity: 2026-04-18 -- Phase 7 planning complete
 progress:
   total_phases: 4
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 3
+  completed_plans: 3
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** Milestone v1.1 roadmap ready; Phase 7 planning next
+**Current focus:** Phase 7 execution complete; ready for next roadmap phase
 
 ## Current Position
 
 Phase: 7 of 10 (Start Screen and Track Navigation)
 Plan: —
-Status: Ready to plan
-Last activity: 2026-04-18 - Roadmap and phase mappings created for v1.1
+Status: Completed
+Last activity: 2026-04-18 -- Completed Phase 7 plans 01-03
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -63,6 +63,9 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03-board-renderer-and-core-ui P03 | 17 min | 2 tasks | 4 files |
 | Phase 03-board-renderer-and-core-ui P04 | 1 min | 2 tasks | 4 files |
 | Phase 03-board-renderer-and-core-ui P05 | 5 min | 2 tasks | 15 files |
+| Phase 07-start-screen-and-track-navigation P01 | 75 | 2 tasks | 3 files |
+| Phase 07-start-screen-and-track-navigation P02 | 181 | 3 tasks | 8 files |
+| Phase 07-start-screen-and-track-navigation P03 | 208 | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -100,6 +103,12 @@ Recent decisions affecting current work:
 - [Phase 03-board-renderer-and-core-ui]: Adopted open-licensed Cburnett SVG chess set from Wikimedia as local static assets.
 - [Phase 03-board-renderer-and-core-ui]: Piece rendering continues to use strict color-type whitelist with static imports only (no dynamic lookup).
 - [Phase 05-02]: Used registerSW from virtual:pwa-register (not virtual:pwa-register/vanilla — subpath doesn't exist in vite-plugin-pwa 1.2.0)
+- [Phase 07-start-screen-and-track-navigation]: Track launch fallback order is active-in-track -> first-unsolved -> first-track -> null.
+- [Phase 07-start-screen-and-track-navigation]: Track metadata is static/local and unknown track IDs return safe empty/null outputs.
+- [Phase 07-start-screen-and-track-navigation]: Start/track screens are pure renderer modules with callback-only contracts and no controller/store imports.
+- [Phase 07-start-screen-and-track-navigation]: Track browser uses track-only callbacks for overview and {trackId,puzzleId} payloads for puzzle selection.
+- [Phase 07-start-screen-and-track-navigation]: Main flow now uses explicit modes start/tracks/play and preserves selected track context when returning from play.
+- [Phase 07-start-screen-and-track-navigation]: Main auto-mount only runs when #app exists to avoid side-effect crashes in test/non-app contexts.
 
 ### Pending Todos
 
@@ -125,6 +134,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-17T14:21:24.009Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-04-18T09:57:24.740Z
+Stopped at: Completed 07-03-PLAN.md
 Resume file: None

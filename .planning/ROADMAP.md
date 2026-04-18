@@ -23,7 +23,11 @@ Milestone v1.1 (UX Launch Polish) focuses on launch-critical UX and structure up
   3. User can open a track and browse puzzles numbered within that track
   4. User can start a puzzle (or resume current progress) directly from the selected track context
   5. Start, track list, and puzzle play screens present a consistent visual hierarchy and spacing
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [x] 07-01-PLAN.md — Define track metadata and pure track-aware navigation helpers
+- [x] 07-02-PLAN.md — Build start and track-browser UI renderers with consistent styling tokens
+- [x] 07-03-PLAN.md — Integrate start/track/play flow and track-context launch/resume behavior
 **UI hint**: yes
 
 ### Phase 8: Track Compatibility and Launch Content Robustness
@@ -64,7 +68,7 @@ Milestone v1.1 (UX Launch Polish) focuses on launch-critical UX and structure up
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 7. Start Screen and Track Navigation | 0/TBD | Not started | - |
+| 7. Start Screen and Track Navigation | 0/3 | Planned | - |
 | 8. Track Compatibility and Launch Content Robustness | 0/TBD | Not started | - |
 | 9. Puzzle Rich Text Content | 0/TBD | Not started | - |
 | 10. UX and Audio Launch Polish | 0/TBD | Not started | - |
