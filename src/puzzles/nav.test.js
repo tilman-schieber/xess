@@ -188,4 +188,56 @@ describe('track navigation contracts', () => {
       id: 'any', title: 'Any', subtitle: 'Any', puzzleIds: [],
     }])).toBeNull()
   })
+
+  it('getTracks keeps optional mode metadata and ignores unknown mode values', () => {
+    const tracks = getTracks([
+      {
+        id: 'alpha',
+        title: 'Alpha',
+        subtitle: 'A',
+        puzzleIds: ['p1'],
+        modes: { random: { enabled: true }, guided: { enabled: true }, tutorial: { enabled: false }, unknown: { enabled: true } },
+      },
+    ])
+
+    expect(tracks).toEqual([
+      {
+        id: 'alpha',
+        title: 'Alpha',
+        subtitle: 'A',
+        puzzleIds: ['p1'],
+        modes: {
+          random: { enabled: true },
+          guided: { enabled: true },
+          tutorial: { enabled: false },
+        },
+      },
+    ])
+  })
+
+  it('track helpers use integrity-safe filtering for malformed references', () => {
+    const tracks = [
+      { id: 'alpha', title: 'Alpha', puzzleIds: ['p1', 'missing'] },
+      { id: 'beta', title: 'Beta', puzzleIds: ['p1', 'p2'] },
+    ]
+
+    const list = getTrackPuzzleList('beta', ['p1'], tracks, mockCatalogue)
+    const launch = getTrackLaunchPuzzleId({ trackId: 'alpha', solvedIds: [], activePuzzleId: null }, tracks)
+
+    expect(list.map(entry => entry.id)).toEqual(['p2'])
+    expect(launch).toBe('p1')
+  })
+
+  it('track helpers stay pure/local and never call fetch', () => {
+    const fetchSpy = globalThis.fetch ? vi.spyOn(globalThis, 'fetch') : null
+
+    getTracks()
+    getTrackPuzzleList('unknown-track', [])
+    getTrackLaunchPuzzleId({ trackId: 'unknown-track', solvedIds: [], activePuzzleId: null })
+
+    if (fetchSpy) {
+      expect(fetchSpy).not.toHaveBeenCalled()
+      fetchSpy.mockRestore()
+    }
+  })
 })
