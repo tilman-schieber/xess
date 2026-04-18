@@ -52,7 +52,10 @@ Plans:
   1. User sees a short puzzle description within the puzzle play UI
   2. User sees curated formatting (for example emphasis/lists/line breaks) from authored puzzle content
   3. Unsafe markup is not executed in the app while rendering puzzle descriptions
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 09-01-PLAN.md — Add sanitized rich-text foundation and optional puzzle description contract
+- [ ] 09-02-PLAN.md — Integrate sanitized descriptions into play metadata with UI/security regression coverage
 **UI hint**: yes
 
 ### Phase 10: UX and Audio Launch Polish
@@ -73,5 +76,5 @@ Plans:
 |-------|----------------|--------|-----------|
 | 7. Start Screen and Track Navigation | 0/3 | Planned | - |
 | 8. Track Compatibility and Launch Content Robustness | 2/2 | Complete   | 2026-04-18 |
-| 9. Puzzle Rich Text Content | 0/TBD | Not started | - |
+| 9. Puzzle Rich Text Content | 0/2 | Planned | - |
 | 10. UX and Audio Launch Polish | 0/TBD | Not started | - |
