@@ -67,7 +67,11 @@ Plans:
   2. User sees puzzle completion messaging with clear line breaks, spacing, and readable layout
   3. User no longer experiences known interaction rough edges identified for launch quality
   4. User hears no sound until explicitly enabling it, then hears reliable move/solve feedback without audio-context glitches
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [x] 10-01-PLAN.md — Enforce 44px touch-target contract coverage across launch-critical controls
+- [ ] 10-02-PLAN.md — Fix solved-banner readability and drag/tap interaction rough edges
+- [ ] 10-03-PLAN.md — Harden explicit opt-in sound reliability with shared AudioContext tests
 **UI hint**: yes
 
 ## Progress
@@ -77,4 +81,4 @@ Plans:
 | 7. Start Screen and Track Navigation | 0/3 | Planned | - |
 | 8. Track Compatibility and Launch Content Robustness | 2/2 | Complete   | 2026-04-18 |
 | 9. Puzzle Rich Text Content | 0/2 | Planned | - |
-| 10. UX and Audio Launch Polish | 0/TBD | Not started | - |
+| 10. UX and Audio Launch Polish | 1/3 | In Progress|  |

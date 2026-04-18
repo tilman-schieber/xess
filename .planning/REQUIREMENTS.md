@@ -28,7 +28,7 @@
 
 ### UX/UI Polish
 
-- [ ] **UXP-01**: Primary controls meet mobile touch-target expectations (>= 44px interactive targets).
+- [x] **UXP-01**: Primary controls meet mobile touch-target expectations (>= 44px interactive targets).
 - [ ] **UXP-02**: Puzzle completion message layout is corrected, including proper line breaks and spacing.
 - [x] **UXP-03**: Start/list/play screens use consistent visual hierarchy and spacing.
 - [ ] **UXP-04**: Known interaction rough edges in the current UI are resolved for launch quality.
@@ -70,7 +70,7 @@
 | TXT-01 | Phase 9 | Complete |
 | TXT-02 | Phase 9 | Complete |
 | TXT-03 | Phase 9 | Complete |
-| UXP-01 | Phase 10 | Pending |
+| UXP-01 | Phase 10 | Complete |
 | UXP-02 | Phase 10 | Pending |
 | UXP-03 | Phase 7 | Complete |
 | UXP-04 | Phase 10 | Pending |
