@@ -64,6 +64,64 @@ describe('loadStore', () => {
       activeState: null,
     })
   })
+
+  it('retains valid solved IDs and removes stale solved IDs', () => {
+    const data = {
+      schemaVersion: 1,
+      solvedIds: ['xk3m9pq2', 'stale-id', 'gt7wz4r1', 'stale-id'],
+      activeState: null,
+    }
+
+    _storage['xess_v1'] = JSON.stringify(data)
+    const store = loadStore()
+
+    expect(store.solvedIds).toEqual(['xk3m9pq2', 'gt7wz4r1'])
+  })
+
+  it('drops stale activeState puzzleId and keeps valid activeState', () => {
+    const stale = {
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: {
+        puzzleId: 'stale-id',
+        boardEntries: [['0,0', { piece: null, isGoal: false }]],
+        undoEntries: [],
+      },
+    }
+    _storage['xess_v1'] = JSON.stringify(stale)
+    expect(loadStore().activeState).toBeNull()
+
+    const valid = {
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: {
+        puzzleId: 'xk3m9pq2',
+        boardEntries: [['0,0', { piece: null, isGoal: false }]],
+        undoEntries: [],
+      },
+    }
+    _storage['xess_v1'] = JSON.stringify(valid)
+    expect(loadStore().activeState?.puzzleId).toBe('xk3m9pq2')
+  })
+
+  it('sanitizes mixed malformed payloads to playable default shape without throwing', () => {
+    _storage['xess_v1'] = JSON.stringify({
+      schemaVersion: 1,
+      solvedIds: [null, {}, 42, 'xk3m9pq2', 'stale-id'],
+      activeState: {
+        puzzleId: null,
+        boardEntries: 'nope',
+        undoEntries: {},
+      },
+    })
+
+    expect(() => loadStore()).not.toThrow()
+    expect(loadStore()).toEqual({
+      schemaVersion: 1,
+      solvedIds: ['xk3m9pq2'],
+      activeState: null,
+    })
+  })
 })
 
 // ─── Group: saveProgress ─────────────────────────────────────────────────────
