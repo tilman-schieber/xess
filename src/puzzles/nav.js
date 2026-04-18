@@ -4,6 +4,7 @@
 // so tests can inject a controlled mock without vi.mock.
 
 import _catalogue from './catalogue.js'
+import _tracks from './tracks.js'
 
 /**
  * Returns string[] of all selectable puzzle IDs.
@@ -59,6 +60,54 @@ export function getPuzzleList(solvedIds, catalogue = _catalogue) {
     title: e.title,
     status: solved.has(e.id) ? 'solved' : 'unlocked',
   }))
+}
+
+/**
+ * Returns static track metadata used by the track browser UI.
+ *
+ * @param {object[]} [tracks]
+ * @returns {{ id: string, title: string, subtitle?: string, puzzleIds: string[] }[]}
+ */
+export function getTracks(tracks = _tracks) {
+  return tracks.map(track => ({
+    id: track.id,
+    title: track.title,
+    subtitle: track.subtitle,
+    puzzleIds: [...track.puzzleIds],
+  }))
+}
+
+/**
+ * Returns puzzle entries scoped to a single track with within-track numbering.
+ * Unknown track IDs return [] and never throw.
+ *
+ * @param {string} trackId
+ * @param {Set<string>|string[]} solvedIds
+ * @param {object[]} [tracks]
+ * @param {object[]} [catalogue]
+ * @returns {{ id: string, title: string, status: 'solved'|'unlocked', position: string }[]}
+ */
+export function getTrackPuzzleList(trackId, solvedIds, tracks = _tracks, catalogue = _catalogue) {
+  const track = tracks.find(entry => entry.id === trackId)
+  if (!track) return []
+
+  const solved = new Set(solvedIds)
+  const byId = new Map(catalogue.map(entry => [entry.id, entry]))
+  const total = track.puzzleIds.length
+
+  return track.puzzleIds
+    .map((id, idx) => {
+      const puzzle = byId.get(id)
+      if (!puzzle) return null
+
+      return {
+        id,
+        title: puzzle.title,
+        status: solved.has(id) ? 'solved' : 'unlocked',
+        position: `${idx + 1} / ${total}`,
+      }
+    })
+    .filter(Boolean)
 }
 
 /**
