@@ -6,7 +6,7 @@ import { getLegalMoves, applyMove } from './engine/index.js'
 import { parsePuzzle, posKey } from './puzzles/loader.js'
 import catalogue from './puzzles/catalogue.js'
 import { loadStore, saveProgress, saveActiveState, clearActiveState } from './store/store.js'
-import { isUnlocked, getPuzzlePosition, getPuzzleList } from './puzzles/nav.js'
+import { isUnlocked, getPuzzlePosition, getPuzzleList, getTrackLaunchPuzzleId as resolveTrackLaunchPuzzleId } from './puzzles/nav.js'
 
 /**
  * Create a stateful game controller instance.
@@ -190,6 +190,24 @@ export function createController() {
      */
     isUnlocked(puzzleId) {
       return isUnlocked(puzzleId, state.solvedIds)
+    },
+
+    /**
+     * Resolve launch/resume puzzle for a selected track using persisted progress state.
+     *
+     * @param {string} trackId
+     * @returns {string|null}
+     */
+    getTrackLaunchPuzzleId(trackId) {
+      const store = loadStore()
+      const solvedIds = Array.isArray(store.solvedIds) ? store.solvedIds : []
+      const activePuzzleId = store.activeState?.puzzleId ?? null
+
+      return resolveTrackLaunchPuzzleId({
+        trackId,
+        solvedIds,
+        activePuzzleId,
+      })
     },
   }
 }
