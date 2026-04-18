@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { JSDOM } from 'jsdom'
 
 vi.mock('./store/store.js', () => ({
   loadStore: vi.fn(() => ({ schemaVersion: 1, solvedIds: [], activeState: null })),
@@ -11,7 +12,7 @@ vi.mock('./store/store.js', () => ({
   flushSync: vi.fn(),
 }))
 
-import { createGameUiController } from './main.js'
+import { createGameUiController, renderToDom } from './main.js'
 
 function byKey(model) {
   return new Map(model.cells.map(cell => [cell.key, cell]))
@@ -75,5 +76,58 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     ui.tapCell('2,2')
     model = ui.getRenderModel()
     expect(model.boardClasses).toContain('is-won')
+  })
+
+  it('renders puzzle description block near objective for authored rich text', () => {
+    const dom = new JSDOM('<!doctype html><div id="root"></div>')
+    globalThis.document = dom.window.document
+
+    const model = {
+      puzzle: { goalType: 'capture-all-targets', targetColor: 'black', descriptionHtml: '<p><em>Pin first.</em></p>' },
+      puzzleTitle: 'With Description',
+      objectiveText: 'Capture all black targets.',
+      boardClasses: [],
+      animationMs: 180,
+      cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
+      width: 1,
+      height: 1,
+      puzzleId: 'xk3m9pq2',
+      prevId: null,
+      nextId: null,
+    }
+
+    const root = dom.window.document.querySelector('#root')
+    renderToDom(root, model)
+
+    const objective = root.querySelector('[data-puzzle-objective]')
+    const description = root.querySelector('[data-puzzle-description]')
+
+    expect(objective).not.toBeNull()
+    expect(description).not.toBeNull()
+    expect(description?.querySelector('em')?.textContent).toBe('Pin first.')
+  })
+
+  it('suppresses description block when content is empty', () => {
+    const dom = new JSDOM('<!doctype html><div id="root"></div>')
+    globalThis.document = dom.window.document
+
+    const model = {
+      puzzle: { goalType: 'capture-all-targets', targetColor: 'black', descriptionHtml: '' },
+      puzzleTitle: 'No Description',
+      objectiveText: 'Capture all black targets.',
+      boardClasses: [],
+      animationMs: 180,
+      cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
+      width: 1,
+      height: 1,
+      puzzleId: 'xk3m9pq2',
+      prevId: null,
+      nextId: null,
+    }
+
+    const root = dom.window.document.querySelector('#root')
+    renderToDom(root, model)
+
+    expect(root.querySelector('[data-puzzle-description]')).toBeNull()
   })
 })
