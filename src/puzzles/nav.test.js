@@ -1,6 +1,14 @@
 // src/puzzles/nav.test.js
 import { describe, it, expect } from 'vitest'
-import { getUnlockedIds, isUnlocked, getPuzzlePosition, getPuzzleList } from './nav.js'
+import {
+  getUnlockedIds,
+  isUnlocked,
+  getPuzzlePosition,
+  getPuzzleList,
+  getTracks,
+  getTrackPuzzleList,
+} from './nav.js'
+import catalogue from './catalogue.js'
 
 const mockCatalogue = [
   { id: 'p1', title: 'Puzzle 1', schemaVersion: 1, goalType: 'capture-all-targets', grid: [] },
@@ -97,5 +105,48 @@ describe('getPuzzleList', () => {
   it('order matches catalogue order', () => {
     const list = getPuzzleList([], mockCatalogue)
     expect(list.map(e => e.id)).toEqual(['p1', 'p2', 'p3'])
+  })
+})
+
+describe('track navigation contracts', () => {
+  it('getTracks returns stable track metadata with valid puzzle ids', () => {
+    const tracks = getTracks()
+    const catalogueIds = new Set(catalogue.map(entry => entry.id))
+    const allTrackIds = []
+
+    expect(Array.isArray(tracks)).toBe(true)
+    expect(tracks.length).toBeGreaterThanOrEqual(2)
+
+    tracks.forEach((track) => {
+      expect(typeof track.id).toBe('string')
+      expect(track.id.length).toBeGreaterThan(0)
+      expect(typeof track.title).toBe('string')
+      expect(track.title.length).toBeGreaterThan(0)
+      expect(Array.isArray(track.puzzleIds)).toBe(true)
+      expect(track.puzzleIds.length).toBeGreaterThan(0)
+
+      track.puzzleIds.forEach((puzzleId) => {
+        expect(catalogueIds.has(puzzleId)).toBe(true)
+        allTrackIds.push(puzzleId)
+      })
+    })
+
+    expect(allTrackIds).toHaveLength(catalogue.length)
+    expect(new Set(allTrackIds).size).toBe(catalogue.length)
+  })
+
+  it('getTrackPuzzleList keeps track order and uses within-track numbering', () => {
+    const tracks = getTracks()
+    const firstTrack = tracks[0]
+    const list = getTrackPuzzleList(firstTrack.id, [])
+
+    expect(list).toHaveLength(firstTrack.puzzleIds.length)
+    expect(list.map(entry => entry.id)).toEqual(firstTrack.puzzleIds)
+    expect(list[0].position).toBe(`1 / ${firstTrack.puzzleIds.length}`)
+    expect(list.at(-1).position).toBe(`${firstTrack.puzzleIds.length} / ${firstTrack.puzzleIds.length}`)
+  })
+
+  it('getTrackPuzzleList returns safe empty value for unknown track', () => {
+    expect(getTrackPuzzleList('unknown-track', [])).toEqual([])
   })
 })
