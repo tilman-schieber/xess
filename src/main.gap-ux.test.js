@@ -130,4 +130,52 @@ describe('gap UX regressions: objective context + static square geometry', () =>
 
     expect(root.querySelector('[data-puzzle-description]')).toBeNull()
   })
+
+  it('renders allowlisted formatting while stripping unsafe rich-text content', () => {
+    const dom = new JSDOM('<!doctype html><div id="root"></div>')
+    globalThis.document = dom.window.document
+
+    const model = {
+      puzzle: {
+        goalType: 'capture-all-targets',
+        targetColor: 'black',
+        descriptionHtml: '<p><em>Safe</em> <strong>hint</strong><br></p><ul><li>Line</li></ul><a href="javascript:alert(1)" onclick="evil()">link</a><script>alert(1)</script>',
+      },
+      puzzleTitle: 'Unsafe Description',
+      objectiveText: 'Capture all black targets.',
+      boardClasses: [],
+      animationMs: 180,
+      cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
+      width: 1,
+      height: 1,
+      puzzleId: 'xk3m9pq2',
+      prevId: null,
+      nextId: null,
+    }
+
+    const root = dom.window.document.querySelector('#root')
+    renderToDom(root, model)
+
+    const description = root.querySelector('[data-puzzle-description]')
+    expect(description).not.toBeNull()
+    expect(description?.querySelector('p')).not.toBeNull()
+    expect(description?.querySelector('em')?.textContent).toBe('Safe')
+    expect(description?.querySelector('strong')?.textContent).toBe('hint')
+    expect(description?.querySelectorAll('ul li')).toHaveLength(1)
+
+    const link = description?.querySelector('a')
+    expect(link).not.toBeNull()
+    expect(link?.getAttribute('onclick')).toBeNull()
+    expect(link?.getAttribute('href')).toBeNull()
+    expect(description?.querySelector('script')).toBeNull()
+  })
+
+  it('has compact mobile-friendly puzzle-description typography styles', () => {
+    const appCss = getCssFile('./styles/app.css')
+    expect(appCss.exists).toBe(true)
+    expect(appCss.content).toMatch(/\.puzzle-description\s*\{[\s\S]*font-size:\s*var\(--text-label\)/)
+    expect(appCss.content).toMatch(/\.puzzle-description\s+p\s*\{[\s\S]*margin:\s*0/)
+    expect(appCss.content).toMatch(/\.puzzle-description\s+ul\s*,\s*\.puzzle-description\s+ol\s*\{[\s\S]*padding-inline-start:/)
+    expect(appCss.content).toMatch(/\.puzzle-description\s+a\s*\{[\s\S]*text-decoration:/)
+  })
 })
