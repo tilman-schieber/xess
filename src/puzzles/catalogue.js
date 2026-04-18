@@ -10,6 +10,7 @@ export default [
     schemaVersion: 1,
     id: 'xk3m9pq2',
     title: 'Corner Trap',
+    descriptionHtml: '<p><strong>Theme:</strong> Cut off escape squares before capturing.</p><ul><li>Use tempo to force the target into the corner.</li></ul>',
     goalType: 'capture-all-targets',
     targetColor: 'black',
     grid: [
@@ -26,6 +27,7 @@ export default [
     schemaVersion: 1,
     id: 'gt7wz4r1',
     title: 'Find the Square',
+    descriptionHtml: '<p><em>Hint:</em> Rook paths stay open on files and ranks.</p>',
     goalType: 'reach-all-goal-squares',
     targetColor: null,
     grid: [
