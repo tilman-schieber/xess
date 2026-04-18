@@ -12,6 +12,10 @@
 
 const STORAGE_KEY = 'xess-sound-enabled'
 
+// Session-level fallback when storage access fails (private mode, quota, etc.).
+// Null means "defer to persisted storage state".
+let _sessionSoundEnabled = null
+
 // Module-level AudioContext — created lazily on first sound call.
 // iOS Safari requires AudioContext to be created inside a user gesture handler.
 // We call getCtx() only from playMove/playSolve, which are always triggered by
@@ -36,11 +40,10 @@ function getCtx() {
     return _ctx
   }
   const Ctor =
-    typeof AudioContext !== 'undefined'
-      ? AudioContext
-      : typeof webkitAudioContext !== 'undefined'
-        // eslint-disable-next-line no-undef
-        ? webkitAudioContext
+    typeof globalThis !== 'undefined' && typeof globalThis.AudioContext !== 'undefined'
+      ? globalThis.AudioContext
+      : typeof globalThis !== 'undefined' && typeof globalThis.webkitAudioContext !== 'undefined'
+        ? globalThis.webkitAudioContext
         : null
   if (!Ctor) return null
   try {
@@ -59,6 +62,10 @@ function primeSoundContext() {
 // ─── Preference ──────────────────────────────────────────────────────────────
 
 export function isSoundEnabled() {
+  if (typeof _sessionSoundEnabled === 'boolean') {
+    return _sessionSoundEnabled
+  }
+
   try {
     return localStorage.getItem(STORAGE_KEY) === 'true'
   } catch {
@@ -68,6 +75,8 @@ export function isSoundEnabled() {
 
 export function toggleSound() {
   const next = !isSoundEnabled()
+  _sessionSoundEnabled = next
+
   try {
     localStorage.setItem(STORAGE_KEY, String(next))
   } catch {

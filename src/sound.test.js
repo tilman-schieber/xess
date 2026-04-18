@@ -61,10 +61,13 @@ function installAudioMock({ throwOnCtor = false, throwOnOscillator = false } = {
     }
   }
 
-  globalThis.AudioContext = vi.fn(() => new MockAudioContext())
+  const AudioContextCtor = vi.fn(function AudioContextCtor() {
+    return new MockAudioContext()
+  })
+  globalThis.AudioContext = AudioContextCtor
   globalThis.webkitAudioContext = undefined
 
-  return { resume, createdOscillators, frequencies, starts }
+  return { resume, createdOscillators, frequencies, starts, AudioContextCtor }
 }
 
 async function loadSoundModule() {
