@@ -16,6 +16,7 @@ import catalogue from './puzzles/catalogue.js'
 import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
 import { initDragDrop } from './ui/dragDrop.js'
 import { initPwaPrompts } from './ui/pwaPrompts.js'
+import { sanitizePuzzleDescription } from './ui/puzzleDescriptionSanitizer.js'
 
 if (typeof window !== 'undefined') {
   initPwaPrompts()
@@ -89,6 +90,12 @@ export function getGoalBadgeData(puzzle) {
   if (puzzle.goalType === 'capture-all-targets') return { label: 'Capture all targets', type: 'capture' }
   if (puzzle.goalType === 'reach-all-goal-squares') return { label: 'Reach the goal squares', type: 'reach' }
   return { label: 'Solve the puzzle objective.', type: 'unknown' }
+}
+
+export function getPuzzleDescriptionHtml(puzzle) {
+  const authoredHtml = typeof puzzle?.descriptionHtml === 'string' ? puzzle.descriptionHtml : ''
+  const sanitized = sanitizePuzzleDescription(authoredHtml)
+  return sanitized.trim()
 }
 
 /**
@@ -266,7 +273,7 @@ function animatePieceMove(root, fromKey, toKey, renderFn) {
   }, 180)
 }
 
-function renderToDom(root, model) {
+export function renderToDom(root, model) {
   root.innerHTML = ''
 
   const app = document.createElement('section')
@@ -299,6 +306,15 @@ function renderToDom(root, model) {
   objective.setAttribute('data-puzzle-objective', 'true')
   objective.textContent = model.objectiveText
 
+  const descriptionHtml = getPuzzleDescriptionHtml(model.puzzle)
+  let description = null
+  if (descriptionHtml.length > 0) {
+    description = document.createElement('div')
+    description.className = 'puzzle-description'
+    description.setAttribute('data-puzzle-description', 'true')
+    description.innerHTML = descriptionHtml
+  }
+
   // Goal badge
   const badge = getGoalBadgeData(model.puzzle)
   const goalBadge = document.createElement('div')
@@ -316,7 +332,11 @@ function renderToDom(root, model) {
   posSpan.setAttribute('data-puzzle-position', 'true')
   posSpan.textContent = position ?? ''
 
-  meta.append(metaTop, objective, goalBadge, posSpan)
+  meta.append(metaTop, objective)
+  if (description) {
+    meta.append(description)
+  }
+  meta.append(goalBadge, posSpan)
   app.append(meta)
 
   // Nav controls
