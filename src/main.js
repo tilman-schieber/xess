@@ -222,7 +222,7 @@ function renderSoundToggle() {
     btn.setAttribute('title', enabled ? 'Sound on' : 'Sound off')
   }
 
-  btn.addEventListener('pointerup', (event) => {
+  btn.addEventListener('pointerdown', (event) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
     event.preventDefault()
     handleToggle()
@@ -493,7 +493,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   function bindPrimaryAction(element, onActivate) {
     if (!element) return
 
-    element.addEventListener('pointerup', (event) => {
+    element.addEventListener('pointerdown', (event) => {
       if (event.pointerType === 'mouse' && event.button !== 0) return
       event.preventDefault()
       onActivate()

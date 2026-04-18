@@ -259,7 +259,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     expect(mainSource.exists).toBe(true)
 
     expect(mainSource.content).toMatch(/sound-toggle/)
-    expect(mainSource.content).toMatch(/addEventListener\('pointerup'/)
+    expect(mainSource.content).toMatch(/addEventListener\('pointer(?:down|up)'/)
     expect(mainSource.content).toMatch(/addEventListener\('keydown'/)
     expect(mainSource.content).toMatch(/event\.key\s*===\s*'Enter'\s*\|\|\s*event\.key\s*===\s*' '/)
   })
