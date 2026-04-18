@@ -17,6 +17,7 @@
     "vitest": "^4.1.4"
   },
   "dependencies": {
-    "@fontsource/inter": "^5.2.8"
+    "@fontsource/inter": "^5.2.8",
+    "dompurify": "^3.4.0"
   }
 }

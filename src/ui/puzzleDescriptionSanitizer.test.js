@@ -36,7 +36,7 @@ describe('sanitizePuzzleDescription', () => {
     const links = [...body.querySelectorAll('a')]
 
     expect(links).toHaveLength(2)
-    expect(links[0].getAttribute('href')).not.toMatch(/^javascript:/i)
+    expect(links[0].getAttribute('href')).toBeNull()
     expect(links[1].getAttribute('href')).toBe('https://xess.example')
   })
 })
