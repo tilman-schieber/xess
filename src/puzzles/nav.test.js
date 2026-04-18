@@ -7,6 +7,7 @@ import {
   getPuzzleList,
   getTracks,
   getTrackPuzzleList,
+  getTrackLaunchPuzzleId,
 } from './nav.js'
 import catalogue from './catalogue.js'
 
@@ -148,5 +149,43 @@ describe('track navigation contracts', () => {
 
   it('getTrackPuzzleList returns safe empty value for unknown track', () => {
     expect(getTrackPuzzleList('unknown-track', [])).toEqual([])
+  })
+
+  it('getTrackLaunchPuzzleId prefers active puzzle when active belongs to selected track', () => {
+    const launchId = getTrackLaunchPuzzleId({
+      trackId: 'foundations',
+      solvedIds: [],
+      activePuzzleId: 'p1q2r3s4',
+    })
+
+    expect(launchId).toBe('p1q2r3s4')
+  })
+
+  it('getTrackLaunchPuzzleId falls back to first unsolved puzzle when active is outside track', () => {
+    const launchId = getTrackLaunchPuzzleId({
+      trackId: 'foundations',
+      solvedIds: ['xk3m9pq2', 'gt7wz4r1'],
+      activePuzzleId: 'x1y2z3a4',
+    })
+
+    expect(launchId).toBe('g3h4i5j6')
+  })
+
+  it('getTrackLaunchPuzzleId falls back to first puzzle when track is fully solved', () => {
+    const track = getTracks().find(entry => entry.id === 'foundations')
+    const launchId = getTrackLaunchPuzzleId({
+      trackId: 'foundations',
+      solvedIds: [...track.puzzleIds],
+      activePuzzleId: null,
+    })
+
+    expect(launchId).toBe(track.puzzleIds[0])
+  })
+
+  it('getTrackLaunchPuzzleId returns null for unknown or empty tracks', () => {
+    expect(getTrackLaunchPuzzleId({ trackId: 'unknown', solvedIds: [], activePuzzleId: null })).toBeNull()
+    expect(getTrackLaunchPuzzleId({ trackId: 'any', solvedIds: [], activePuzzleId: null }, [{
+      id: 'any', title: 'Any', subtitle: 'Any', puzzleIds: [],
+    }])).toBeNull()
   })
 })
