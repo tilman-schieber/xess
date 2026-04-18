@@ -185,4 +185,22 @@ describe('parsePuzzle', () => {
 
     expect(() => parsePuzzle(raw)).toThrow('goalTargets key "2,0" has invalid piece "z"')
   })
+
+  it('preserves authored descriptionHtml string when present', () => {
+    const raw = makeRaw(['-'], { descriptionHtml: '<p><em>Hint</em> first.</p>' })
+    const puzzle = parsePuzzle(raw)
+    expect(puzzle.descriptionHtml).toBe('<p><em>Hint</em> first.</p>')
+  })
+
+  it('defaults descriptionHtml to empty string when omitted', () => {
+    const raw = makeRaw(['-'])
+    const puzzle = parsePuzzle(raw)
+    expect(puzzle.descriptionHtml).toBe('')
+  })
+
+  it('fails soft for non-string descriptionHtml values', () => {
+    const raw = makeRaw(['-'], { descriptionHtml: { text: 'bad' } })
+    const puzzle = parsePuzzle(raw)
+    expect(puzzle.descriptionHtml).toBe('')
+  })
 })
