@@ -379,6 +379,9 @@ export function renderToDom(root, model) {
     if (model.nextId) {
       winBanner.setAttribute('data-win-state', 'puzzle-solved')
 
+      const solvedState = document.createElement('div')
+      solvedState.className = 'win-banner-state win-banner-state--puzzle-solved'
+
       const solvedSpan = document.createElement('p')
       solvedSpan.className = 'win-banner-headline'
       solvedSpan.setAttribute('data-win-headline', 'true')
@@ -395,17 +398,23 @@ export function renderToDom(root, model) {
       nextPuzzleBtn.textContent = 'Next Puzzle'
 
       actionRow.append(nextPuzzleBtn)
-      winBanner.append(solvedSpan, actionRow)
+      solvedState.append(solvedSpan, actionRow)
+      winBanner.append(solvedState)
     } else {
       winBanner.setAttribute('data-win-state', 'all-solved')
+
+      const allSolvedState = document.createElement('div')
+      allSolvedState.className = 'win-banner-state win-banner-state--all-solved'
 
       // End of catalogue — count total puzzles from position string
       const total = catalogue.length
       const endSpan = document.createElement('p')
       endSpan.className = 'win-banner-headline'
       endSpan.setAttribute('data-win-headline', 'true')
+      endSpan.setAttribute('data-win-all-solved', 'true')
       endSpan.textContent = total ? `All ${total} puzzles solved! 🎉` : 'All puzzles solved! 🎉'
-      winBanner.append(endSpan)
+      allSolvedState.append(endSpan)
+      winBanner.append(allSolvedState)
     }
   }
 

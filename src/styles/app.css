@@ -173,6 +173,16 @@ body {
   text-wrap: balance;
 }
 
+.win-banner-state {
+  display: grid;
+  justify-items: center;
+  row-gap: var(--space-xs);
+}
+
+.win-banner-state--all-solved {
+  max-inline-size: 28ch;
+}
+
 .win-banner-action {
   display: grid;
   justify-items: center;
