@@ -9,7 +9,7 @@ Milestone v1.1 (UX Launch Polish) focuses on launch-critical UX and structure up
 - [ ] **Phase 7: Start Screen and Track Navigation** - Replace flat entry flow with a start screen and track-based browsing/play entry.
 - [x] **Phase 8: Track Compatibility and Launch Content Robustness** - Preserve progress compatibility while hardening launch content delivery in the new track model. (completed 2026-04-18)
 - [ ] **Phase 9: Puzzle Rich Text Content** - Add safe authored puzzle descriptions rendered during play.
-- [ ] **Phase 10: UX and Audio Launch Polish** - Complete touch-first quality pass and robust opt-in sound behavior.
+- [x] **Phase 10: UX and Audio Launch Polish** - Complete touch-first quality pass and robust opt-in sound behavior. (completed 2026-04-18)
 
 ## Phase Details
 
@@ -70,7 +70,7 @@ Plans:
 **Plans**: 3 plans
 Plans:
 - [x] 10-01-PLAN.md — Enforce 44px touch-target contract coverage across launch-critical controls
-- [ ] 10-02-PLAN.md — Fix solved-banner readability and drag/tap interaction rough edges
+- [x] 10-02-PLAN.md — Fix solved-banner readability and drag/tap interaction rough edges
 - [x] 10-03-PLAN.md — Harden explicit opt-in sound reliability with shared AudioContext tests
 **UI hint**: yes
 
@@ -81,4 +81,4 @@ Plans:
 | 7. Start Screen and Track Navigation | 0/3 | Planned | - |
 | 8. Track Compatibility and Launch Content Robustness | 2/2 | Complete   | 2026-04-18 |
 | 9. Puzzle Rich Text Content | 0/2 | Planned | - |
-| 10. UX and Audio Launch Polish | 2/3 | In Progress|  |
+| 10. UX and Audio Launch Polish | 3/3 | Complete   | 2026-04-18 |

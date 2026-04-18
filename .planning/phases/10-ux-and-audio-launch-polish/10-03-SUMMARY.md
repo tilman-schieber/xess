@@ -52,7 +52,7 @@ completed: 2026-04-18
 1. **Task 1: Add dedicated sound contract tests before behavior hardening** - `a56c442` (test)
 2. **Task 2: Implement gesture-safe shared AudioContext hardening with deterministic cue gating** - `3b0c055` (test), `96765b0` (feat)
 
-**Plan metadata:** `pending`
+**Plan metadata:** `cf9d3b2`
 
 ## Files Created/Modified
 - `src/sound.test.js` - contract suite for default mute, opt-in toggle persistence, fail-silent behavior, shared context priming, and deterministic cue scheduling.
