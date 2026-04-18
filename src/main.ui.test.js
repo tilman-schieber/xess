@@ -33,6 +33,7 @@ function expectTouchTargetContract(cssContent, selector) {
   const block = blockMatch?.[0] ?? ''
   expect(block).toMatch(/min-inline-size:\s*(var\(--touch-target-min(?:,\s*44px)?\)|44px)/)
   expect(block).toMatch(/min-block-size:\s*(var\(--touch-target-min(?:,\s*44px)?\)|44px)/)
+  expect(block).toMatch(/--touch-target-min|44px/)
 }
 
 describe('main UI interaction flow', () => {
@@ -179,16 +180,20 @@ describe('responsive layout and touch target contracts', () => {
 
     expect(appCss.content).toMatch(/--touch-target-min:\s*44px/)
 
-    expectTouchTargetContract(appCss.content, '\\.nav-btn')
-    expectTouchTargetContract(appCss.content, '\\.btn-next-puzzle')
-    expectTouchTargetContract(appCss.content, '\\.sound-toggle')
+    const coverage = [
+      [appCss.content, '\\.nav-btn'],
+      [appCss.content, '\\.btn-next-puzzle'],
+      [appCss.content, '\\.sound-toggle'],
+      [startCss.content, '\\.start-screen-primary'],
+      [startCss.content, '\\.start-screen-secondary'],
+      [trackCss.content, '\\.track-browser-back'],
+      [trackCss.content, '\\.track-action-open'],
+      [trackCss.content, '\\.track-action-resume'],
+      [trackCss.content, '\\.track-puzzle-item'],
+    ]
 
-    expectTouchTargetContract(startCss.content, '\\.start-screen-primary')
-    expectTouchTargetContract(startCss.content, '\\.start-screen-secondary')
-
-    expectTouchTargetContract(trackCss.content, '\\.track-browser-back')
-    expectTouchTargetContract(trackCss.content, '\\.track-action-open')
-    expectTouchTargetContract(trackCss.content, '\\.track-action-resume')
-    expectTouchTargetContract(trackCss.content, '\\.track-puzzle-item')
+    coverage.forEach(([content, selector]) => {
+      expectTouchTargetContract(content, selector)
+    })
   })
 })
