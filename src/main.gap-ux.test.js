@@ -203,12 +203,15 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     const winBanner = root.querySelector('[data-win-banner]')
     expect(winBanner).not.toBeNull()
     expect(winBanner?.getAttribute('data-win-state')).toBe('puzzle-solved')
+    const solvedState = winBanner?.querySelector('.win-banner-state--puzzle-solved')
+    expect(solvedState).not.toBeNull()
     expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toBe('Puzzle solved!')
     expect(winBanner?.querySelector('[data-win-action] [data-win-next-puzzle]')?.textContent).toBe('Next Puzzle')
 
     const appCss = getCssFile('./styles/app.css')
     expect(appCss.content).toMatch(/\.win-banner\.is-won\s*\{[\s\S]*display:\s*(grid|flex)/)
     expect(appCss.content).toMatch(/\.win-banner\s*\{[\s\S]*gap:/)
+    expect(appCss.content).toMatch(/\.win-banner-state\s*\{[\s\S]*display:\s*grid/)
   })
 
   it('renders terminal solved banner as distinct all-solved state block', () => {
@@ -235,6 +238,8 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     const winBanner = root.querySelector('[data-win-banner]')
     expect(winBanner).not.toBeNull()
     expect(winBanner?.getAttribute('data-win-state')).toBe('all-solved')
+    expect(winBanner?.querySelector('.win-banner-state--all-solved')).not.toBeNull()
+    expect(winBanner?.querySelector('[data-win-all-solved]')).not.toBeNull()
     expect(winBanner?.querySelector('[data-win-next-puzzle]')).toBeNull()
     expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toMatch(/All .* puzzles solved! 🎉|All puzzles solved! 🎉/)
   })
