@@ -178,4 +178,64 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     expect(appCss.content).toMatch(/\.puzzle-description\s+ul\s*,\s*\.puzzle-description\s+ol\s*\{[\s\S]*padding-inline-start:/)
     expect(appCss.content).toMatch(/\.puzzle-description\s+a\s*\{[\s\S]*text-decoration:/)
   })
+
+  it('renders solved-with-next banner as explicit multi-line state with headline and action rows', () => {
+    const dom = new JSDOM('<!doctype html><div id="root"></div>')
+    globalThis.document = dom.window.document
+
+    const model = {
+      puzzle: { goalType: 'reach-all-goal-squares', targetColor: 'black', descriptionHtml: '' },
+      puzzleTitle: 'Solved Puzzle',
+      objectiveText: 'Move all white pieces onto goal squares.',
+      boardClasses: ['is-won'],
+      animationMs: 180,
+      cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
+      width: 1,
+      height: 1,
+      puzzleId: 'gt7wz4r1',
+      prevId: null,
+      nextId: 'xk3m9pq2',
+    }
+
+    const root = dom.window.document.querySelector('#root')
+    renderToDom(root, model)
+
+    const winBanner = root.querySelector('[data-win-banner]')
+    expect(winBanner).not.toBeNull()
+    expect(winBanner?.getAttribute('data-win-state')).toBe('puzzle-solved')
+    expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toBe('Puzzle solved!')
+    expect(winBanner?.querySelector('[data-win-action] [data-win-next-puzzle]')?.textContent).toBe('Next Puzzle')
+
+    const appCss = getCssFile('./styles/app.css')
+    expect(appCss.content).toMatch(/\.win-banner\.is-won\s*\{[\s\S]*display:\s*(grid|flex)/)
+    expect(appCss.content).toMatch(/\.win-banner\s*\{[\s\S]*gap:/)
+  })
+
+  it('renders terminal solved banner as distinct all-solved state block', () => {
+    const dom = new JSDOM('<!doctype html><div id="root"></div>')
+    globalThis.document = dom.window.document
+
+    const model = {
+      puzzle: { goalType: 'capture-all-targets', targetColor: 'black', descriptionHtml: '' },
+      puzzleTitle: 'Final Puzzle',
+      objectiveText: 'Capture all black targets.',
+      boardClasses: ['is-won'],
+      animationMs: 180,
+      cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
+      width: 1,
+      height: 1,
+      puzzleId: 'xk3m9pq2',
+      prevId: 'gt7wz4r1',
+      nextId: null,
+    }
+
+    const root = dom.window.document.querySelector('#root')
+    renderToDom(root, model)
+
+    const winBanner = root.querySelector('[data-win-banner]')
+    expect(winBanner).not.toBeNull()
+    expect(winBanner?.getAttribute('data-win-state')).toBe('all-solved')
+    expect(winBanner?.querySelector('[data-win-next-puzzle]')).toBeNull()
+    expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toMatch(/All .* puzzles solved! 🎉|All puzzles solved! 🎉/)
+  })
 })
