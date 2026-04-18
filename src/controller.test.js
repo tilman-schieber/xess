@@ -19,10 +19,11 @@ vi.mock('./puzzles/nav.js', () => ({
   isUnlocked: vi.fn(() => true),
   getPuzzlePosition: vi.fn(() => '1 / 2'),
   getPuzzleList: vi.fn(() => []),
+  getTrackLaunchPuzzleId: vi.fn(() => null),
 }))
 
 import { loadStore, saveProgress, saveActiveState, clearActiveState } from './store/store.js'
-import { isUnlocked, getPuzzlePosition, getPuzzleList } from './puzzles/nav.js'
+import { isUnlocked, getPuzzlePosition, getPuzzleList, getTrackLaunchPuzzleId } from './puzzles/nav.js'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -96,6 +97,25 @@ describe('loadPuzzle', () => {
     const ctrl = createController()
     const result = ctrl.loadPuzzle('xk3m9pq2')
     // Should start fresh — board should have the real Corner Trap cells, not the stored single cell
+    expect(result.board.size).toBeGreaterThan(1)
+    expect(result.undoStack).toEqual([])
+  })
+
+  it('malformed activeState entries for matching puzzle fail soft to fresh board', () => {
+    loadStore.mockReturnValue({
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: {
+        puzzleId: 'xk3m9pq2',
+        boardEntries: 42,
+        undoEntries: {},
+      },
+    })
+
+    const ctrl = createController()
+    const result = ctrl.loadPuzzle('xk3m9pq2')
+
+    expect(result.board).toBeInstanceOf(Map)
     expect(result.board.size).toBeGreaterThan(1)
     expect(result.undoStack).toEqual([])
   })
@@ -382,5 +402,28 @@ describe('getPuzzleList / getPuzzlePosition / isUnlocked', () => {
     ctrl.getPuzzleList()
     // Now solvedIds should include 'gt7wz4r1'
     expect(getPuzzleList).toHaveBeenCalledWith(expect.arrayContaining(['gt7wz4r1']))
+  })
+
+  it('getTrackLaunchPuzzleId uses sanitized solvedIds and active puzzle id from store', () => {
+    loadStore.mockReturnValue({
+      schemaVersion: 1,
+      solvedIds: ['xk3m9pq2', 'stale-id'],
+      activeState: {
+        puzzleId: 'gt7wz4r1',
+        boardEntries: [],
+        undoEntries: [],
+      },
+    })
+    getTrackLaunchPuzzleId.mockReturnValue('xk3m9pq2')
+
+    const ctrl = createController()
+    const result = ctrl.getTrackLaunchPuzzleId('foundations')
+
+    expect(getTrackLaunchPuzzleId).toHaveBeenCalledWith({
+      trackId: 'foundations',
+      solvedIds: ['xk3m9pq2'],
+      activePuzzleId: 'gt7wz4r1',
+    })
+    expect(result).toBe('xk3m9pq2')
   })
 })
