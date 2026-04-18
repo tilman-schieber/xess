@@ -18,6 +18,8 @@ function createStorage(seed = {}) {
 
 function installAudioMock({ throwOnCtor = false, throwOnOscillator = false } = {}) {
   const resume = vi.fn(() => Promise.resolve())
+  const frequencies = []
+  const starts = []
   const createdOscillators = []
 
   class MockAudioContext {
@@ -33,9 +35,15 @@ function installAudioMock({ throwOnCtor = false, throwOnOscillator = false } = {
       if (throwOnOscillator) throw new Error('oscillator failed')
       const osc = {
         type: 'sine',
-        frequency: { setValueAtTime: vi.fn() },
+        frequency: {
+          setValueAtTime: vi.fn((freq, when) => {
+            frequencies.push({ freq, when })
+          }),
+        },
         connect: vi.fn(),
-        start: vi.fn(),
+        start: vi.fn(when => {
+          starts.push(when)
+        }),
         stop: vi.fn(),
       }
       createdOscillators.push(osc)
@@ -56,7 +64,7 @@ function installAudioMock({ throwOnCtor = false, throwOnOscillator = false } = {
   globalThis.AudioContext = vi.fn(() => new MockAudioContext())
   globalThis.webkitAudioContext = undefined
 
-  return { resume, createdOscillators }
+  return { resume, createdOscillators, frequencies, starts }
 }
 
 async function loadSoundModule() {
@@ -127,5 +135,40 @@ describe('sound contract', () => {
     installAudioMock({ throwOnCtor: true })
     const ctorFailing = await loadSoundModule()
     expect(() => ctorFailing.playMove()).not.toThrow()
+  })
+
+  it('keeps enabled state and plays cues even when storage APIs fail', async () => {
+    globalThis.localStorage = {
+      getItem: vi.fn(() => {
+        throw new Error('read blocked')
+      }),
+      setItem: vi.fn(() => {
+        throw new Error('write blocked')
+      }),
+    }
+    const { createdOscillators } = installAudioMock()
+    const sound = await loadSoundModule()
+
+    expect(sound.toggleSound()).toBe(true)
+    expect(sound.isSoundEnabled()).toBe(true)
+
+    sound.playMove()
+    expect(createdOscillators.length).toBeGreaterThan(0)
+  })
+
+  it('primes a shared context on enable and schedules deterministic move/solve cues', async () => {
+    globalThis.localStorage = createStorage({ 'xess-sound-enabled': 'false' })
+    const { resume, frequencies } = installAudioMock()
+    const sound = await loadSoundModule()
+
+    expect(sound.toggleSound()).toBe(true)
+    expect(globalThis.AudioContext).toHaveBeenCalledTimes(1)
+    expect(resume).toHaveBeenCalledTimes(1)
+
+    sound.playMove()
+    sound.playSolve()
+
+    expect(globalThis.AudioContext).toHaveBeenCalledTimes(1)
+    expect(frequencies.map(entry => entry.freq)).toEqual([520, 523, 659, 784])
   })
 })
