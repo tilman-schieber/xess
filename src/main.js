@@ -377,18 +377,33 @@ export function renderToDom(root, model) {
 
   if (isWon) {
     if (model.nextId) {
-      const solvedSpan = document.createElement('span')
+      winBanner.setAttribute('data-win-state', 'puzzle-solved')
+
+      const solvedSpan = document.createElement('p')
+      solvedSpan.className = 'win-banner-headline'
+      solvedSpan.setAttribute('data-win-headline', 'true')
       solvedSpan.textContent = 'Puzzle solved!'
+
+      const actionRow = document.createElement('div')
+      actionRow.className = 'win-banner-action'
+      actionRow.setAttribute('data-win-action', 'true')
+
       const nextPuzzleBtn = document.createElement('button')
       nextPuzzleBtn.type = 'button'
       nextPuzzleBtn.className = 'btn-next-puzzle'
       nextPuzzleBtn.setAttribute('data-win-next-puzzle', 'true')
       nextPuzzleBtn.textContent = 'Next Puzzle'
-      winBanner.append(solvedSpan, nextPuzzleBtn)
+
+      actionRow.append(nextPuzzleBtn)
+      winBanner.append(solvedSpan, actionRow)
     } else {
+      winBanner.setAttribute('data-win-state', 'all-solved')
+
       // End of catalogue — count total puzzles from position string
       const total = catalogue.length
-      const endSpan = document.createElement('span')
+      const endSpan = document.createElement('p')
+      endSpan.className = 'win-banner-headline'
+      endSpan.setAttribute('data-win-headline', 'true')
       endSpan.textContent = total ? `All ${total} puzzles solved! 🎉` : 'All puzzles solved! 🎉'
       winBanner.append(endSpan)
     }

@@ -156,10 +156,26 @@ body {
   font-size: var(--text-display);
   font-weight: 600;
   color: var(--text-muted);
+  gap: var(--space-xs);
 }
 
 .win-banner.is-won {
   color: var(--accent-win);
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  row-gap: var(--space-xs);
+}
+
+.win-banner-headline {
+  margin: 0;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.win-banner-action {
+  display: grid;
+  justify-items: center;
 }
 
 .puzzle-meta-top {
