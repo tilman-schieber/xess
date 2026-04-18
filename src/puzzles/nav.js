@@ -111,6 +111,30 @@ export function getTrackPuzzleList(trackId, solvedIds, tracks = _tracks, catalog
 }
 
 /**
+ * Resolve deterministic launch/resume puzzle ID for a track.
+ * Fallback order: active-in-track → first unsolved-in-track → first track puzzle → null.
+ * Unknown or empty tracks return null and never throw.
+ *
+ * @param {{ trackId: string, solvedIds: Set<string>|string[], activePuzzleId?: string|null }} params
+ * @param {object[]} [tracks]
+ * @returns {string|null}
+ */
+export function getTrackLaunchPuzzleId({ trackId, solvedIds, activePuzzleId }, tracks = _tracks) {
+  const track = tracks.find(entry => entry.id === trackId)
+  if (!track || track.puzzleIds.length === 0) return null
+
+  if (typeof activePuzzleId === 'string' && track.puzzleIds.includes(activePuzzleId)) {
+    return activePuzzleId
+  }
+
+  const solved = new Set(solvedIds)
+  const firstUnsolved = track.puzzleIds.find(id => !solved.has(id))
+  if (firstUnsolved) return firstUnsolved
+
+  return track.puzzleIds[0] ?? null
+}
+
+/**
  * Returns the id of the puzzle immediately before puzzleId in catalogue order.
  * Returns null if puzzleId is first or not found.
  *
