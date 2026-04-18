@@ -22,7 +22,7 @@
 
 ### Puzzle Rich Text
 
-- [ ] **TXT-01**: User sees a short puzzle description rendered in the puzzle UI.
+- [x] **TXT-01**: User sees a short puzzle description rendered in the puzzle UI.
 - [x] **TXT-02**: Puzzle description supports curated HTML formatting from puzzle author data.
 - [x] **TXT-03**: HTML rendering is sanitized or allowlisted so unsafe markup is not executed.
 
@@ -67,7 +67,7 @@
 | TRK-04 | Phase 7 | Complete |
 | TRK-05 | Phase 8 | Complete |
 | TRK-06 | Phase 8 | Complete |
-| TXT-01 | Phase 9 | Pending |
+| TXT-01 | Phase 9 | Complete |
 | TXT-02 | Phase 9 | Complete |
 | TXT-03 | Phase 9 | Complete |
 | UXP-01 | Phase 10 | Pending |

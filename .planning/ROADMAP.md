@@ -55,7 +55,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 09-01-PLAN.md — Add sanitized rich-text foundation and optional puzzle description contract
-- [ ] 09-02-PLAN.md — Integrate sanitized descriptions into play metadata with UI/security regression coverage
+- [x] 09-02-PLAN.md — Integrate sanitized descriptions into play metadata with UI/security regression coverage
 **UI hint**: yes
 
 ### Phase 10: UX and Audio Launch Polish
