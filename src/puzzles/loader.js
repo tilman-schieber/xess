@@ -74,6 +74,7 @@ export function parsePuzzle(raw) {
     id: raw.id,
     schemaVersion: raw.schemaVersion,
     title: raw.title ?? '',
+    descriptionHtml: typeof raw.descriptionHtml === 'string' ? raw.descriptionHtml : '',
     goalType: raw.goalType,
     targetColor: raw.targetColor ?? null,
     board,
