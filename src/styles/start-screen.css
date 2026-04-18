@@ -37,8 +37,8 @@
 
 .start-screen-primary,
 .start-screen-secondary {
-  min-inline-size: var(--touch-target-min);
-  min-block-size: var(--touch-target-min);
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
   border-radius: 0.5rem;
   border: 1px solid var(--border-subtle);
   font-size: var(--text-body);

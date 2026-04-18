@@ -210,8 +210,8 @@ body {
 }
 
 .nav-btn {
-  min-inline-size: var(--touch-target-min);
-  min-block-size: var(--touch-target-min);
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
   background: var(--surface-card);
   border: 1px solid var(--border-subtle);
   border-radius: 0.5rem;
@@ -226,8 +226,8 @@ body {
 }
 
 .btn-next-puzzle {
-  min-inline-size: var(--touch-target-min);
-  min-block-size: var(--touch-target-min);
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
   background: var(--accent);
   color: var(--surface-bg);
   border: none;

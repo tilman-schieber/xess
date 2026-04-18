@@ -27,8 +27,8 @@
 
 .track-browser-back {
   justify-self: start;
-  min-inline-size: var(--touch-target-min);
-  min-block-size: var(--touch-target-min);
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
   border-radius: 0.5rem;
   border: 1px solid var(--border-subtle);
   background: transparent;
@@ -70,8 +70,8 @@
 
 .track-action-open,
 .track-action-resume {
-  min-inline-size: var(--touch-target-min);
-  min-block-size: var(--touch-target-min);
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
   border-radius: 0.5rem;
   border: 1px solid var(--border-subtle);
   padding: var(--space-sm) var(--space-md);
@@ -106,8 +106,8 @@
   border-radius: 0.5rem;
   border: 1px solid var(--border-subtle);
   background: var(--surface-card);
-  min-inline-size: var(--touch-target-min);
-  min-block-size: var(--touch-target-min);
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
   align-items: center;
   cursor: pointer;
 }
