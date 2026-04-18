@@ -243,4 +243,24 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     expect(winBanner?.querySelector('[data-win-next-puzzle]')).toBeNull()
     expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toMatch(/All .* puzzles solved! 🎉|All puzzles solved! 🎉/)
   })
+
+  it('suppresses root tap handling for pointer sequences already consumed by drag drop', () => {
+    const mainSource = getCssFile('./main.js')
+    expect(mainSource.exists).toBe(true)
+
+    expect(mainSource.content).toMatch(/let\s+_suppressTapPointerId\s*=\s*null/)
+    expect(mainSource.content).toMatch(/if\s*\(_suppressTapPointerId\s*===\s*event\.pointerId\)\s*\{[\s\S]*return/s)
+    expect(mainSource.content).toMatch(/onDrop\([^)]*pointerId[^)]*\)[\s\S]*_suppressTapPointerId\s*=\s*pointerId/s)
+    expect(mainSource.content).toMatch(/onCancel\([^)]*pointerId[^)]*\)[\s\S]*_suppressTapPointerId\s*=\s*pointerId/s)
+  })
+
+  it('uses pointer-first sound toggle handlers while keeping keyboard activation support', () => {
+    const mainSource = getCssFile('./main.js')
+    expect(mainSource.exists).toBe(true)
+
+    expect(mainSource.content).toMatch(/sound-toggle/)
+    expect(mainSource.content).toMatch(/addEventListener\('pointerup'/)
+    expect(mainSource.content).toMatch(/addEventListener\('keydown'/)
+    expect(mainSource.content).toMatch(/event\.key\s*===\s*'Enter'\s*\|\|\s*event\.key\s*===\s*' '/)
+  })
 })
