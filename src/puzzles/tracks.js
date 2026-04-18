@@ -6,6 +6,11 @@ export default [
     id: 'foundations',
     title: 'Foundations',
     subtitle: 'Learn board quirks and core movement ideas',
+    modes: {
+      random: { enabled: false },
+      guided: { enabled: true },
+      tutorial: { enabled: true },
+    },
     puzzleIds: [
       'xk3m9pq2',
       'gt7wz4r1',
@@ -21,6 +26,11 @@ export default [
     id: 'formations',
     title: 'Formations',
     subtitle: 'Multi-piece tactics on larger boards',
+    modes: {
+      random: { enabled: true },
+      guided: { enabled: true },
+      tutorial: { enabled: false },
+    },
     puzzleIds: [
       'd1e2f3g4',
       'l9m0n1o2',
@@ -36,6 +46,11 @@ export default [
     id: 'labyrinths',
     title: 'Labyrinths',
     subtitle: 'Irregular geometry and finale challenges',
+    modes: {
+      random: { enabled: true },
+      guided: { enabled: false },
+      tutorial: { enabled: false },
+    },
     puzzleIds: [
       'h7i8j9k0',
       'l1m2n3o4',

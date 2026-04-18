@@ -2,6 +2,28 @@ function asStringOrNull(value) {
   return typeof value === 'string' && value.length > 0 ? value : null
 }
 
+function normalizeModeEntry(entry) {
+  if (!entry || typeof entry !== 'object') return undefined
+  return {
+    enabled: Boolean(entry.enabled),
+  }
+}
+
+function normalizeModes(modes) {
+  if (!modes || typeof modes !== 'object') return undefined
+
+  const normalized = {}
+  const random = normalizeModeEntry(modes.random)
+  const guided = normalizeModeEntry(modes.guided)
+  const tutorial = normalizeModeEntry(modes.tutorial)
+
+  if (random) normalized.random = random
+  if (guided) normalized.guided = guided
+  if (tutorial) normalized.tutorial = tutorial
+
+  return Object.keys(normalized).length > 0 ? normalized : undefined
+}
+
 /**
  * Validate static track metadata against bundled catalogue IDs.
  * Fail-soft: malformed tracks/ids produce warnings and are filtered instead of throwing.
@@ -38,6 +60,7 @@ export function validateTrackCatalogueIntegrity({ tracks = [], catalogue = [] } 
     const trackId = asStringOrNull(rawTrack.id) ?? `invalid-track-${index}`
     const title = asStringOrNull(rawTrack.title) ?? trackId
     const subtitle = typeof rawTrack.subtitle === 'string' ? rawTrack.subtitle : undefined
+    const modes = normalizeModes(rawTrack.modes)
 
     const sourceIds = Array.isArray(rawTrack.puzzleIds)
       ? rawTrack.puzzleIds
@@ -77,12 +100,18 @@ export function validateTrackCatalogueIntegrity({ tracks = [], catalogue = [] } 
       warnings.push({ code: 'empty-track', trackId })
     }
 
-    normalizedTracks.push({
+    const normalizedTrack = {
       id: trackId,
       title,
       subtitle,
       puzzleIds: filteredPuzzleIds,
-    })
+    }
+
+    if (modes) {
+      normalizedTrack.modes = modes
+    }
+
+    normalizedTracks.push(normalizedTrack)
   })
 
   return { tracks: normalizedTracks, warnings }

@@ -1,5 +1,5 @@
 // src/puzzles/nav.test.js
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import {
   getUnlockedIds,
   isUnlocked,
@@ -190,12 +190,13 @@ describe('track navigation contracts', () => {
   })
 
   it('getTracks keeps optional mode metadata and ignores unknown mode values', () => {
+    const realPuzzleId = catalogue[0].id
     const tracks = getTracks([
       {
         id: 'alpha',
         title: 'Alpha',
         subtitle: 'A',
-        puzzleIds: ['p1'],
+        puzzleIds: [realPuzzleId],
         modes: { random: { enabled: true }, guided: { enabled: true }, tutorial: { enabled: false }, unknown: { enabled: true } },
       },
     ])
@@ -205,7 +206,7 @@ describe('track navigation contracts', () => {
         id: 'alpha',
         title: 'Alpha',
         subtitle: 'A',
-        puzzleIds: ['p1'],
+        puzzleIds: [realPuzzleId],
         modes: {
           random: { enabled: true },
           guided: { enabled: true },
@@ -216,16 +217,18 @@ describe('track navigation contracts', () => {
   })
 
   it('track helpers use integrity-safe filtering for malformed references', () => {
-    const tracks = [
-      { id: 'alpha', title: 'Alpha', puzzleIds: ['p1', 'missing'] },
+    const playableId = catalogue[0].id
+    const listTracks = [
+      { id: 'alpha', title: 'Alpha', puzzleIds: ['p1'] },
       { id: 'beta', title: 'Beta', puzzleIds: ['p1', 'p2'] },
     ]
+    const launchTracks = [{ id: 'alpha', title: 'Alpha', puzzleIds: [playableId, 'missing'] }]
 
-    const list = getTrackPuzzleList('beta', ['p1'], tracks, mockCatalogue)
-    const launch = getTrackLaunchPuzzleId({ trackId: 'alpha', solvedIds: [], activePuzzleId: null }, tracks)
+    const list = getTrackPuzzleList('beta', ['p1'], listTracks, mockCatalogue)
+    const launch = getTrackLaunchPuzzleId({ trackId: 'alpha', solvedIds: [], activePuzzleId: null }, launchTracks)
 
     expect(list.map(entry => entry.id)).toEqual(['p2'])
-    expect(launch).toBe('p1')
+    expect(launch).toBe(playableId)
   })
 
   it('track helpers stay pure/local and never call fetch', () => {

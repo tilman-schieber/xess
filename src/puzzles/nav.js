@@ -5,6 +5,12 @@
 
 import _catalogue from './catalogue.js'
 import _tracks from './tracks.js'
+import { validateTrackCatalogueIntegrity } from './contentIntegrity.js'
+
+function getIntegritySafeTracks(tracks = _tracks, catalogue = _catalogue) {
+  const { tracks: sanitizedTracks } = validateTrackCatalogueIntegrity({ tracks, catalogue })
+  return sanitizedTracks
+}
 
 /**
  * Returns string[] of all selectable puzzle IDs.
@@ -66,13 +72,14 @@ export function getPuzzleList(solvedIds, catalogue = _catalogue) {
  * Returns static track metadata used by the track browser UI.
  *
  * @param {object[]} [tracks]
- * @returns {{ id: string, title: string, subtitle?: string, puzzleIds: string[] }[]}
+ * @returns {{ id: string, title: string, subtitle?: string, modes?: object, puzzleIds: string[] }[]}
  */
 export function getTracks(tracks = _tracks) {
-  return tracks.map(track => ({
+  return getIntegritySafeTracks(tracks).map(track => ({
     id: track.id,
     title: track.title,
     subtitle: track.subtitle,
+    modes: track.modes,
     puzzleIds: [...track.puzzleIds],
   }))
 }
@@ -88,7 +95,8 @@ export function getTracks(tracks = _tracks) {
  * @returns {{ id: string, title: string, status: 'solved'|'unlocked', position: string }[]}
  */
 export function getTrackPuzzleList(trackId, solvedIds, tracks = _tracks, catalogue = _catalogue) {
-  const track = tracks.find(entry => entry.id === trackId)
+  const integritySafeTracks = getIntegritySafeTracks(tracks, catalogue)
+  const track = integritySafeTracks.find(entry => entry.id === trackId)
   if (!track) return []
 
   const solved = new Set(solvedIds)
@@ -120,7 +128,8 @@ export function getTrackPuzzleList(trackId, solvedIds, tracks = _tracks, catalog
  * @returns {string|null}
  */
 export function getTrackLaunchPuzzleId({ trackId, solvedIds, activePuzzleId }, tracks = _tracks) {
-  const track = tracks.find(entry => entry.id === trackId)
+  const integritySafeTracks = getIntegritySafeTracks(tracks)
+  const track = integritySafeTracks.find(entry => entry.id === trackId)
   if (!track || track.puzzleIds.length === 0) return null
 
   if (typeof activePuzzleId === 'string' && track.puzzleIds.includes(activePuzzleId)) {
