@@ -23,14 +23,13 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Every puzzle can define short authored HTML text shown in the puzzle UI (`TXT-01`, `TXT-02`, `TXT-03`) — Validated in Phase 09: puzzle-rich-text-content
 
 ### Active
 
 - [ ] Finish launch gaps for content and audio robustness (`CNT-01`, `CNT-02`, `SND-02`)
 - [ ] Puzzles are organized into tracks, with numbering scoped per track (not one global flat list)
 - [ ] New start screen exists and routes into puzzle experience; foundation exists for random/guided/tutorial track modes
-- [ ] Every puzzle can define short authored HTML text shown in the puzzle UI
 - [ ] Core UI polish pass improves tap-target sizing, completion banner readability, and related interaction rough edges
 
 ### Out of Scope
@@ -86,4 +85,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-18 after milestone v1.1 initialization*
+*Last updated: 2026-04-18 after Phase 09 completion*
