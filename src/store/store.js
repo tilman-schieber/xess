@@ -1,6 +1,8 @@
 // src/store/store.js
 // localStorage persistence layer for Xess puzzle game.
 
+import catalogue from '../puzzles/catalogue.js'
+
 const STORAGE_KEY = 'xess_v1'
 const CURRENT_SCHEMA_VERSION = 1
 const DEBOUNCE_MS = 300
@@ -16,6 +18,8 @@ function _defaultStore() {
   return { schemaVersion: CURRENT_SCHEMA_VERSION, solvedIds: [], activeState: null }
 }
 
+const VALID_PUZZLE_IDS = new Set(catalogue.map(entry => entry.id))
+
 /**
  * Load and parse the store from localStorage.
  *
@@ -29,7 +33,7 @@ function _sanitizeActiveState(activeState) {
   if (!activeState || typeof activeState !== 'object') return null
 
   const puzzleId = typeof activeState.puzzleId === 'string' ? activeState.puzzleId : null
-  if (!puzzleId) return null
+  if (!puzzleId || !VALID_PUZZLE_IDS.has(puzzleId)) return null
 
   const boardEntries = Array.isArray(activeState.boardEntries) ? activeState.boardEntries : []
   const undoEntries = Array.isArray(activeState.undoEntries) ? activeState.undoEntries : []
@@ -39,7 +43,7 @@ function _sanitizeActiveState(activeState) {
 
 function _sanitizeStore(parsed) {
   const solvedIds = Array.isArray(parsed?.solvedIds)
-    ? [...new Set(parsed.solvedIds.filter(id => typeof id === 'string'))]
+    ? [...new Set(parsed.solvedIds.filter(id => typeof id === 'string' && VALID_PUZZLE_IDS.has(id)))]
     : []
 
   return {

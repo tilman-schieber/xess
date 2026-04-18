@@ -24,6 +24,9 @@ function makeBoard(entries) {
   return new Map(entries)
 }
 
+const VALID_ID_A = 'xk3m9pq2'
+const VALID_ID_B = 'gt7wz4r1'
+
 // ─── Group: loadStore ────────────────────────────────────────────────────────
 
 describe('loadStore', () => {
@@ -37,11 +40,11 @@ describe('loadStore', () => {
   })
 
   it('returns parsed data when key exists and schemaVersion matches', () => {
-    const data = { schemaVersion: 1, solvedIds: ['p1', 'p2'], activeState: null }
+    const data = { schemaVersion: 1, solvedIds: [VALID_ID_A, VALID_ID_B], activeState: null }
     _storage['xess_v1'] = JSON.stringify(data)
     const store = loadStore()
     expect(store.schemaVersion).toBe(1)
-    expect(store.solvedIds).toEqual(['p1', 'p2'])
+    expect(store.solvedIds).toEqual([VALID_ID_A, VALID_ID_B])
   })
 
   it('returns default when schemaVersion is wrong (stored version 99)', () => {
@@ -128,16 +131,16 @@ describe('loadStore', () => {
 
 describe('saveProgress', () => {
   it('adds solved IDs and loadStore reflects them', () => {
-    saveProgress(['puzzle-1', 'puzzle-2'])
+    saveProgress([VALID_ID_A, VALID_ID_B])
     const store = loadStore()
-    expect(store.solvedIds).toContain('puzzle-1')
-    expect(store.solvedIds).toContain('puzzle-2')
+    expect(store.solvedIds).toContain(VALID_ID_A)
+    expect(store.solvedIds).toContain(VALID_ID_B)
   })
 
   it('deduplicates duplicate IDs', () => {
-    saveProgress(['puzzle-1', 'puzzle-1', 'puzzle-2'])
+    saveProgress([VALID_ID_A, VALID_ID_A, VALID_ID_B])
     const store = loadStore()
-    const count = store.solvedIds.filter(id => id === 'puzzle-1').length
+    const count = store.solvedIds.filter(id => id === VALID_ID_A).length
     expect(count).toBe(1)
   })
 })
@@ -147,11 +150,11 @@ describe('saveProgress', () => {
 describe('saveActiveState / round-trip', () => {
   it('after advancing timers by 300ms, loadStore returns activeState with correct puzzleId', () => {
     const board = makeBoard([['0,0', { piece: { type: 'p', color: 'white' }, isGoal: false }]])
-    saveActiveState('puzzle-abc', board, [])
+    saveActiveState(VALID_ID_A, board, [])
     vi.advanceTimersByTime(300)
     const store = loadStore()
     expect(store.activeState).not.toBeNull()
-    expect(store.activeState.puzzleId).toBe('puzzle-abc')
+    expect(store.activeState.puzzleId).toBe(VALID_ID_A)
   })
 
   it('board Map entries survive serialize/deserialize round-trip (3 cells with piece and isGoal)', () => {
@@ -160,7 +163,7 @@ describe('saveActiveState / round-trip', () => {
       ['1,0', { piece: null, isGoal: true }],
       ['2,0', { piece: { type: 'n', color: 'black' }, isGoal: false }],
     ])
-    saveActiveState('puzzle-rt', board, [])
+    saveActiveState(VALID_ID_A, board, [])
     vi.advanceTimersByTime(300)
     const store = loadStore()
     const rehydrated = new Map(store.activeState.boardEntries)
@@ -179,7 +182,7 @@ describe('saveActiveState / round-trip', () => {
       ['0,0', { piece: null, isGoal: false }],
       ['1,0', { piece: { type: 'p', color: 'white' }, isGoal: false }],
     ])
-    saveActiveState('puzzle-undo', board, [snap1, snap2])
+    saveActiveState(VALID_ID_A, board, [snap1, snap2])
     vi.advanceTimersByTime(300)
     const store = loadStore()
     expect(store.activeState.undoEntries).toHaveLength(2)
@@ -194,9 +197,9 @@ describe('saveActiveState / round-trip', () => {
     const board = makeBoard([['0,0', { piece: null, isGoal: false }]])
     // Count only activeState writes (saveProgress also calls setItem)
     const setItemCallsBefore = spy.mock.calls.length
-    saveActiveState('puzzle-debounce', board, [])
-    saveActiveState('puzzle-debounce', board, [])
-    saveActiveState('puzzle-debounce', board, [])
+    saveActiveState(VALID_ID_A, board, [])
+    saveActiveState(VALID_ID_A, board, [])
+    saveActiveState(VALID_ID_A, board, [])
     vi.advanceTimersByTime(300)
     const setItemCallsAfter = spy.mock.calls.length
     // Exactly 1 write for all 3 rapid calls
@@ -210,17 +213,17 @@ describe('saveActiveState / round-trip', () => {
 describe('flushSync', () => {
   it('flushSync() before timer fires writes to localStorage immediately', () => {
     const board = makeBoard([['0,0', { piece: null, isGoal: false }]])
-    saveActiveState('puzzle-flush', board, [])
+    saveActiveState(VALID_ID_A, board, [])
     // Timer has NOT fired yet
     flushSync()
     const store = loadStore()
     expect(store.activeState).not.toBeNull()
-    expect(store.activeState.puzzleId).toBe('puzzle-flush')
+    expect(store.activeState.puzzleId).toBe(VALID_ID_A)
   })
 
   it('after flushSync(), loadStore returns the flushed activeState', () => {
     const board = makeBoard([['1,1', { piece: { type: 'q', color: 'white' }, isGoal: true }]])
-    saveActiveState('puzzle-flushed', board, [])
+    saveActiveState(VALID_ID_A, board, [])
     flushSync()
     const store = loadStore()
     const rehydrated = new Map(store.activeState.boardEntries)
@@ -237,7 +240,7 @@ describe('flushSync', () => {
 describe('clearActiveState', () => {
   it('after saveActiveState and flushSync, clearActiveState sets activeState to null in storage', () => {
     const board = makeBoard([['0,0', { piece: null, isGoal: false }]])
-    saveActiveState('puzzle-clear', board, [])
+    saveActiveState(VALID_ID_A, board, [])
     flushSync()
     clearActiveState()
     const store = loadStore()
