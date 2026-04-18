@@ -1,169 +1,85 @@
 # Requirements: Xess
 
-**Defined:** 2026-04-16
+**Defined:** 2026-04-18
 **Core Value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
 
 ## v1 Requirements
 
-### Puzzle Format
+### Launch Completion
 
-- [x] **FMT-01**: Puzzle definition encodes board shape as a text-grid (rows of character codes: `-`=empty, `x`=impassable, `G`=goal square, piece chars for pieces)
-- [x] **FMT-02**: Puzzle definition encodes piece type, piece color (player/opponent), and for pawns an explicit direction property
-- [x] **FMT-03**: Puzzle definition encodes goal type (capture-all-targets or reach-all-goal-squares)
-- [x] **FMT-04**: Each puzzle has a stable opaque string ID (never an array index) used for localStorage keys
-- [x] **FMT-05**: Puzzle format is versioned with a `schemaVersion` field
+- [ ] **CNT-01**: User can play a placeholder launch puzzle set immediately; puzzle quality/content expansion will be authored manually later.
+- [ ] **CNT-02**: Puzzle catalogue ships as static local assets with no runtime network dependency for puzzle data.
+- [ ] **SND-02**: Sound system uses one shared `AudioContext` with a small sample set and never plays unless explicitly enabled.
 
-### Puzzle Engine
+### Tracks and Start Screen
 
-- [x] **ENG-01**: Engine generates legal moves for all 6 piece types (King, Queen, Rook, Bishop, Knight, Pawn) following standard chess movement rules
-- [x] **ENG-02**: Engine treats impassable squares as walls for all sliding pieces and as jumpable obstacles (cannot land) for knights
-- [x] **ENG-03**: Engine enforces pawn movement using per-piece direction property (not inferred from color or board orientation)
-- [x] **ENG-04**: Engine does not implement check, pin detection, or castling (no king-safety rules — king is never on the board in any puzzle)
-- [x] **ENG-05**: Engine supports "capture-all-targets" win condition: all opponent pieces must be captured
-- [x] **ENG-06**: Engine supports "reach-all-goal-squares" win condition: specified player pieces must occupy all goal squares
-- [x] **ENG-07**: Engine exposes pure functions with no DOM or localStorage dependencies (testable in isolation with Vitest)
-- [x] **ENG-08**: Undo is snapshot-based: each move stores the full board state; undo pops the stack (multi-level, no limit)
+- [ ] **TRK-01**: User lands on a new start screen before entering puzzle play.
+- [ ] **TRK-02**: User sees puzzle tracks grouped as separate collections (not one flat list).
+- [ ] **TRK-03**: User can open a track and browse puzzles numbered within that track.
+- [ ] **TRK-04**: User can start or resume a puzzle from track context.
+- [ ] **TRK-05**: Track metadata supports future mode entry points (random, guided, tutorial) without breaking current flow.
+- [ ] **TRK-06**: Existing solved/progress data remains compatible after migration to track-based indexing.
 
-### Game Interaction
+### Puzzle Rich Text
 
-- [x] **INT-01**: Player selects a piece by tapping/clicking it; legal destination squares are highlighted
-- [x] **INT-02**: Player completes a move by tapping/clicking a highlighted destination; illegal taps are ignored with visual feedback
-- [x] **INT-03**: Player can undo any number of moves back to the puzzle start state
-- [x] **INT-04**: Player can reset the puzzle to its initial state with a single action
-- [x] **INT-05**: Piece movement is animated with a smooth CSS transition (150–200ms)
-- [x] **INT-06**: Win state is detected immediately after each move and presented clearly to the player
+- [ ] **TXT-01**: User sees a short puzzle description rendered in the puzzle UI.
+- [ ] **TXT-02**: Puzzle description supports curated HTML formatting from puzzle author data.
+- [ ] **TXT-03**: HTML rendering is sanitized or allowlisted so unsafe markup is not executed.
 
-### Puzzle Navigation
+### UX/UI Polish
 
-- [x] **NAV-01**: Player sees a list of all puzzles; solved puzzles are marked; unsolved future puzzles are locked
-- [x] **NAV-02**: Puzzles unlock sequentially — a puzzle is unlocked only when the previous one is solved
-- [x] **NAV-03**: Current puzzle position is displayed ("7 / 42")
-- [x] **NAV-04**: Each puzzle displays its goal type and target clearly before and during play
-- [x] **NAV-05**: Puzzles are ordered by implied difficulty (easier first, harder later) with no explicit difficulty labels
-
-### Persistence
-
-- [x] **PRS-01**: Solved puzzle IDs are persisted in localStorage and survive browser close/reopen
-- [x] **PRS-02**: Active puzzle state (piece positions, move history for undo) is persisted in localStorage and restored on revisit
-- [x] **PRS-03**: localStorage schema includes a version field; migrations are handled gracefully
-- [x] **PRS-04**: State is written on every move (debounced) and synchronously on `visibilitychange: hidden`
-
-### Board Rendering
-
-- [x] **RND-01**: Board renders correctly for any board shape: variable dimensions, non-rectangular grids, impassable squares
-- [x] **RND-02**: All squares are visually uniform (no alternating chess colors); goal squares are distinctly highlighted (e.g. green)
-- [x] **RND-03**: Board and pieces are readable at 375px viewport width; minimum touch target per piece is 44px
-- [x] **RND-04**: Piece rendering uses SVG; board layout uses CSS Grid driven by puzzle definition dimensions
-
-### Visual Design
-
-- [x] **VIS-01**: Visual style is elegant and premium — custom piece set, refined color palette, considered typography; no standard chess clichés
-- [x] **VIS-02**: UI is mobile-first responsive and usable on both phone and desktop
-
-### Sound
-
-- [x] **SND-01**: Optional sound feedback for piece moves and puzzle solve (off by default; preference persisted in localStorage)
-- [ ] **SND-02**: Sound uses a single AudioContext with 3–4 short samples; no sound plays unless user has enabled it
-
-### PWA
-
-- [x] **PWA-01**: App is installable as a PWA: valid Web App Manifest with required icon sizes (192, 512, 180 Apple Touch), standalone display mode
-- [x] **PWA-02**: App works fully offline after first load: service worker precaches all static assets and all puzzle data at install time
-- [x] **PWA-03**: New app versions activate immediately using `skipWaiting` + `clients.claim`; a reload prompt is shown to the player
-- [x] **PWA-04**: iOS Safari users who haven't installed see a persistent "Add to Home Screen" instruction (conditioned on iOS UA + `navigator.standalone !== true`)
-
-### Content
-
-- [ ] **CNT-01**: App ships with 25–50 curated puzzles exercising multiple board shapes and both goal types
-- [ ] **CNT-02**: Puzzle catalogue is embedded as static JS modules (no network fetch; offline from build time)
-
----
+- [ ] **UXP-01**: Primary controls meet mobile touch-target expectations (>= 44px interactive targets).
+- [ ] **UXP-02**: Puzzle completion message layout is corrected, including proper line breaks and spacing.
+- [ ] **UXP-03**: Start/list/play screens use consistent visual hierarchy and spacing.
+- [ ] **UXP-04**: Known interaction rough edges in the current UI are resolved for launch quality.
 
 ## v2 Requirements
 
-### Polish
+### Game Modes
 
-- **POL-01**: Puzzle solved celebration — short particle burst or CSS keyframe animation on solve
-- **POL-02**: Difficulty labels visible in puzzle list (Easy / Medium / Hard)
-- **POL-03**: Export/import puzzle progress (safety net for iOS localStorage eviction)
+- **MODE-01**: User can start a random puzzle mode from the start screen.
+- **MODE-02**: User can run guided track mode with curated progression constraints.
+- **MODE-03**: User can access a tutorial track with onboarding-focused puzzle sequencing.
 
-### Content
+### Content Expansion
 
-- **CNT-V2-01**: Additional puzzle packs beyond initial 25–50
-- **CNT-V2-02**: Puzzle packs grouped by board shape theme or difficulty tier
-
----
+- **CNT-V2-01**: User can play expanded track libraries beyond the placeholder launch set.
+- **CNT-V2-02**: Tracks can be tagged by theme/difficulty and filtered in the start flow.
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Hint system | Requires solver infrastructure; reduces solve satisfaction; undo + reset is the safety net |
-| Move count / par system | Pressures players on unfamiliar boards; exploration is the point |
-| Timer / speed challenge | Wrong genre for geometry puzzles; adds anxiety |
-| In-app level editor | Different UI surface, validation tooling, QA scope; curated content is a feature |
-| Online leaderboards / accounts | Requires backend, auth, ops cost; local progress tracking is sufficient |
-| Pawn promotion | Geometrically ambiguous on non-standard boards; adds rules complexity with no puzzle design benefit |
-| Castling | Never used in any Xess puzzle; removed from engine to simplify undo state |
-| Check / pin enforcement | King never appears on any Xess puzzle board; rules enforcement not needed |
-| Alternating-turn chess | Static opponent pieces only; turns the game into a tactics trainer, not a geometry puzzle |
-| Server-side persistence | Purely client-side; local storage is the contract |
-| Achievements / badge system | Hollow without thoughtful design; completion checkmarks are sufficient |
-
----
+| AI-generated puzzle authoring | Puzzle quality and pedagogy should be manually authored by the project owner |
+| Server-backed track sync | Product remains local-first/browser-only for current milestone |
+| New chess mechanics beyond current engine | Milestone targets structure/presentation polish, not rule expansion |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FMT-01 | Phase 1 | Complete |
-| FMT-02 | Phase 1 | Complete |
-| FMT-03 | Phase 1 | Complete |
-| FMT-04 | Phase 1 | Complete |
-| FMT-05 | Phase 1 | Complete |
-| ENG-01 | Phase 1 | Complete |
-| ENG-02 | Phase 1 | Complete |
-| ENG-03 | Phase 1 | Complete |
-| ENG-04 | Phase 1 | Complete |
-| ENG-05 | Phase 1 | Complete |
-| ENG-06 | Phase 1 | Complete |
-| ENG-07 | Phase 1 | Complete |
-| ENG-08 | Phase 1 | Complete |
-| INT-01 | Phase 3 | Complete |
-| INT-02 | Phase 3 | Complete |
-| INT-03 | Phase 2 | Complete |
-| INT-04 | Phase 2 | Complete |
-| INT-05 | Phase 3 | Complete |
-| INT-06 | Phase 2 | Complete |
-| NAV-01 | Phase 2 | Complete |
-| NAV-02 | Phase 2 | Complete |
-| NAV-03 | Phase 2 | Complete |
-| NAV-04 | Phase 4 | Complete |
-| NAV-05 | Phase 2 | Complete |
-| PRS-01 | Phase 2 | Complete |
-| PRS-02 | Phase 2 | Complete |
-| PRS-03 | Phase 2 | Complete |
-| PRS-04 | Phase 2 | Complete |
-| RND-01 | Phase 3 | Complete |
-| RND-02 | Phase 3 | Complete |
-| RND-03 | Phase 3 | Complete |
-| RND-04 | Phase 3 | Complete |
-| VIS-01 | Phase 4 | Complete |
-| VIS-02 | Phase 3 | Complete |
-| SND-01 | Phase 5 | Complete |
-| SND-02 | Phase 5 | Pending |
-| PWA-01 | Phase 5 | Complete |
-| PWA-02 | Phase 5 | Complete |
-| PWA-03 | Phase 5 | Complete |
-| PWA-04 | Phase 5 | Complete |
-| CNT-01 | Phase 4 | Pending |
-| CNT-02 | Phase 4 | Pending |
+| CNT-01 | TBD | Pending |
+| CNT-02 | TBD | Pending |
+| SND-02 | TBD | Pending |
+| TRK-01 | TBD | Pending |
+| TRK-02 | TBD | Pending |
+| TRK-03 | TBD | Pending |
+| TRK-04 | TBD | Pending |
+| TRK-05 | TBD | Pending |
+| TRK-06 | TBD | Pending |
+| TXT-01 | TBD | Pending |
+| TXT-02 | TBD | Pending |
+| TXT-03 | TBD | Pending |
+| UXP-01 | TBD | Pending |
+| UXP-02 | TBD | Pending |
+| UXP-03 | TBD | Pending |
+| UXP-04 | TBD | Pending |
 
 **Coverage:**
-- v1 requirements: 42 total
-- Mapped to phases: 42
-- Unmapped: 0
+- v1 requirements: 16 total
+- Mapped to phases: 0
+- Unmapped: 16 ⚠️
 
 ---
-*Requirements defined: 2026-04-16*
-*Last updated: 2026-04-16 after roadmap creation*
+*Requirements defined: 2026-04-18*
+*Last updated: 2026-04-18 after milestone v1.1 scope definition*
