@@ -26,6 +26,15 @@ function getCssFile(relativePath) {
   }
 }
 
+function expectTouchTargetContract(cssContent, selector) {
+  const selectorRegex = new RegExp(`${selector}[^\\{]*\\{[^}]*`, 's')
+  const blockMatch = cssContent.match(selectorRegex)
+  expect(blockMatch, `Missing CSS block for ${selector}`).not.toBeNull()
+  const block = blockMatch?.[0] ?? ''
+  expect(block).toMatch(/min-inline-size:\s*(var\(--touch-target-min(?:,\s*44px)?\)|44px)/)
+  expect(block).toMatch(/min-block-size:\s*(var\(--touch-target-min(?:,\s*44px)?\)|44px)/)
+}
+
 describe('main UI interaction flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -157,5 +166,29 @@ describe('responsive layout and touch target contracts', () => {
     expect(boardCss.content).toMatch(/min-(height|block-size):\s*44px/)
     expect(boardCss.content).toMatch(/\.cell/)
     expect(boardCss.content).toMatch(/\.piece/)
+  })
+
+  it('launch-critical controls keep tokenized min-size touch target coverage (UXP-01)', () => {
+    const appCss = getCssFile('./styles/app.css')
+    const startCss = getCssFile('./styles/start-screen.css')
+    const trackCss = getCssFile('./styles/track-browser.css')
+
+    expect(appCss.exists).toBe(true)
+    expect(startCss.exists).toBe(true)
+    expect(trackCss.exists).toBe(true)
+
+    expect(appCss.content).toMatch(/--touch-target-min:\s*44px/)
+
+    expectTouchTargetContract(appCss.content, '\\.nav-btn')
+    expectTouchTargetContract(appCss.content, '\\.btn-next-puzzle')
+    expectTouchTargetContract(appCss.content, '\\.sound-toggle')
+
+    expectTouchTargetContract(startCss.content, '\\.start-screen-primary')
+    expectTouchTargetContract(startCss.content, '\\.start-screen-secondary')
+
+    expectTouchTargetContract(trackCss.content, '\\.track-browser-back')
+    expectTouchTargetContract(trackCss.content, '\\.track-action-open')
+    expectTouchTargetContract(trackCss.content, '\\.track-action-resume')
+    expectTouchTargetContract(trackCss.content, '\\.track-puzzle-item')
   })
 })
