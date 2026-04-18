@@ -1,36 +1,36 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
+milestone: v1.1
+milestone_name: ux-launch-polish
 status: planning
-stopped_at: Completed 06-UAT.md (8/8 passed)
-last_updated: "2026-04-17T17:18:12Z"
+stopped_at: Defining requirements for milestone v1.1
+last_updated: "2026-04-18T00:00:00Z"
 last_activity: 2026-04-17
 progress:
-  total_phases: 6
-  completed_phases: 6
-  total_plans: 19
-  completed_plans: 19
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-16)
+See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** Phase 06 — drag-and-drop-interaction-and-square-cell-layout (complete)
+**Current focus:** Milestone v1.1 requirement definition
 
 ## Current Position
 
-Phase: 06 (drag-and-drop-interaction-and-square-cell-layout) — COMPLETE
-Plan: 2 of 2
-Status: Phase 6 complete and verified (UAT 8/8 passed)
-Last activity: 2026-04-17 - Completed quick task 260417-ugk: show ghost target piece on goal squares for reach puzzles; update encoding if needed and simplify to one piece to one goal if necessary
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-18 - Milestone v1.1 started
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 

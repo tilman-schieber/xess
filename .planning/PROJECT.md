@@ -8,6 +8,17 @@ Xess is a client-side chess-based puzzle game that runs in the browser and insta
 
 A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
 
+## Current Milestone: v1.1 UX Launch Polish
+
+**Goal:** Ship launch-critical gaps while introducing a track-based puzzle structure and start screen foundation for future game modes.
+
+**Target features:**
+- Finish launch gaps: complete content and sound robustness
+- Replace the flat puzzle list with grouped puzzle tracks and per-track numbering
+- Add a new start screen that becomes the main entry point for future play modes
+- Add short per-puzzle rich text content displayed during play
+- Polish touch-first UX details (button sizing, completion messaging, and interaction rough edges)
+
 ## Requirements
 
 ### Validated
@@ -16,15 +27,11 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 
 ### Active
 
-- [ ] Puzzle engine supports standard chess movement for all 6 piece types (King, Queen, Rook, Bishop, Knight, Pawn) with multiple instances of any type allowed
-- [ ] Board can be any shape: variable dimensions, non-rectangular grids, impassable squares (knights can jump over them)
-- [ ] All squares are uniform (no alternating dark/light); goal squares are visually distinct (e.g. green)
-- [ ] Two goal types: "capture all target pieces" and "move pieces onto goal squares"
-- [ ] 25–50 curated puzzles at launch, unlocked sequentially
-- [ ] Undo move and reset puzzle (no hints)
-- [ ] Progress persisted in local storage (solved puzzles, current puzzle state)
-- [ ] Installable as a PWA, mobile-ready responsive layout
-- [ ] Elegant, premium visual style
+- [ ] Finish launch gaps for content and audio robustness (`CNT-01`, `CNT-02`, `SND-02`)
+- [ ] Puzzles are organized into tracks, with numbering scoped per track (not one global flat list)
+- [ ] New start screen exists and routes into puzzle experience; foundation exists for random/guided/tutorial track modes
+- [ ] Every puzzle can define short authored HTML text shown in the puzzle UI
+- [ ] Core UI polish pass improves tap-target sizing, completion banner readability, and related interaction rough edges
 
 ### Out of Scope
 
@@ -42,6 +49,8 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 - PWA requirements: service worker, manifest, offline play
 - Puzzle format needs to encode: board shape, piece positions, piece colors/types, goal type, goal parameters (target pieces or goal squares)
 - The example puzzle uses a text-grid notation (e.g. `p`=white pawn, `P`=black pawn, `n`=knight, `-`=empty, `x`=impassable) — worth formalizing as the puzzle definition format
+- Launch scope now includes structural navigation changes (tracks/start screen) to support later game modes without rewiring core gameplay
+- Puzzle rich text is curated author content, but rendering must sanitize or strictly constrain allowed HTML tags/attributes
 
 ## Constraints
 
@@ -55,7 +64,7 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Client-side only, no backend | Simplicity, no hosting costs, privacy — puzzles are static content | — Pending |
-| Sequential unlock (not open) | Creates progression and pacing; prevents players skipping to hard puzzles | — Pending |
+| Sequential unlock (not open) | Original v1.0 progression plan; now under milestone reconsideration as tracks are introduced | ⚠️ Revisit |
 | No hints system | Keeps the puzzle honest; undo/reset is the safety net | — Pending |
 | Pawns don't promote | Avoids complexity on non-standard boards where promotion zones are ambiguous | — Pending |
 
@@ -77,4 +86,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-16 after initialization*
+*Last updated: 2026-04-18 after milestone v1.1 initialization*
