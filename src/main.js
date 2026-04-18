@@ -215,11 +215,24 @@ function renderSoundToggle() {
   btn.setAttribute('title', isSoundEnabled() ? 'Sound on' : 'Sound off')
   btn.textContent = isSoundEnabled() ? '🔊' : '🔇'
 
-  btn.addEventListener('click', () => {
+  const handleToggle = () => {
     const enabled = toggleSound()
     btn.textContent = enabled ? '🔊' : '🔇'
     btn.setAttribute('aria-label', enabled ? 'Mute sounds' : 'Unmute sounds')
     btn.setAttribute('title', enabled ? 'Sound on' : 'Sound off')
+  }
+
+  btn.addEventListener('pointerup', (event) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    event.preventDefault()
+    handleToggle()
+  })
+
+  btn.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleToggle()
+    }
   })
 
   return btn
@@ -475,6 +488,24 @@ export function mountGameUi(root = document.querySelector('#app')) {
   let ui = null
   let _dragCleanup = null    // cleanup fn returned by initDragDrop
   let _isDragging = false    // true once drag threshold exceeded this pointer sequence
+  let _suppressTapPointerId = null
+
+  function bindPrimaryAction(element, onActivate) {
+    if (!element) return
+
+    element.addEventListener('pointerup', (event) => {
+      if (event.pointerType === 'mouse' && event.button !== 0) return
+      event.preventDefault()
+      onActivate()
+    })
+
+    element.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        onActivate()
+      }
+    })
+  }
 
   function loadPuzzle(puzzleId, options = {}) {
     ui = createGameUiController({ controller, puzzleId })
@@ -566,8 +597,9 @@ export function mountGameUi(root = document.querySelector('#app')) {
           // and kill the in-flight drag state (ghost + pointer capture).
           // Selection highlight is intentionally deferred to onDrop/onCancel.
         },
-        onDrop(fromKey, toKey) {
+        onDrop(fromKey, toKey, pointerId) {
           _isDragging = false
+          _suppressTapPointerId = pointerId
           animatePieceMove(root, fromKey, toKey, () => {
             ui.tapCell(toKey)
             const moveResult = ui.getLastMoveResult()
@@ -576,8 +608,9 @@ export function mountGameUi(root = document.querySelector('#app')) {
             rerender()
           })
         },
-        onCancel(fromKey) {
+        onCancel(fromKey, pointerId) {
           _isDragging = false
+          _suppressTapPointerId = pointerId
           // Deselect: tapCell with the currently-selected key toggles off
           const snapshot = ui.getState()
           if (snapshot.selectedKey === fromKey) {
@@ -588,20 +621,20 @@ export function mountGameUi(root = document.querySelector('#app')) {
       })
     }
 
-    root.querySelector('[data-prev-puzzle]')?.addEventListener('pointerdown', () => {
+    bindPrimaryAction(root.querySelector('[data-prev-puzzle]'), () => {
       if (extModel.prevId) loadPuzzle(extModel.prevId)
     })
-    root.querySelector('[data-next-puzzle]')?.addEventListener('pointerdown', () => {
+    bindPrimaryAction(root.querySelector('[data-next-puzzle]'), () => {
       if (extModel.nextId) loadPuzzle(extModel.nextId)
     })
-    root.querySelector('[data-restart-puzzle]')?.addEventListener('pointerdown', () => {
+    bindPrimaryAction(root.querySelector('[data-restart-puzzle]'), () => {
       ui.restart()
       rerender()
     })
-    root.querySelector('[data-back-to-tracks]')?.addEventListener('pointerdown', () => {
+    bindPrimaryAction(root.querySelector('[data-back-to-tracks]'), () => {
       goToTrackBrowser(selectedTrackId)
     })
-    root.querySelector('[data-win-next-puzzle]')?.addEventListener('pointerdown', () => {
+    bindPrimaryAction(root.querySelector('[data-win-next-puzzle]'), () => {
       if (extModel.nextId) loadPuzzle(extModel.nextId)
     })
   }
@@ -638,10 +671,17 @@ export function mountGameUi(root = document.querySelector('#app')) {
   root.addEventListener('pointerdown', (event) => {
     if (screenMode !== 'play') return
     _isDragging = false  // reset for this pointer sequence
+    if (_suppressTapPointerId === event.pointerId) {
+      _suppressTapPointerId = null
+    }
   })
 
   root.addEventListener('pointerup', (event) => {
     if (screenMode !== 'play') return
+    if (_suppressTapPointerId === event.pointerId) {
+      _suppressTapPointerId = null
+      return
+    }
     if (_isDragging) return  // drag handled it; skip tap
     const cell = event.target.closest?.('[data-cell-key]')
     if (!cell) return

@@ -110,9 +110,9 @@ export function initDragDrop(boardEl, { onDragStart, onDrop, onCancel }) {
     dragState = null
 
     if (toKey && toKey !== fromKey) {
-      onDrop(fromKey, toKey)
+      onDrop(fromKey, toKey, event.pointerId)
     } else {
-      onCancel(fromKey)
+      onCancel(fromKey, event.pointerId)
     }
   }
 
@@ -123,7 +123,7 @@ export function initDragDrop(boardEl, { onDragStart, onDrop, onCancel }) {
       const fromKey = dragState.fromKey
       cleanupDrag()
       dragState = null
-      onCancel(fromKey)
+      onCancel(fromKey, event.pointerId)
     } else {
       dragState = null
     }
