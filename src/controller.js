@@ -8,6 +8,18 @@ import catalogue from './puzzles/catalogue.js'
 import { loadStore, saveProgress, saveActiveState, clearActiveState } from './store/store.js'
 import { isUnlocked, getPuzzlePosition, getPuzzleList, getTrackLaunchPuzzleId as resolveTrackLaunchPuzzleId } from './puzzles/nav.js'
 
+const CATALOGUE_IDS = new Set(catalogue.map(entry => entry.id))
+
+function sanitizeSolvedIds(solvedIds) {
+  if (!Array.isArray(solvedIds)) return []
+  return solvedIds.filter(id => typeof id === 'string' && CATALOGUE_IDS.has(id))
+}
+
+function sanitizeActivePuzzleId(activePuzzleId) {
+  if (typeof activePuzzleId !== 'string') return null
+  return CATALOGUE_IDS.has(activePuzzleId) ? activePuzzleId : null
+}
+
 /**
  * Create a stateful game controller instance.
  *
@@ -50,7 +62,7 @@ export function createController() {
       const raw = _rawEntry(puzzleId)            // T-02-09: throws if unknown
       const parsed = parsePuzzle(raw)
       const store = loadStore()
-      state.solvedIds = store.solvedIds ?? []
+      state.solvedIds = sanitizeSolvedIds(store.solvedIds)
 
       // Re-hydration: only if store has activeState for exactly this puzzle (T-02-10)
       let board = parsed.board
@@ -200,8 +212,8 @@ export function createController() {
      */
     getTrackLaunchPuzzleId(trackId) {
       const store = loadStore()
-      const solvedIds = Array.isArray(store.solvedIds) ? store.solvedIds : []
-      const activePuzzleId = store.activeState?.puzzleId ?? null
+      const solvedIds = sanitizeSolvedIds(store.solvedIds)
+      const activePuzzleId = sanitizeActivePuzzleId(store.activeState?.puzzleId)
 
       return resolveTrackLaunchPuzzleId({
         trackId,

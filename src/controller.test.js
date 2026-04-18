@@ -35,7 +35,7 @@ beforeEach(() => {
 
 describe('loadPuzzle', () => {
   it('fresh load: returns parsed puzzle, board (Map), empty undoStack, solvedIds from store', () => {
-    loadStore.mockReturnValue({ schemaVersion: 1, solvedIds: ['prev-1'], activeState: null })
+    loadStore.mockReturnValue({ schemaVersion: 1, solvedIds: ['xk3m9pq2'], activeState: null })
     const ctrl = createController()
     const result = ctrl.loadPuzzle('xk3m9pq2')
     expect(result.puzzle).toBeDefined()
@@ -43,7 +43,7 @@ describe('loadPuzzle', () => {
     expect(result.board).toBeInstanceOf(Map)
     expect(result.board.size).toBeGreaterThan(0)
     expect(result.undoStack).toEqual([])
-    expect(result.solvedIds).toEqual(['prev-1'])
+    expect(result.solvedIds).toEqual(['xk3m9pq2'])
     expect(result.won).toBe(false)
   })
 
@@ -364,13 +364,13 @@ describe('reset', () => {
 
 describe('getPuzzleList / getPuzzlePosition / isUnlocked', () => {
   it('getPuzzleList delegates to nav.js with current solvedIds', () => {
-    loadStore.mockReturnValue({ schemaVersion: 1, solvedIds: ['puzzle-solved'], activeState: null })
-    getPuzzleList.mockReturnValue([{ id: 'puzzle-solved', title: 'Test', status: 'solved' }])
+    loadStore.mockReturnValue({ schemaVersion: 1, solvedIds: ['xk3m9pq2'], activeState: null })
+    getPuzzleList.mockReturnValue([{ id: 'xk3m9pq2', title: 'Test', status: 'solved' }])
     const ctrl = createController()
     ctrl.loadPuzzle('gt7wz4r1')
     const list = ctrl.getPuzzleList()
-    expect(getPuzzleList).toHaveBeenCalledWith(['puzzle-solved'])
-    expect(list).toEqual([{ id: 'puzzle-solved', title: 'Test', status: 'solved' }])
+    expect(getPuzzleList).toHaveBeenCalledWith(['xk3m9pq2'])
+    expect(list).toEqual([{ id: 'xk3m9pq2', title: 'Test', status: 'solved' }])
   })
 
   it('getPuzzlePosition delegates to nav.js', () => {
