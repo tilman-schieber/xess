@@ -54,7 +54,7 @@ Plans:
   3. Unsafe markup is not executed in the app while rendering puzzle descriptions
 **Plans**: 2 plans
 Plans:
-- [ ] 09-01-PLAN.md — Add sanitized rich-text foundation and optional puzzle description contract
+- [x] 09-01-PLAN.md — Add sanitized rich-text foundation and optional puzzle description contract
 - [ ] 09-02-PLAN.md — Integrate sanitized descriptions into play metadata with UI/security regression coverage
 **UI hint**: yes
 
