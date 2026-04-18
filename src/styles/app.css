@@ -3,6 +3,8 @@
 @import '@fontsource/inter/600.css';
 
 @import './board.css';
+@import './start-screen.css';
+@import './track-browser.css';
 
 :root {
   /* Layout */
@@ -85,6 +87,13 @@ body {
   display: grid;
   justify-items: center;
   gap: var(--app-gap);
+}
+
+.xess-ui,
+.start-screen,
+.track-browser {
+  inline-size: min(100vw, var(--app-max-width-mobile));
+  max-width: var(--app-max-width-mobile);
 }
 
 .puzzle-meta {

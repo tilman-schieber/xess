@@ -1,6 +1,9 @@
 // @vitest-environment jsdom
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { existsSync, readFileSync } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 let mockStore = { schemaVersion: 1, solvedIds: [], activeState: null }
 
@@ -30,6 +33,14 @@ vi.mock('./ui/pwaPrompts.js', () => ({
 
 import { createController } from './controller.js'
 import { mountGameUi } from './main.js'
+
+function getSourceFile(relativePath) {
+  const filePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), relativePath)
+  return {
+    exists: existsSync(filePath),
+    content: existsSync(filePath) ? readFileSync(filePath, 'utf8') : '',
+  }
+}
 
 describe('track launch selection via controller', () => {
   beforeEach(() => {
@@ -110,5 +121,15 @@ describe('main track-first screen flow', () => {
 
     expect(document.querySelector('[data-track-browser]')).not.toBeNull()
     expect(document.querySelector('[data-selected-track="foundations"]')).not.toBeNull()
+  })
+
+  it('app style contract imports start/track styles and shared shell width hooks', () => {
+    const appCss = getSourceFile('./styles/app.css')
+
+    expect(appCss.exists).toBe(true)
+    expect(appCss.content).toMatch(/@import\s+['"]\.\/start-screen\.css['"];/)
+    expect(appCss.content).toMatch(/@import\s+['"]\.\/track-browser\.css['"];/)
+    expect(appCss.content).toMatch(/\.xess-ui,\s*\n\.start-screen,\s*\n\.track-browser/s)
+    expect(appCss.content).toMatch(/--app-max-width-mobile/)
   })
 })
