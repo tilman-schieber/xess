@@ -58,27 +58,27 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CNT-01 | TBD | Pending |
-| CNT-02 | TBD | Pending |
-| SND-02 | TBD | Pending |
-| TRK-01 | TBD | Pending |
-| TRK-02 | TBD | Pending |
-| TRK-03 | TBD | Pending |
-| TRK-04 | TBD | Pending |
-| TRK-05 | TBD | Pending |
-| TRK-06 | TBD | Pending |
-| TXT-01 | TBD | Pending |
-| TXT-02 | TBD | Pending |
-| TXT-03 | TBD | Pending |
-| UXP-01 | TBD | Pending |
-| UXP-02 | TBD | Pending |
-| UXP-03 | TBD | Pending |
-| UXP-04 | TBD | Pending |
+| CNT-01 | Phase 8 | Pending |
+| CNT-02 | Phase 8 | Pending |
+| SND-02 | Phase 10 | Pending |
+| TRK-01 | Phase 7 | Pending |
+| TRK-02 | Phase 7 | Pending |
+| TRK-03 | Phase 7 | Pending |
+| TRK-04 | Phase 7 | Pending |
+| TRK-05 | Phase 8 | Pending |
+| TRK-06 | Phase 8 | Pending |
+| TXT-01 | Phase 9 | Pending |
+| TXT-02 | Phase 9 | Pending |
+| TXT-03 | Phase 9 | Pending |
+| UXP-01 | Phase 10 | Pending |
+| UXP-02 | Phase 10 | Pending |
+| UXP-03 | Phase 7 | Pending |
+| UXP-04 | Phase 10 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 0
-- Unmapped: 16 ⚠️
+- Mapped to phases: 16
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-18*

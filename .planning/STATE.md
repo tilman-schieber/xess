@@ -3,11 +3,11 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: ux-launch-polish
 status: planning
-stopped_at: Defining requirements for milestone v1.1
+stopped_at: Roadmap created for milestone v1.1; Phase 7 ready for planning
 last_updated: "2026-04-18T00:00:00Z"
-last_activity: 2026-04-17
+last_activity: 2026-04-18
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** Milestone v1.1 requirement definition
+**Current focus:** Milestone v1.1 roadmap ready; Phase 7 planning next
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 7 of 10 (Start Screen and Track Navigation)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-04-18 - Milestone v1.1 started
+Status: Ready to plan
+Last activity: 2026-04-18 - Roadmap and phase mappings created for v1.1
 
 Progress: [░░░░░░░░░░] 0%
 
