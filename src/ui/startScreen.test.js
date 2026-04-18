@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+
 import { describe, expect, it, vi } from 'vitest'
 import { renderStartScreen } from './startScreen.js'
 
@@ -18,7 +20,7 @@ describe('renderStartScreen', () => {
     const onStart = vi.fn()
     const view = renderStartScreen({ canResume: false, onStart, onResume: () => {} })
 
-    view.querySelector('[data-start-action]')?.dispatchEvent(new PointerEvent('pointerdown'))
+    view.querySelector('[data-start-action]')?.dispatchEvent(new Event('pointerdown'))
 
     expect(onStart).toHaveBeenCalledTimes(1)
   })
