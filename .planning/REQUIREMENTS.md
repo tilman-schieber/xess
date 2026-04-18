@@ -9,7 +9,7 @@
 
 - [x] **CNT-01**: User can play a placeholder launch puzzle set immediately; puzzle quality/content expansion will be authored manually later.
 - [x] **CNT-02**: Puzzle catalogue ships as static local assets with no runtime network dependency for puzzle data.
-- [ ] **SND-02**: Sound system uses one shared `AudioContext` with a small sample set and never plays unless explicitly enabled.
+- [x] **SND-02**: Sound system uses one shared `AudioContext` with a small sample set and never plays unless explicitly enabled.
 
 ### Tracks and Start Screen
 
@@ -60,7 +60,7 @@
 |-------------|-------|--------|
 | CNT-01 | Phase 8 | Complete |
 | CNT-02 | Phase 8 | Complete |
-| SND-02 | Phase 10 | Pending |
+| SND-02 | Phase 10 | Complete |
 | TRK-01 | Phase 7 | Complete |
 | TRK-02 | Phase 7 | Complete |
 | TRK-03 | Phase 7 | Complete |

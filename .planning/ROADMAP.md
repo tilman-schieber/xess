@@ -71,7 +71,7 @@ Plans:
 Plans:
 - [x] 10-01-PLAN.md — Enforce 44px touch-target contract coverage across launch-critical controls
 - [ ] 10-02-PLAN.md — Fix solved-banner readability and drag/tap interaction rough edges
-- [ ] 10-03-PLAN.md — Harden explicit opt-in sound reliability with shared AudioContext tests
+- [x] 10-03-PLAN.md — Harden explicit opt-in sound reliability with shared AudioContext tests
 **UI hint**: yes
 
 ## Progress
@@ -81,4 +81,4 @@ Plans:
 | 7. Start Screen and Track Navigation | 0/3 | Planned | - |
 | 8. Track Compatibility and Launch Content Robustness | 2/2 | Complete   | 2026-04-18 |
 | 9. Puzzle Rich Text Content | 0/2 | Planned | - |
-| 10. UX and Audio Launch Polish | 1/3 | In Progress|  |
+| 10. UX and Audio Launch Polish | 2/3 | In Progress|  |
