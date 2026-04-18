@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: completed
-stopped_at: Phase 8 context gathered
-last_updated: "2026-04-18T10:19:12.489Z"
-last_activity: 2026-04-18 -- Completed Phase 7 plans 01-03
+status: executing
+stopped_at: Completed 08-02-PLAN.md
+last_updated: "2026-04-18T16:53:39.319Z"
+last_activity: 2026-04-18 -- Phase 08 planning complete
 progress:
   total_phases: 4
-  completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  completed_phases: 2
+  total_plans: 5
+  completed_plans: 5
   percent: 100
 ---
 
@@ -27,8 +27,8 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 
 Phase: 7 of 10 (Start Screen and Track Navigation)
 Plan: —
-Status: Completed
-Last activity: 2026-04-18 -- Completed Phase 7 plans 01-03
+Status: Ready to execute
+Last activity: 2026-04-18 -- Phase 08 planning complete
 
 Progress: [██████████] 100%
 
@@ -66,6 +66,8 @@ Progress: [██████████] 100%
 | Phase 07-start-screen-and-track-navigation P01 | 75 | 2 tasks | 3 files |
 | Phase 07-start-screen-and-track-navigation P02 | 181 | 3 tasks | 8 files |
 | Phase 07-start-screen-and-track-navigation P03 | 208 | 3 tasks | 5 files |
+| Phase 08-track-compatibility-and-launch-content-robustness P01 | 720 | 2 tasks | 5 files |
+| Phase 08-track-compatibility-and-launch-content-robustness P02 | 900 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -109,6 +111,8 @@ Recent decisions affecting current work:
 - [Phase 07-start-screen-and-track-navigation]: Track browser uses track-only callbacks for overview and {trackId,puzzleId} payloads for puzzle selection.
 - [Phase 07-start-screen-and-track-navigation]: Main flow now uses explicit modes start/tracks/play and preserves selected track context when returning from play.
 - [Phase 07-start-screen-and-track-navigation]: Main auto-mount only runs when #app exists to avoid side-effect crashes in test/non-app contexts.
+- [Phase 08]: Track navigation now consumes validator-sanitized tracks with fail-soft filtering for malformed references.
+- [Phase 08]: Store/controller sanitize persisted solved and active puzzle IDs against catalogue IDs to preserve valid progress and drop stale entries.
 
 ### Pending Todos
 
@@ -134,6 +138,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18T10:19:12.485Z
-Stopped at: Phase 8 context gathered
-Resume file: .planning/phases/08-track-compatibility-and-launch-content-robustness/08-CONTEXT.md
+Last session: 2026-04-18T16:53:39.305Z
+Stopped at: Completed 08-02-PLAN.md
+Resume file: None

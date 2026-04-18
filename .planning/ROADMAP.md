@@ -7,7 +7,7 @@ Milestone v1.1 (UX Launch Polish) focuses on launch-critical UX and structure up
 ## Phases
 
 - [ ] **Phase 7: Start Screen and Track Navigation** - Replace flat entry flow with a start screen and track-based browsing/play entry.
-- [ ] **Phase 8: Track Compatibility and Launch Content Robustness** - Preserve progress compatibility while hardening launch content delivery in the new track model.
+- [x] **Phase 8: Track Compatibility and Launch Content Robustness** - Preserve progress compatibility while hardening launch content delivery in the new track model. (completed 2026-04-18)
 - [ ] **Phase 9: Puzzle Rich Text Content** - Add safe authored puzzle descriptions rendered during play.
 - [ ] **Phase 10: UX and Audio Launch Polish** - Complete touch-first quality pass and robust opt-in sound behavior.
 
@@ -39,7 +39,10 @@ Plans:
   2. User can continue playing with no runtime puzzle-data network dependency (catalogue is local static assets)
   3. Existing solved and in-progress puzzle data remains intact and usable after migration to track-based indexing
   4. User sees track metadata that can represent future mode entry points (random, guided, tutorial) without breaking current flow
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [x] 08-01-PLAN.md — Harden static content contracts and future-ready track metadata with fail-soft integrity checks
+- [x] 08-02-PLAN.md — Preserve solved/in-progress compatibility via non-destructive ID-based persistence migration
 
 ### Phase 9: Puzzle Rich Text Content
 **Goal**: Users see curated puzzle descriptions in-play with safe, constrained HTML formatting
@@ -69,6 +72,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 7. Start Screen and Track Navigation | 0/3 | Planned | - |
-| 8. Track Compatibility and Launch Content Robustness | 0/TBD | Not started | - |
+| 8. Track Compatibility and Launch Content Robustness | 2/2 | Complete   | 2026-04-18 |
 | 9. Puzzle Rich Text Content | 0/TBD | Not started | - |
 | 10. UX and Audio Launch Polish | 0/TBD | Not started | - |

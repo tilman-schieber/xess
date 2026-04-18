@@ -7,8 +7,8 @@
 
 ### Launch Completion
 
-- [ ] **CNT-01**: User can play a placeholder launch puzzle set immediately; puzzle quality/content expansion will be authored manually later.
-- [ ] **CNT-02**: Puzzle catalogue ships as static local assets with no runtime network dependency for puzzle data.
+- [x] **CNT-01**: User can play a placeholder launch puzzle set immediately; puzzle quality/content expansion will be authored manually later.
+- [x] **CNT-02**: Puzzle catalogue ships as static local assets with no runtime network dependency for puzzle data.
 - [ ] **SND-02**: Sound system uses one shared `AudioContext` with a small sample set and never plays unless explicitly enabled.
 
 ### Tracks and Start Screen
@@ -17,8 +17,8 @@
 - [x] **TRK-02**: User sees puzzle tracks grouped as separate collections (not one flat list).
 - [x] **TRK-03**: User can open a track and browse puzzles numbered within that track.
 - [x] **TRK-04**: User can start or resume a puzzle from track context.
-- [ ] **TRK-05**: Track metadata supports future mode entry points (random, guided, tutorial) without breaking current flow.
-- [ ] **TRK-06**: Existing solved/progress data remains compatible after migration to track-based indexing.
+- [x] **TRK-05**: Track metadata supports future mode entry points (random, guided, tutorial) without breaking current flow.
+- [x] **TRK-06**: Existing solved/progress data remains compatible after migration to track-based indexing.
 
 ### Puzzle Rich Text
 
@@ -58,15 +58,15 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CNT-01 | Phase 8 | Pending |
-| CNT-02 | Phase 8 | Pending |
+| CNT-01 | Phase 8 | Complete |
+| CNT-02 | Phase 8 | Complete |
 | SND-02 | Phase 10 | Pending |
 | TRK-01 | Phase 7 | Complete |
 | TRK-02 | Phase 7 | Complete |
 | TRK-03 | Phase 7 | Complete |
 | TRK-04 | Phase 7 | Complete |
-| TRK-05 | Phase 8 | Pending |
-| TRK-06 | Phase 8 | Pending |
+| TRK-05 | Phase 8 | Complete |
+| TRK-06 | Phase 8 | Complete |
 | TXT-01 | Phase 9 | Pending |
 | TXT-02 | Phase 9 | Pending |
 | TXT-03 | Phase 9 | Pending |
