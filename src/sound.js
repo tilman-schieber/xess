@@ -18,11 +18,21 @@ const STORAGE_KEY = 'xess-sound-enabled'
 // user taps, so we meet the gesture requirement.
 let _ctx = null
 
+function resumeCtxSafe(ctx) {
+  if (!ctx || ctx.state !== 'suspended') return
+  try {
+    const maybePromise = ctx.resume()
+    if (maybePromise && typeof maybePromise.catch === 'function') {
+      maybePromise.catch(() => {})
+    }
+  } catch {
+    // Fail silent: resume failures must never block gameplay interactions
+  }
+}
+
 function getCtx() {
   if (_ctx) {
-    if (_ctx.state === 'suspended') {
-      _ctx.resume().catch(() => {})
-    }
+    resumeCtxSafe(_ctx)
     return _ctx
   }
   const Ctor =
@@ -35,10 +45,15 @@ function getCtx() {
   if (!Ctor) return null
   try {
     _ctx = new Ctor()
+    resumeCtxSafe(_ctx)
     return _ctx
   } catch {
     return null
   }
+}
+
+function primeSoundContext() {
+  getCtx()
 }
 
 // ─── Preference ──────────────────────────────────────────────────────────────
@@ -57,6 +72,10 @@ export function toggleSound() {
     localStorage.setItem(STORAGE_KEY, String(next))
   } catch {
     // Ignore storage errors (private browsing quotas, etc.)
+  }
+  if (next) {
+    // Explicit enable path occurs during a user gesture; prime context eagerly.
+    primeSoundContext()
   }
   return next
 }
