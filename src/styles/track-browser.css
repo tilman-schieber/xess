@@ -106,6 +106,7 @@
   border-radius: 0.5rem;
   border: 1px solid var(--border-subtle);
   background: var(--surface-card);
+  min-inline-size: var(--touch-target-min);
   min-block-size: var(--touch-target-min);
   align-items: center;
   cursor: pointer;

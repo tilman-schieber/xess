@@ -210,6 +210,8 @@ body {
 }
 
 .btn-next-puzzle {
+  min-inline-size: var(--touch-target-min);
+  min-block-size: var(--touch-target-min);
   background: var(--accent);
   color: var(--surface-bg);
   border: none;
@@ -218,7 +220,6 @@ body {
   font-size: var(--text-label);
   font-weight: 600;
   cursor: pointer;
-  min-block-size: var(--touch-target-min);
 }
 
 @media (min-width: 768px) {
@@ -266,8 +267,8 @@ body {
   cursor: pointer;
   font-size: 1.1rem;
   line-height: 1;
-  min-width: var(--touch-target-min, 44px);
-  min-height: var(--touch-target-min, 44px);
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
