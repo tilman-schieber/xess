@@ -1,6 +1,7 @@
 import { createController } from './controller.js'
 import { createBoardRenderModel } from './ui/boardRenderer.js'
-import { renderPuzzleList } from './ui/puzzleList.js'
+import { renderStartScreen } from './ui/startScreen.js'
+import { renderTrackBrowser } from './ui/trackBrowser.js'
 import './styles/app.css'
 import './styles/puzzle-list.css'
 import {
@@ -10,7 +11,7 @@ import {
   getCellInteractionClasses,
   getPieceInteractionClasses,
 } from './ui/interactionFeedback.js'
-import { getPrevId, getNextId, getPuzzlePosition } from './puzzles/nav.js'
+import { getPrevId, getNextId, getPuzzlePosition, getTracks, getTrackPuzzleList } from './puzzles/nav.js'
 import catalogue from './puzzles/catalogue.js'
 import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
 import { initDragDrop } from './ui/dragDrop.js'
@@ -287,9 +288,9 @@ function renderToDom(root, model) {
   const listBtn = document.createElement('button')
   listBtn.type = 'button'
   listBtn.className = 'nav-btn'
-  listBtn.setAttribute('data-open-list', 'true')
-  listBtn.setAttribute('aria-label', 'Puzzle list')
-  listBtn.textContent = '☰'
+  listBtn.setAttribute('data-back-to-tracks', 'true')
+  listBtn.setAttribute('aria-label', 'Back to tracks')
+  listBtn.textContent = 'Tracks'
 
   metaTop.append(title, listBtn, renderSoundToggle())
 
@@ -424,28 +425,81 @@ export function mountGameUi(root = document.querySelector('#app')) {
   const controller = createController()
 
   // Navigation state
+  let screenMode = 'start'
   let currentPuzzleId = null
+  let selectedTrackId = null
   let ui = null
-  let showingList = false
   let _dragCleanup = null    // cleanup fn returned by initDragDrop
   let _isDragging = false    // true once drag threshold exceeded this pointer sequence
 
-  function loadPuzzle(puzzleId) {
+  function loadPuzzle(puzzleId, options = {}) {
     ui = createGameUiController({ controller, puzzleId })
     currentPuzzleId = puzzleId
-    showingList = false
+    if (options.trackId) {
+      selectedTrackId = options.trackId
+    }
+    screenMode = 'play'
+    rerender()
+  }
+
+  function buildTrackViewModels() {
+    const solvedIds = controller
+      .getPuzzleList()
+      .filter(item => item.status === 'solved')
+      .map(item => item.id)
+
+    return getTracks().map(track => {
+      const puzzles = getTrackPuzzleList(track.id, solvedIds)
+      return {
+        ...track,
+        puzzles,
+        totalCount: puzzles.length,
+        solvedCount: puzzles.filter(entry => entry.status === 'solved').length,
+      }
+    })
+  }
+
+  function goToTrackBrowser(trackId = null) {
+    selectedTrackId = trackId
+    screenMode = 'tracks'
     rerender()
   }
 
   function rerender() {
-    if (showingList) {
-      renderListScreen()
-    } else {
+    if (screenMode === 'play') {
       renderGameScreen()
+      return
     }
+
+    if (screenMode === 'tracks') {
+      renderTrackBrowserScreen()
+      return
+    }
+
+    renderStartScreenView()
+  }
+
+  function renderStartScreenView() {
+    const startEl = renderStartScreen({
+      canResume: false,
+      onStart() {
+        goToTrackBrowser(null)
+      },
+      onResume() {
+        goToTrackBrowser(null)
+      },
+    })
+
+    root.innerHTML = ''
+    root.append(startEl)
   }
 
   function renderGameScreen() {
+    if (!ui || !currentPuzzleId) {
+      goToTrackBrowser(selectedTrackId)
+      return
+    }
+
     const model = ui.getRenderModel()
     const extModel = {
       ...model,
@@ -500,36 +554,50 @@ export function mountGameUi(root = document.querySelector('#app')) {
       ui.restart()
       rerender()
     })
-    root.querySelector('[data-open-list]')?.addEventListener('pointerdown', () => {
-      showingList = true
-      rerender()
+    root.querySelector('[data-back-to-tracks]')?.addEventListener('pointerdown', () => {
+      goToTrackBrowser(selectedTrackId)
     })
     root.querySelector('[data-win-next-puzzle]')?.addEventListener('pointerdown', () => {
       if (extModel.nextId) loadPuzzle(extModel.nextId)
     })
   }
 
-  function renderListScreen() {
-    const listData = controller.getPuzzleList()
-    const listEl = renderPuzzleList({
-      list: listData,
-      currentId: currentPuzzleId,
-      onSelect(id) { loadPuzzle(id) },
-      onClose() { showingList = false; rerender() },
+  function renderTrackBrowserScreen() {
+    const trackEl = renderTrackBrowser({
+      tracks: buildTrackViewModels(),
+      selectedTrackId,
+      onOpenTrack(trackId) {
+        goToTrackBrowser(trackId)
+      },
+      onResumeTrack(trackId) {
+        const launchId = controller.getTrackLaunchPuzzleId(trackId)
+        if (launchId) {
+          loadPuzzle(launchId, { trackId })
+          return
+        }
+        goToTrackBrowser(trackId)
+      },
+      onSelectPuzzle({ trackId, puzzleId }) {
+        loadPuzzle(puzzleId, { trackId })
+      },
+      onBack() {
+        goToTrackBrowser(null)
+      },
     })
+
     root.innerHTML = ''
-    root.append(listEl)
+    root.append(trackEl)
   }
 
-  loadPuzzle(chooseInitialPuzzleId(controller))
+  rerender()
 
   root.addEventListener('pointerdown', (event) => {
-    if (showingList) return
+    if (screenMode !== 'play') return
     _isDragging = false  // reset for this pointer sequence
   })
 
   root.addEventListener('pointerup', (event) => {
-    if (showingList) return
+    if (screenMode !== 'play') return
     if (_isDragging) return  // drag handled it; skip tap
     const cell = event.target.closest?.('[data-cell-key]')
     if (!cell) return
@@ -551,5 +619,8 @@ export function mountGameUi(root = document.querySelector('#app')) {
 }
 
 if (typeof document !== 'undefined') {
-  mountGameUi(document.querySelector('#app'))
+  const autoMountRoot = document.querySelector('#app')
+  if (autoMountRoot) {
+    mountGameUi(autoMountRoot)
+  }
 }

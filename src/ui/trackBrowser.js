@@ -34,6 +34,9 @@ export function renderTrackBrowser({
   list.className = 'track-browser-list'
 
   const selectedTrack = tracks.find(track => track.id === selectedTrackId) ?? null
+  if (selectedTrack) {
+    screen.setAttribute('data-selected-track', selectedTrack.id)
+  }
 
   if (!selectedTrack) {
     tracks.forEach((track) => {
