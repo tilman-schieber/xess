@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.1 UX Launch Polish** — Phases 7-10 (shipped 2026-04-19, archive: `.planning/milestones/v1.1-ROADMAP.md`)
-- ◆ **v1.2 Puzzle Logic Improvement** — Phases 11-13 (active)
+- ◆ **v1.2 Puzzle Logic Improvement** — Phases 11-12 (active)
 
 ## Phases
 
@@ -24,8 +24,7 @@
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
 | 11 | Move Legality Hardening | Remove geometry-edge move inconsistencies and enforce strict invalid-move rejection | LOGIC-01, LOGIC-02 | 4 |
-| 12 | Tracking State Foundation | Introduce canonical move events plus undo/redo/reload-safe tracking state | LOGIC-03, MOVE-02, MOVE-03, MOVE-04 | 5 |
-| 13 | Tracking UX and Verification | Surface move history clearly and verify end-to-end tracking behavior | MOVE-01 | 4 |
+| 12 | Tracking State and UX Verification | Introduce canonical move events plus synced move-history UX with undo/redo/reload-safe tracking state | LOGIC-03, MOVE-01, MOVE-02, MOVE-03, MOVE-04 | 7 |
 
 ### Phase 11: Move Legality Hardening
 
@@ -39,11 +38,11 @@ Success criteria:
 3. Engine/controller regression tests cover edge movement paths for all supported piece types.
 4. Existing solved puzzle flow remains unchanged for valid moves.
 
-### Phase 12: Tracking State Foundation
+### Phase 12: Tracking State and UX Verification
 
-Goal: Introduce canonical move events plus undo/redo/reload-safe tracking state.
+Goal: Introduce canonical move events plus synced move-history UX with undo/redo/reload-safe tracking state.
 
-Requirements: LOGIC-03, MOVE-02, MOVE-03, MOVE-04
+Requirements: LOGIC-03, MOVE-01, MOVE-02, MOVE-03, MOVE-04
 
 Success criteria:
 1. Every committed move appends one canonical tracking event with deterministic replay semantics.
@@ -51,15 +50,5 @@ Success criteria:
 3. Redo availability clears immediately when a new divergent move is committed.
 4. Persisted active puzzle snapshots rehydrate board, history, and counter without mismatch.
 5. Regression tests cover undo/redo/reload invariants and reject drift cases.
-
-### Phase 13: Tracking UX and Verification
-
-Goal: Surface move history clearly and verify end-to-end tracking behavior.
-
-Requirements: MOVE-01
-
-Success criteria:
-1. Active puzzle UI exposes chronological move history with stable ordering and readable entries.
-2. History view stays synchronized with current board position after undo/redo/reset.
-3. Invalid moves do not appear in visible history.
-4. Manual verification confirms the tracking UI is understandable on mobile and desktop.
+6. Active puzzle UI exposes chronological move history with stable ordering and readable entries.
+7. History view stays synchronized with current board position after undo/redo/reset and excludes invalid moves.

@@ -4,10 +4,10 @@ milestone: v1.2
 milestone_name: Puzzle Logic Improvement
 status: planning
 stopped_at: Roadmap approved for v1.2
-last_updated: "2026-04-19T11:24:00.000Z"
+last_updated: "2026-04-19T14:16:05.032Z"
 last_activity: 2026-04-19
 progress:
-  total_phases: 3
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0

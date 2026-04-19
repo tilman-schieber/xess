@@ -45,7 +45,7 @@ Deferred while v1.2 focuses on correctness and tracking.
 | LOGIC-01 | Phase 11 | Pending |
 | LOGIC-02 | Phase 11 | Pending |
 | LOGIC-03 | Phase 12 | Pending |
-| MOVE-01 | Phase 13 | Pending |
+| MOVE-01 | Phase 12 | Pending |
 | MOVE-02 | Phase 12 | Pending |
 | MOVE-03 | Phase 12 | Pending |
 | MOVE-04 | Phase 12 | Pending |
