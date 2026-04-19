@@ -15,11 +15,14 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 - Puzzle metadata supports safe curated rich-text descriptions.
 - Audio remains explicit opt-in and robust across browser/runtime failures.
 
-## Next Milestone Goals
+## Current Milestone: v1.2 Puzzle Logic Improvement
 
-- Define first playable game modes (`MODE-01`, `MODE-02`, `MODE-03`) on top of the new start/track entry structure.
-- Expand puzzle content beyond placeholder launch set (`CNT-V2-01`).
-- Add theme/difficulty tagging and filtering in track browsing (`CNT-V2-02`).
+**Goal:** Tune move legality and state transitions so puzzle play feels consistent and trustworthy, then make move tracking visible and recoverable during play.
+
+**Target features:**
+- Tighten move legality on irregular boards and blocked geometry
+- Improve invalid-move feedback and move-state clarity in play
+- Add robust move tracking (history, counters, and state recovery)
 
 ## Requirements
 
@@ -33,11 +36,11 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 
 ### Active
 
-- [ ] User can start a random puzzle mode from the start screen (`MODE-01`)
-- [ ] User can run a guided progression mode with curated constraints (`MODE-02`)
-- [ ] User can access a tutorial track with onboarding-focused sequencing (`MODE-03`)
-- [ ] User can play expanded track libraries beyond the launch placeholder set (`CNT-V2-01`)
-- [ ] Tracks can be tagged and filtered by theme/difficulty in the start flow (`CNT-V2-02`)
+- [ ] Player move legality is consistent for irregular geometry and impassable squares (`LOGIC-01`)
+- [ ] Invalid move attempts are rejected with explicit in-play feedback (`LOGIC-02`)
+- [ ] Player can inspect move history for the active puzzle (`MOVE-01`)
+- [ ] Player can undo and redo across multiple moves in the active puzzle (`MOVE-02`)
+- [ ] Move tracking state resumes correctly after reload for in-progress puzzles (`MOVE-03`)
 
 ### Out of Scope
 
@@ -47,6 +50,8 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 - Pawn promotion — pawns move and capture normally but never promote
 - Online multiplayer or leaderboards — purely local single-player
 - Server-side persistence — everything lives in local storage
+- Random/guided/tutorial mode rollout (`MODE-01`..`MODE-03`) — deferred while gameplay correctness and move tracking are prioritized
+- Track tagging/filtering expansion (`CNT-V2-01`, `CNT-V2-02`) — deferred until post-logic milestone
 
 ## Context
 
@@ -56,6 +61,7 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 - v1.1 established stable screen modes (`start`, `tracks`, `play`) and track context preservation on back navigation
 - Rich text rendering now uses allowlist sanitization and test coverage to keep authoring safe
 - Touch interaction contracts and opt-in audio behavior are now validated by automated regression tests
+- New milestone focus is gameplay correctness and move-state visibility before adding additional mode breadth
 
 ## Constraints
 
@@ -72,6 +78,7 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 | Track launch fallback order: active-in-track -> first-unsolved -> first-track -> null | Preserve resume-first UX while staying deterministic for empty/unknown progress states | ✓ Good |
 | Sanitized rich-text rendering with strict allowlist | Allow puzzle flavor text without introducing XSS in browser runtime | ✓ Good |
 | Explicit user opt-in for audio with fail-silent runtime behavior | Prevent surprise audio and keep game stable when audio/storage APIs fail | ✓ Good |
+| Milestone v1.2 prioritizes puzzle logic and move tracking over mode expansion | Trust in core move behavior is prerequisite for additional game modes/content growth | — Pending |
 | Sequential unlock (not open) | Original v1.0 progression plan; now under milestone reconsideration as tracks are introduced | ⚠️ Revisit |
 | No hints system | Keeps the puzzle honest; undo/reset is the safety net | — Pending |
 | Pawns don't promote | Avoids complexity on non-standard boards where promotion zones are ambiguous | — Pending |
@@ -105,4 +112,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-19 after v1.1 milestone completion*
+*Last updated: 2026-04-19 after starting v1.2 milestone*
