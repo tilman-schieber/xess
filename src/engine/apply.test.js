@@ -77,4 +77,45 @@ describe('applyMove', () => {
     const { won } = applyMove(board, '0,0', '1,0', { goalType: 'capture-all-targets', targetColor: 'black' })
     expect(won).toBe(true)
   })
+
+  it('auto-promotes pawn to queen on row 0 when puzzle.promote is true', () => {
+    const board = new Map([
+      ['1,1', { piece: { type: 'p', color: 'white' }, isGoal: false }],
+      ['1,0', { piece: null, isGoal: false }],
+    ])
+
+    const { board: next, won } = applyMove(board, '1,1', '1,0', {
+      goalType: 'capture-all-targets',
+      targetColor: 'black',
+      promote: true,
+    })
+
+    expect(next.get('1,0').piece).toEqual({ type: 'q', color: 'white' })
+    expect(next.get('1,1').piece).toBeNull()
+    expect(won).toBe(true)
+  })
+
+  it('does not promote pawn when promote is false or missing', () => {
+    const startBoard = new Map([
+      ['1,1', { piece: { type: 'p', color: 'white' }, isGoal: false }],
+      ['1,0', { piece: null, isGoal: false }],
+    ])
+
+    const { board: noPromote } = applyMove(startBoard, '1,1', '1,0', {
+      goalType: 'capture-all-targets',
+      targetColor: 'black',
+      promote: false,
+    })
+    expect(noPromote.get('1,0').piece).toEqual({ type: 'p', color: 'white' })
+
+    const secondBoard = new Map([
+      ['1,1', { piece: { type: 'p', color: 'white' }, isGoal: false }],
+      ['1,0', { piece: null, isGoal: false }],
+    ])
+    const { board: missingPromote } = applyMove(secondBoard, '1,1', '1,0', {
+      goalType: 'capture-all-targets',
+      targetColor: 'black',
+    })
+    expect(missingPromote.get('1,0').piece).toEqual({ type: 'p', color: 'white' })
+  })
 })
