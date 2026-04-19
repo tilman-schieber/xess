@@ -33,6 +33,24 @@ function applyMove(board, from, to, puzzle) {
   const captured = toCell.piece ?? null
   newBoard.set(to, { ...toCell, piece: fromCell.piece })
   newBoard.set(from, { ...fromCell, piece: null })
+
+  const movedPiece = newBoard.get(to)?.piece
+  const [, toRow] = to.split(',').map(Number)
+  if (
+    movedPiece
+    && movedPiece.type === 'p'
+    && toRow === 0
+    && puzzle?.promote === true
+  ) {
+    newBoard.set(to, {
+      ...newBoard.get(to),
+      piece: {
+        ...movedPiece,
+        type: 'q',
+      },
+    })
+  }
+
   return {
     board: newBoard,
     captured,
