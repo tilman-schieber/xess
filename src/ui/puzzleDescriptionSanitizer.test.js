@@ -8,8 +8,10 @@ function parseBody(html) {
 }
 
 describe('sanitizePuzzleDescription', () => {
+  const sanitizerWindow = new JSDOM('').window
+
   it('preserves allowlisted rich formatting tags', () => {
-    const clean = sanitizePuzzleDescription('<p>Line <em>one</em><br><strong>bold</strong></p><ul><li>Item</li></ul>')
+    const clean = sanitizePuzzleDescription('<p>Line <em>one</em><br><strong>bold</strong></p><ul><li>Item</li></ul>', { window: sanitizerWindow })
     const body = parseBody(clean)
 
     expect(body.querySelector('p')).not.toBeNull()
@@ -20,7 +22,7 @@ describe('sanitizePuzzleDescription', () => {
   })
 
   it('removes disallowed tags and attributes', () => {
-    const clean = sanitizePuzzleDescription('<p onclick="evil()" style="color:red">safe</p><script>alert(1)</script><iframe src="https://x.com"></iframe>')
+    const clean = sanitizePuzzleDescription('<p onclick="evil()" style="color:red">safe</p><script>alert(1)</script><iframe src="https://x.com"></iframe>', { window: sanitizerWindow })
     const body = parseBody(clean)
 
     expect(body.querySelector('script')).toBeNull()
@@ -31,7 +33,7 @@ describe('sanitizePuzzleDescription', () => {
   })
 
   it('neutralizes unsafe javascript links', () => {
-    const clean = sanitizePuzzleDescription('<a href="javascript:alert(1)">go</a><a href="https://xess.example">safe</a>')
+    const clean = sanitizePuzzleDescription('<a href="javascript:alert(1)">go</a><a href="https://xess.example">safe</a>', { window: sanitizerWindow })
     const body = parseBody(clean)
     const links = [...body.querySelectorAll('a')]
 

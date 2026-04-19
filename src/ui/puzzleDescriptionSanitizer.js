@@ -1,17 +1,14 @@
 import createDOMPurify from 'dompurify'
-import { JSDOM } from 'jsdom'
 
 const URI_ALLOWLIST = /^(?:(?:(?:https?|mailto|tel):|[^a-z]|[a-z+.-]+(?:[^a-z+.-:]|$)))/i
 
-function createSanitizerWindow() {
+function getRuntimeWindow() {
   if (typeof window !== 'undefined' && window?.document) {
     return window
   }
 
-  return new JSDOM('').window
+  return null
 }
-
-const domPurify = createDOMPurify(createSanitizerWindow())
 
 const SANITIZE_CONFIG = {
   ALLOWED_TAGS: ['p', 'br', 'em', 'strong', 'ul', 'ol', 'li', 'a'],
@@ -20,10 +17,17 @@ const SANITIZE_CONFIG = {
   ALLOWED_URI_REGEXP: URI_ALLOWLIST,
 }
 
-export function sanitizePuzzleDescription(html) {
+export function sanitizePuzzleDescription(html, options = {}) {
   if (typeof html !== 'string' || html.trim().length === 0) {
     return ''
   }
+
+  const sanitizerWindow = options.window ?? getRuntimeWindow()
+  if (!sanitizerWindow?.document) {
+    return ''
+  }
+
+  const domPurify = createDOMPurify(sanitizerWindow)
 
   return domPurify.sanitize(html, SANITIZE_CONFIG)
 }
