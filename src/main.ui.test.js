@@ -26,6 +26,15 @@ function getCssFile(relativePath) {
   }
 }
 
+function getSourceFile(relativePath) {
+  const filePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), relativePath)
+  return {
+    filePath,
+    exists: existsSync(filePath),
+    content: existsSync(filePath) ? readFileSync(filePath, 'utf8') : '',
+  }
+}
+
 function expectTouchTargetContract(cssContent, selector) {
   const selectorRegex = new RegExp(`${selector}[^\\{]*\\{[^}]*`, 's')
   const blockMatch = cssContent.match(selectorRegex)
@@ -221,5 +230,68 @@ describe('responsive layout and touch target contracts', () => {
     coverage.forEach(([content, selector]) => {
       expectTouchTargetContract(content, selector)
     })
+  })
+})
+
+describe('tracking runtime and UI contracts', () => {
+  it('undo/redo actions keep move counter synchronized across move, undo, redo, and restart', () => {
+    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+
+    expect(ui.getRenderModel().moveCount).toBe(0)
+
+    ui.tapCell('0,0')
+    ui.tapCell('0,2')
+    expect(ui.getRenderModel().moveCount).toBe(1)
+
+    ui.undo()
+    expect(ui.getRenderModel().moveCount).toBe(0)
+
+    ui.redo()
+    expect(ui.getRenderModel().moveCount).toBe(1)
+
+    ui.restart()
+    expect(ui.getRenderModel().moveCount).toBe(0)
+  })
+
+  it('divergent move after undo invalidates redo availability immediately', () => {
+    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+
+    ui.tapCell('0,0')
+    ui.tapCell('0,2')
+    ui.undo()
+    expect(ui.getRenderModel().canRedo).toBe(true)
+
+    ui.tapCell('0,0')
+    ui.tapCell('1,0')
+
+    expect(ui.getRenderModel().canRedo).toBe(false)
+  })
+
+  it('runtime state exposes chronological move history data while list rendering remains deferred', () => {
+    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+
+    ui.tapCell('0,0')
+    ui.tapCell('0,2')
+
+    const runtime = ui.getState()
+    expect(runtime.moveEvents).toHaveLength(1)
+    expect(runtime.moveEvents[0]).toMatchObject({ from: '0,0', to: '0,2' })
+    expect(runtime.historyListRendered).toBe(false)
+  })
+
+  it('main view defines move counter and undo/redo controls but no move history list container', () => {
+    const mainSource = getSourceFile('./main.js')
+    const appCss = getCssFile('./styles/app.css')
+
+    expect(mainSource.exists).toBe(true)
+    expect(appCss.exists).toBe(true)
+
+    expect(mainSource.content).toMatch(/data-move-counter/)
+    expect(mainSource.content).toMatch(/data-undo-move/)
+    expect(mainSource.content).toMatch(/data-redo-move/)
+    expect(mainSource.content).not.toMatch(/data-move-history-list/)
+
+    expect(appCss.content).toMatch(/\.tracking-controls/)
+    expect(appCss.content).toMatch(/\.tracking-counter/)
   })
 })
