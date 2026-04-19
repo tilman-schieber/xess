@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createController } from './controller.js'
 import catalogue from './puzzles/catalogue.js'
+import { parsePuzzle } from './puzzles/loader.js'
+import { applyMove } from './engine/apply.js'
 
 vi.mock('./store/store.js', () => ({
   loadStore: vi.fn(() => ({ schemaVersion: 1, solvedIds: [], solvedMoveCounts: {}, activeState: null })),
@@ -198,6 +200,83 @@ describe('tracking events and move counters', () => {
 
     ctrl.redo()
     expect(ctrl.getTrackingState().moveCount).toBe(1)
+  })
+})
+
+describe('undo/redo divergence and tracking rehydration', () => {
+  it('supports multi-step undo/redo with synchronized counter and availability state', () => {
+    const ctrl = createController()
+    ctrl.loadPuzzle('g3h4i5j6')
+
+    ctrl.makeMove('0,0', '2,1')
+    const secondHop = ctrl.selectPiece('2,1')[0]
+    expect(typeof secondHop).toBe('string')
+    ctrl.makeMove('2,1', secondHop)
+
+    expect(ctrl.getTrackingState().moveCount).toBe(2)
+    expect(ctrl.getTrackingState().canUndo).toBe(true)
+
+    ctrl.undo()
+    ctrl.undo()
+    expect(ctrl.getTrackingState().moveCount).toBe(0)
+    expect(ctrl.getTrackingState().canRedo).toBe(true)
+
+    ctrl.redo()
+    ctrl.redo()
+    expect(ctrl.getTrackingState().moveCount).toBe(2)
+    expect(ctrl.getTrackingState().canRedo).toBe(false)
+  })
+
+  it('clears redo availability after divergent move post-undo', () => {
+    const ctrl = createController()
+    ctrl.loadPuzzle('g3h4i5j6')
+
+    ctrl.makeMove('0,0', '2,1')
+    ctrl.undo()
+    expect(ctrl.getTrackingState().canRedo).toBe(true)
+
+    ctrl.makeMove('0,0', '1,2')
+    expect(ctrl.getTrackingState().canRedo).toBe(false)
+    expect(ctrl.getTrackingState().moveCount).toBe(1)
+    expect(ctrl.getTrackingState().moveEvents).toHaveLength(1)
+  })
+
+  it('rehydrates board history and tracking payload from activeState and preserves solved metadata on win', () => {
+    const parsed = parsePuzzle(getRawPuzzle('g3h4i5j6'))
+    const first = applyMove(parsed.board, '0,0', '2,1', parsed)
+
+    loadStore.mockReturnValue({
+      schemaVersion: 1,
+      solvedIds: ['xk3m9pq2'],
+      solvedMoveCounts: { xk3m9pq2: 4 },
+      activeState: {
+        puzzleId: 'g3h4i5j6',
+        boardEntries: Array.from(first.board.entries()),
+        undoEntries: [Array.from(parsed.board.entries())],
+        redoEntries: [],
+        moveEvents: [{ from: '0,0', to: '2,1', captured: null }],
+        moveCount: 1,
+      },
+    })
+
+    const ctrl = createController()
+    const loaded = ctrl.loadPuzzle('g3h4i5j6')
+    expect(loaded.undoStack).toHaveLength(1)
+    expect(ctrl.getTrackingState().moveCount).toBe(1)
+    expect(loaded.board.get('2,1').piece).toEqual({ type: 'n', color: 'white' })
+
+    const legalFollowUp = ctrl.selectPiece('2,1')[0]
+    expect(typeof legalFollowUp).toBe('string')
+    const winResult = ctrl.makeMove('2,1', legalFollowUp)
+    expect(winResult.won).toBe(false)
+
+    ctrl.reset()
+    const solved = ctrl.makeMove('0,0', '1,2')
+    expect(solved.won).toBe(true)
+    expect(saveProgress).toHaveBeenCalledWith(
+      expect.arrayContaining(['xk3m9pq2', 'g3h4i5j6']),
+      expect.objectContaining({ xk3m9pq2: 4, g3h4i5j6: expect.any(Number) }),
+    )
   })
 })
 
