@@ -206,6 +206,85 @@ describe('saveActiveState / round-trip', () => {
     expect(setItemCallsAfter - setItemCallsBefore).toBe(1)
     spy.mockRestore()
   })
+
+  it('sanitized load keeps valid tracking fields and drops malformed tracking payloads', () => {
+    _storage['xess_v1'] = JSON.stringify({
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: {
+        puzzleId: VALID_ID_A,
+        boardEntries: [['0,0', { piece: null, isGoal: false }]],
+        undoEntries: [],
+        moveEvents: [{ from: '0,0', to: '0,1', captured: null }],
+        redoEntries: [[['0,0', { piece: null, isGoal: false }]]],
+        moveCount: 1,
+      },
+    })
+
+    expect(loadStore().activeState).toMatchObject({
+      moveEvents: [{ from: '0,0', to: '0,1', captured: null }],
+      redoEntries: [[['0,0', { piece: null, isGoal: false }]]],
+      moveCount: 1,
+    })
+
+    _storage['xess_v1'] = JSON.stringify({
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: {
+        puzzleId: VALID_ID_A,
+        boardEntries: [['0,0', { piece: null, isGoal: false }]],
+        undoEntries: [],
+        moveEvents: 'bad',
+        redoEntries: {},
+        moveCount: -1,
+      },
+    })
+
+    expect(loadStore().activeState).toMatchObject({
+      moveEvents: [],
+      redoEntries: [],
+      moveCount: 0,
+    })
+  })
+
+  it('save/load round-trip preserves active-state tracking fields without type drift', () => {
+    const board = makeBoard([['0,0', { piece: { type: 'p', color: 'white' }, isGoal: false }]])
+    const undo = [makeBoard([['0,0', { piece: null, isGoal: false }]])]
+    const moveEvents = [{ from: '0,0', to: '0,1', captured: null }]
+    const redoEntries = [
+      [[
+        '0,0',
+        { piece: { type: 'p', color: 'white' }, isGoal: false },
+      ]],
+    ]
+
+    saveActiveState(VALID_ID_A, board, undo, { moveEvents, redoEntries, moveCount: 1 })
+    vi.advanceTimersByTime(300)
+
+    const state = loadStore().activeState
+    expect(state.moveEvents).toEqual(moveEvents)
+    expect(state.redoEntries).toEqual(redoEntries)
+    expect(state.moveCount).toBe(1)
+  })
+
+  it('legacy payloads without tracking fields load with playable tracking defaults', () => {
+    _storage['xess_v1'] = JSON.stringify({
+      schemaVersion: 1,
+      solvedIds: [VALID_ID_A],
+      activeState: {
+        puzzleId: VALID_ID_A,
+        boardEntries: [['0,0', { piece: null, isGoal: false }]],
+        undoEntries: [],
+      },
+    })
+
+    expect(loadStore().activeState).toMatchObject({
+      puzzleId: VALID_ID_A,
+      moveEvents: [],
+      redoEntries: [],
+      moveCount: 0,
+    })
+  })
 })
 
 // ─── Group: flushSync ─────────────────────────────────────────────────────────
