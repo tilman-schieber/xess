@@ -51,6 +51,13 @@ Goal: Introduce canonical move events plus synced move-history UX with undo/redo
 
 Requirements: LOGIC-03, MOVE-01, MOVE-02, MOVE-03, MOVE-04
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — Extend store schema and sanitization for replay-safe tracking persistence and solved move-count metadata
+- [ ] 12-02-PLAN.md — Implement controller canonical events with synchronized undo/redo/counter/reload semantics
+- [ ] 12-03-PLAN.md — Wire gameplay undo/redo + move counter UX while deferring visible history list rendering
+
 Success criteria:
 1. Every committed move appends one canonical tracking event with deterministic replay semantics.
 2. Move counter remains accurate through forward moves, undo, redo, and reset.
