@@ -10,7 +10,7 @@ const rawCapture = {
   goalType: 'capture-all-targets',
   targetColor: 'black',
   grid: [
-    'r--',
+    'R--',
     '---',
     '--P',
   ],
@@ -24,7 +24,7 @@ const rawGoal = {
   goalType: 'reach-all-goal-squares',
   targetColor: null,
   grid: [
-    'r--',
+    'R--',
     '---',
     '--G',
   ],
