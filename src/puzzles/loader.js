@@ -33,12 +33,9 @@ export function parsePuzzle(raw) {
       } else if (char === 'G') {
         board.set(posKey(col, row), { piece: null, isGoal: true })
       } else if (PIECE_CHARS.has(char)) {
-        const color = char === char.toLowerCase() ? 'white' : 'black'  // D-03
+        const color = char === char.toUpperCase() ? 'white' : 'black'
         const type = char.toLowerCase()  // D-04: piece type is always lowercase
         const piece = { type, color }
-        if (type === 'p') {
-          piece.direction = raw.pawnDirections?.[posKey(col, row)] ?? [0, -1]
-        }
         board.set(posKey(col, row), { piece, isGoal: false })
       }
     })
@@ -57,7 +54,7 @@ export function parsePuzzle(raw) {
         throw new Error(`Puzzle "${raw.id}": goalTargets key "${key}" has invalid piece "${pieceChar}"`)
       }
 
-      const color = pieceChar === pieceChar.toLowerCase() ? 'white' : 'black'
+      const color = pieceChar === pieceChar.toUpperCase() ? 'white' : 'black'
       goalTargets.set(key, {
         type: pieceChar.toLowerCase(),
         color,
@@ -77,6 +74,18 @@ export function parsePuzzle(raw) {
     descriptionHtml: typeof raw.descriptionHtml === 'string' ? raw.descriptionHtml : '',
     goalType: raw.goalType,
     targetColor: raw.targetColor ?? null,
+    controllableColors: Array.isArray(raw.controllableColors) && raw.controllableColors.length > 0
+      ? [...new Set(raw.controllableColors.filter(color => color === 'white' || color === 'black'))]
+      : ['white'],
+    capturableByColor: {
+      white: Array.isArray(raw.capturableByColor?.white)
+        ? [...new Set(raw.capturableByColor.white.filter(color => color === 'white' || color === 'black'))]
+        : ['black'],
+      black: Array.isArray(raw.capturableByColor?.black)
+        ? [...new Set(raw.capturableByColor.black.filter(color => color === 'white' || color === 'black'))]
+        : ['white'],
+    },
+    promote: raw.promote === true,
     board,
     goalTargets,
     width,
