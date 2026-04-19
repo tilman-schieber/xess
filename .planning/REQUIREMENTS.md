@@ -1,0 +1,60 @@
+# Requirements: Xess
+
+**Defined:** 2026-04-19
+**Core Value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
+
+## v1 Requirements
+
+### Puzzle Logic Integrity
+
+- [ ] **LOGIC-01**: Player legal moves are generated consistently across non-rectangular boards and impassable squares.
+- [ ] **LOGIC-02**: Player invalid move attempts are rejected without mutating board, progress, or move history state.
+- [ ] **LOGIC-03**: Every committed move produces a canonical tracking event that can be replayed deterministically.
+
+### Move Tracking and Recovery
+
+- [ ] **MOVE-01**: Player can view a chronological move list for the active puzzle.
+- [ ] **MOVE-02**: Player can see an accurate move counter that stays in sync with undo, redo, and reset actions.
+- [ ] **MOVE-03**: Player can perform multi-step undo and redo during an active puzzle.
+- [ ] **MOVE-04**: Player can reload and resume an in-progress puzzle with board state, move history, and move counter preserved.
+
+## v2 Requirements
+
+Deferred while v1.2 focuses on correctness and tracking.
+
+### Modes and Content Expansion
+
+- **MODE-01**: User can start a random puzzle mode from the start screen.
+- **MODE-02**: User can run a guided progression mode with curated constraints.
+- **MODE-03**: User can access a tutorial track with onboarding-focused sequencing.
+- **CNT-V2-01**: User can play expanded track libraries beyond the launch placeholder set.
+- **CNT-V2-02**: Tracks can be tagged and filtered by theme/difficulty in the start flow.
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| PGN or FEN export/import | Not required for puzzle gameplay trust and adds complexity outside milestone goals |
+| Engine analysis mode | Out of scope for this milestone; focus is deterministic play and tracking |
+| Cloud sync for move history | Violates local-only storage constraints |
+
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| LOGIC-01 | TBD | Pending |
+| LOGIC-02 | TBD | Pending |
+| LOGIC-03 | TBD | Pending |
+| MOVE-01 | TBD | Pending |
+| MOVE-02 | TBD | Pending |
+| MOVE-03 | TBD | Pending |
+| MOVE-04 | TBD | Pending |
+
+**Coverage:**
+- v1 requirements: 7 total
+- Mapped to phases: 0
+- Unmapped: 7 ⚠️
+
+---
+*Requirements defined: 2026-04-19*
+*Last updated: 2026-04-19 after milestone v1.2 requirement definition*
