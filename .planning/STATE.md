@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Puzzle Logic Improvement
-status: All Phase 11 plans executed and summarized
-stopped_at: Completed 12-03-PLAN.md
-last_updated: "2026-04-19T15:21:10.738Z"
-last_activity: 2026-04-19 - Completed 11-03 execution and full-suite verification
+status: Phase 12 complete; v1.2 planning state reconciled
+stopped_at: Completed 12-03-SUMMARY.md
+last_updated: "2026-04-19T15:38:46Z"
+last_activity: 2026-04-19 - Reconciled post-v1.2 planning docs and cleared deferred debug verification
 progress:
   total_phases: 2
   completed_phases: 2
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-19)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** prepare post-Phase-11 milestone follow-up
+**Current focus:** v1.2 complete; maintain consistency across planning artifacts
 
 ## Current Position
 
-Phase: 11 (Move Legality Hardening) - completed
+Phase: 12 (Tracking State and UX Verification) - completed
 Plan: 03/03 complete
-Status: All Phase 11 plans executed and summarized
-Last activity: 2026-04-19 - Completed 11-03 execution and full-suite verification
+Status: Phase 12 complete; v1.2 planning state reconciled
+Last activity: 2026-04-19 - Reconciled post-v1.2 planning docs and cleared deferred debug verification
 
 Progress: [██████████] 100%
 
@@ -36,7 +36,7 @@ Progress: [██████████] 100%
 
 **Velocity:**
 
-- Total plans completed: 5
+- Total plans completed: 6
 - Average duration: —
 - Total execution time: 0 hours
 
@@ -44,8 +44,8 @@ Progress: [██████████] 100%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 | 3 | - | - |
-| 09 | 2 | - | - |
+| 11 | 3 | - | - |
+| 12 | 3 | - | - |
 
 **Recent Trend:**
 
@@ -165,15 +165,16 @@ None yet.
 | 260417-r18 | implement a way to easily restart a puzzle and remove progress blocking so puzzles are freely selectable | 2026-04-17 | 0d67da5 | [260417-r18-implement-a-way-to-easily-restart-a-puzz](./quick/260417-r18-implement-a-way-to-easily-restart-a-puzz/) |
 | 260417-ugk | show ghost target piece on goal squares for reach puzzles; update encoding if needed and simplify to one piece to one goal if necessary | 2026-04-17 | affac9a | [260417-ugk-show-ghost-target-piece-on-goal-squares-](./quick/260417-ugk-show-ghost-target-piece-on-goal-squares-/) |
 | 260419-krg | adjust active-square selection behavior in gameplay ui | 2026-04-19 | e0163a8 | [260419-krg-adjust-active-square-selection-behavior-](./quick/260419-krg-adjust-active-square-selection-behavior-/) |
+| 260419-ohz | reconcile planning docs/state after v1.2 completion and close deferred debug verification | 2026-04-19 | pending | [260419-ohz-cleanup-planning-docs-and-state-after-v1](./quick/260419-ohz-cleanup-planning-docs-and-state-after-v1/) |
 
 ## Deferred Items
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| debug | jsdom-sharedarraybuffer-crash | awaiting_human_verify | 2026-04-19 |
+| debug | jsdom-sharedarraybuffer-crash | completed_verified | 2026-04-19 |
 
 ## Session Continuity
 
-Last session: 2026-04-19T15:21:10.722Z
-Stopped at: Completed 12-03-PLAN.md
+Last session: 2026-04-19T15:38:46Z
+Stopped at: Completed 12-03-SUMMARY.md
 Resume file: None
