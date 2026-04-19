@@ -3,7 +3,7 @@ import { createController } from './controller.js'
 import catalogue from './puzzles/catalogue.js'
 
 vi.mock('./store/store.js', () => ({
-  loadStore: vi.fn(() => ({ schemaVersion: 1, solvedIds: [], activeState: null })),
+  loadStore: vi.fn(() => ({ schemaVersion: 1, solvedIds: [], solvedMoveCounts: {}, activeState: null })),
   saveProgress: vi.fn(),
   saveActiveState: vi.fn(),
   clearActiveState: vi.fn(),
@@ -26,7 +26,7 @@ function getRawPuzzle(id) {
 
 beforeEach(() => {
   vi.clearAllMocks()
-  loadStore.mockReturnValue({ schemaVersion: 1, solvedIds: [], activeState: null })
+  loadStore.mockReturnValue({ schemaVersion: 1, solvedIds: [], solvedMoveCounts: {}, activeState: null })
 })
 
 describe('loadPuzzle', () => {
@@ -154,6 +154,48 @@ describe('makeMove policy and invariants', () => {
     expect(saveActiveState).not.toHaveBeenCalled()
     expect(saveProgress).not.toHaveBeenCalled()
     expect(clearActiveState).not.toHaveBeenCalled()
+  })
+})
+
+describe('tracking events and move counters', () => {
+  it('emits one canonical event and increments move count for legal commits only', () => {
+    const ctrl = createController()
+    ctrl.loadPuzzle('g3h4i5j6')
+
+    const afterLegal = ctrl.makeMove('0,0', '2,1')
+    expect(afterLegal.error).toBeUndefined()
+
+    const trackingAfterLegal = ctrl.getTrackingState()
+    expect(trackingAfterLegal.moveCount).toBe(1)
+    expect(trackingAfterLegal.moveEvents).toEqual([
+      {
+        from: '0,0',
+        to: '2,1',
+        captured: null,
+      },
+    ])
+
+    const afterIllegal = ctrl.makeMove('2,1', '9,9')
+    expect(afterIllegal).toEqual({ error: 'illegal_move' })
+
+    const trackingAfterIllegal = ctrl.getTrackingState()
+    expect(trackingAfterIllegal.moveCount).toBe(1)
+    expect(trackingAfterIllegal.moveEvents).toHaveLength(1)
+  })
+
+  it('keeps moveCount synchronized across makeMove, undo, and redo', () => {
+    const ctrl = createController()
+    ctrl.loadPuzzle('g3h4i5j6')
+
+    ctrl.makeMove('0,0', '2,1')
+    ctrl.makeMove('1,0', '2,2')
+    expect(ctrl.getTrackingState().moveCount).toBe(2)
+
+    ctrl.undo()
+    expect(ctrl.getTrackingState().moveCount).toBe(1)
+
+    ctrl.redo()
+    expect(ctrl.getTrackingState().moveCount).toBe(2)
   })
 })
 
