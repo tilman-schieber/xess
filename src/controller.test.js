@@ -107,6 +107,22 @@ describe('makeMove policy and invariants', () => {
     }
   })
 
+  it('selectPiece does not surface non-capturable destinations', () => {
+    const raw = getRawPuzzle('g3h4i5j6')
+    const prev = raw.capturableByColor
+    raw.capturableByColor = { white: [], black: ['white'] }
+
+    try {
+      const ctrl = createController()
+      ctrl.loadPuzzle('g3h4i5j6')
+      const legal = ctrl.selectPiece('0,0')
+      expect(legal).not.toContain('1,2')
+    } finally {
+      if (prev === undefined) delete raw.capturableByColor
+      else raw.capturableByColor = prev
+    }
+  })
+
   it('winning capture writes solved progress and clears active state', () => {
     const ctrl = createController()
     ctrl.loadPuzzle('g3h4i5j6')
