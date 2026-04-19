@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Puzzle Logic Improvement
 status: planning
-stopped_at: Roadmap approved for v1.2
-last_updated: "2026-04-19T14:16:05.032Z"
-last_activity: 2026-04-19
+stopped_at: Phase 11 context gathered
+last_updated: "2026-04-19T14:29:13.522Z"
+last_activity: 2026-04-19 - Created roadmap for milestone v1.2
 progress:
   total_phases: 2
   completed_phases: 0
@@ -156,6 +156,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18T20:34:52.600Z
-Stopped at: Completed 10-02-PLAN.md
-Resume file: None
+Last session: 2026-04-19T14:29:13.516Z
+Stopped at: Phase 11 context gathered
+Resume file: .planning/phases/11-move-legality-hardening/11-CONTEXT.md
