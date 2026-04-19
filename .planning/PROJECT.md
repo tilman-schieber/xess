@@ -8,29 +8,36 @@ Xess is a client-side chess-based puzzle game that runs in the browser and insta
 
 A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
 
-## Current Milestone: v1.1 UX Launch Polish
+## Current State
 
-**Goal:** Ship launch-critical gaps while introducing a track-based puzzle structure and start screen foundation for future game modes.
+- Shipped **v1.1 UX Launch Polish** on 2026-04-19.
+- Launch UX now includes a start screen, track-first navigation, and track-scoped puzzle selection.
+- Puzzle metadata supports safe curated rich-text descriptions.
+- Audio remains explicit opt-in and robust across browser/runtime failures.
 
-**Target features:**
-- Finish launch gaps: complete content and sound robustness
-- Replace the flat puzzle list with grouped puzzle tracks and per-track numbering
-- Add a new start screen that becomes the main entry point for future play modes
-- Add short per-puzzle rich text content displayed during play
-- Polish touch-first UX details (button sizing, completion messaging, and interaction rough edges)
+## Next Milestone Goals
+
+- Define first playable game modes (`MODE-01`, `MODE-02`, `MODE-03`) on top of the new start/track entry structure.
+- Expand puzzle content beyond placeholder launch set (`CNT-V2-01`).
+- Add theme/difficulty tagging and filtering in track browsing (`CNT-V2-02`).
 
 ## Requirements
 
 ### Validated
 
-- [x] Every puzzle can define short authored HTML text shown in the puzzle UI (`TXT-01`, `TXT-02`, `TXT-03`) — Validated in Phase 09: puzzle-rich-text-content
+- [x] Launch content ships as static local assets and remains playable offline (`CNT-01`, `CNT-02`) — v1.1
+- [x] Sound remains explicit opt-in with shared runtime context (`SND-02`) — v1.1
+- [x] Start-screen and track-based navigation flow is shipped (`TRK-01`..`TRK-06`) — v1.1
+- [x] Puzzle rich-text descriptions are sanitized and rendered in-play (`TXT-01`, `TXT-02`, `TXT-03`) — v1.1
+- [x] Touch-target and completion-flow UX polish delivered (`UXP-01`..`UXP-04`) — v1.1
 
 ### Active
 
-- [ ] Finish launch gaps for content and audio robustness (`CNT-01`, `CNT-02`, `SND-02`)
-- [ ] Puzzles are organized into tracks, with numbering scoped per track (not one global flat list)
-- [ ] New start screen exists and routes into puzzle experience; foundation exists for random/guided/tutorial track modes
-- [ ] Core UI polish pass improves tap-target sizing, completion banner readability, and related interaction rough edges
+- [ ] User can start a random puzzle mode from the start screen (`MODE-01`)
+- [ ] User can run a guided progression mode with curated constraints (`MODE-02`)
+- [ ] User can access a tutorial track with onboarding-focused sequencing (`MODE-03`)
+- [ ] User can play expanded track libraries beyond the launch placeholder set (`CNT-V2-01`)
+- [ ] Tracks can be tagged and filtered by theme/difficulty in the start flow (`CNT-V2-02`)
 
 ### Out of Scope
 
@@ -46,10 +53,9 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 - Purely client-side; no backend needed — local storage is the only persistence layer
 - Target: mobile-first but also works on desktop
 - PWA requirements: service worker, manifest, offline play
-- Puzzle format needs to encode: board shape, piece positions, piece colors/types, goal type, goal parameters (target pieces or goal squares)
-- The example puzzle uses a text-grid notation (e.g. `p`=white pawn, `P`=black pawn, `n`=knight, `-`=empty, `x`=impassable) — worth formalizing as the puzzle definition format
-- Launch scope now includes structural navigation changes (tracks/start screen) to support later game modes without rewiring core gameplay
-- Puzzle rich text is curated author content, but rendering must sanitize or strictly constrain allowed HTML tags/attributes
+- v1.1 established stable screen modes (`start`, `tracks`, `play`) and track context preservation on back navigation
+- Rich text rendering now uses allowlist sanitization and test coverage to keep authoring safe
+- Touch interaction contracts and opt-in audio behavior are now validated by automated regression tests
 
 ## Constraints
 
@@ -62,10 +68,24 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Client-side only, no backend | Simplicity, no hosting costs, privacy — puzzles are static content | — Pending |
+| Client-side only, no backend | Simplicity, no hosting costs, privacy — puzzles are static content | ✓ Good |
+| Track launch fallback order: active-in-track -> first-unsolved -> first-track -> null | Preserve resume-first UX while staying deterministic for empty/unknown progress states | ✓ Good |
+| Sanitized rich-text rendering with strict allowlist | Allow puzzle flavor text without introducing XSS in browser runtime | ✓ Good |
+| Explicit user opt-in for audio with fail-silent runtime behavior | Prevent surprise audio and keep game stable when audio/storage APIs fail | ✓ Good |
 | Sequential unlock (not open) | Original v1.0 progression plan; now under milestone reconsideration as tracks are introduced | ⚠️ Revisit |
 | No hints system | Keeps the puzzle honest; undo/reset is the safety net | — Pending |
 | Pawns don't promote | Avoids complexity on non-standard boards where promotion zones are ambiguous | — Pending |
+
+## Milestone History
+
+<details>
+<summary>v1.1 UX Launch Polish (shipped 2026-04-19)</summary>
+
+- Archive: `.planning/milestones/v1.1-ROADMAP.md`
+- Requirements archive: `.planning/milestones/v1.1-REQUIREMENTS.md`
+- Planning history: `.planning/milestones/v1.1-phases/`
+
+</details>
 
 ## Evolution
 
@@ -85,4 +105,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-18 after Phase 09 completion*
+*Last updated: 2026-04-19 after v1.1 milestone completion*
