@@ -24,7 +24,7 @@
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
 | 11 | Move Legality Hardening | 3/3 | Complete   | 2026-04-19 |
-| 12 | Tracking State and UX Verification | 1/3 | In Progress|  |
+| 12 | Tracking State and UX Verification | 2/3 | In Progress|  |
 
 ### Phase 11: Move Legality Hardening
 
@@ -51,11 +51,11 @@ Goal: Introduce canonical move events plus synced move-history UX with undo/redo
 
 Requirements: LOGIC-03, MOVE-01, MOVE-02, MOVE-03, MOVE-04
 
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [x] 12-01-PLAN.md — Extend store schema and sanitization for replay-safe tracking persistence and solved move-count metadata
-- [ ] 12-02-PLAN.md — Implement controller canonical events with synchronized undo/redo/counter/reload semantics
+- [x] 12-02-PLAN.md — Implement controller canonical events with synchronized undo/redo/counter/reload semantics
 - [ ] 12-03-PLAN.md — Wire gameplay undo/redo + move counter UX while deferring visible history list rendering
 
 Success criteria:

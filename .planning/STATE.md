@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Puzzle Logic Improvement
 status: All Phase 11 plans executed and summarized
-stopped_at: Completed 12-01-PLAN.md
-last_updated: "2026-04-19T15:09:43.704Z"
+stopped_at: Completed 12-02-PLAN.md
+last_updated: "2026-04-19T15:13:56.797Z"
 last_activity: 2026-04-19 - Completed 11-03 execution and full-suite verification
 progress:
   total_phases: 2
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
-  percent: 67
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -78,6 +78,7 @@ Progress: [██████████] 100%
 | Phase 11-move-legality-hardening P02 | 480 | 2 tasks | 5 files |
 | Phase 11-move-legality-hardening P03 | 600 | 2 tasks | 4 files |
 | Phase 12 P01 | 321 | 2 tasks | 2 files |
+| Phase 12 P02 | 600 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -142,6 +143,8 @@ Recent decisions affecting current work:
 - [Phase 11-move-legality-hardening]: selectPiece and makeMove now share capture-policy filtering so blocked captures are never surfaced as legal.
 - [Phase 12]: Store tracking persistence uses sanitize defaults for moveEvents/redoEntries/moveCount and keeps legacy activeState playable.
 - [Phase 12]: Solved move counts persist in solvedMoveCounts metadata map without altering solvedIds semantics.
+- [Phase 12]: Controller tracking uses moveEvents plus moveCount cursor, with redo invalidation on divergent commits.
+- [Phase 12]: Controller persists solved move counts on win while preserving solvedIds unlock semantics.
 
 ### Pending Todos
 
@@ -168,6 +171,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T15:09:43.687Z
-Stopped at: Completed 12-01-PLAN.md
+Last session: 2026-04-19T15:13:56.786Z
+Stopped at: Completed 12-02-PLAN.md
 Resume file: None
