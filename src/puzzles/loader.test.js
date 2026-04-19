@@ -60,20 +60,20 @@ describe('parsePuzzle', () => {
     expect(puzzle.board.get('2,0').isGoal).toBe(false)
   })
 
-  it('parses lowercase chars as white pieces', () => {
+  it('parses lowercase chars as black pieces', () => {
     const raw = makeRaw(['p'])
     const puzzle = parsePuzzle(raw)
     const cell = puzzle.board.get('0,0')
     expect(cell.piece).not.toBeNull()
-    expect(cell.piece.color).toBe('white')
+    expect(cell.piece.color).toBe('black')
   })
 
-  it('parses uppercase chars as black pieces', () => {
+  it('parses uppercase chars as white pieces', () => {
     const raw = makeRaw(['P'])
     const puzzle = parsePuzzle(raw)
     const cell = puzzle.board.get('0,0')
     expect(cell.piece).not.toBeNull()
-    expect(cell.piece.color).toBe('black')
+    expect(cell.piece.color).toBe('white')
   })
 
   it('sets piece.type to the lowercase character', () => {
@@ -87,18 +87,10 @@ describe('parsePuzzle', () => {
     expect(puzzle.board.get('5,0').piece.type).toBe('k')
   })
 
-  it('attaches direction from pawnDirections to pawn pieces', () => {
-    const raw = makeRaw(['p'], {
-      pawnDirections: { '0,0': [1, 0] },
-    })
-    const puzzle = parsePuzzle(raw)
-    expect(puzzle.board.get('0,0').piece.direction).toEqual([1, 0])
-  })
-
-  it('defaults pawn direction to [0,-1] when pawnDirections key is missing', () => {
+  it('does not add direction property to pawn pieces', () => {
     const raw = makeRaw(['p'])
     const puzzle = parsePuzzle(raw)
-    expect(puzzle.board.get('0,0').piece.direction).toEqual([0, -1])
+    expect(puzzle.board.get('0,0').piece.direction).toBeUndefined()
   })
 
   it('does not add direction property to non-pawn pieces', () => {
@@ -163,7 +155,19 @@ describe('parsePuzzle', () => {
     })
 
     const puzzle = parsePuzzle(raw)
-    expect(puzzle.goalTargets.get('2,0')).toEqual({ type: 'r', color: 'white' })
+    expect(puzzle.goalTargets.get('2,0')).toEqual({ type: 'r', color: 'black' })
+  })
+
+  it('defaults control/capture policy and promote flag when omitted', () => {
+    const raw = makeRaw(['P'])
+    const puzzle = parsePuzzle(raw)
+
+    expect(puzzle.controllableColors).toEqual(['white'])
+    expect(puzzle.capturableByColor).toEqual({
+      white: ['black'],
+      black: ['white'],
+    })
+    expect(puzzle.promote).toBe(false)
   })
 
   it('throws when goalTargets points to a non-goal square', () => {
