@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-19)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** plan and execute Phase 11 (Move Legality Hardening)
+**Current focus:** prepare post-Phase-11 milestone follow-up
 
 ## Current Position
 
-Phase: 11 (Move Legality Hardening) - not started
-Plan: Pending /gsd-discuss-phase 11 or /gsd-plan-phase 11
-Status: Roadmap approved, ready for phase planning
-Last activity: 2026-04-19 - Created roadmap for milestone v1.2
+Phase: 11 (Move Legality Hardening) - completed
+Plan: 03/03 complete
+Status: All Phase 11 plans executed and summarized
+Last activity: 2026-04-19 - Completed 11-03 execution and full-suite verification
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
