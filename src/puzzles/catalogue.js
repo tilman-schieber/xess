@@ -28,12 +28,12 @@ export default [
     goalType: 'reach-all-goal-squares',
     targetColor: null,
     grid: [
-      'r--',
+      'R--',
       '-x-',
       '--G',
     ],
     goalTargets: {
-      '2,2': 'r',
+      '2,2': 'R',
     },
   },
   {
@@ -57,12 +57,12 @@ export default [
     goalType: 'reach-all-goal-squares',
     targetColor: null,
     grid: [
-      'r--',
+      'R--',
       '---',
       '--G',
     ],
     goalTargets: {
-      '2,2': 'r',
+      '2,2': 'R',
     },
   },
   {

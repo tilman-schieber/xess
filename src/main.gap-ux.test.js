@@ -81,6 +81,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
   it('renders puzzle description block near objective for authored rich text', () => {
     const dom = new JSDOM('<!doctype html><div id="root"></div>')
     globalThis.document = dom.window.document
+    globalThis.window = dom.window
 
     const model = {
       puzzle: { goalType: 'capture-all-targets', targetColor: 'black', descriptionHtml: '<p><em>Pin first.</em></p>' },
@@ -110,6 +111,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
   it('suppresses description block when content is empty', () => {
     const dom = new JSDOM('<!doctype html><div id="root"></div>')
     globalThis.document = dom.window.document
+    globalThis.window = dom.window
 
     const model = {
       puzzle: { goalType: 'capture-all-targets', targetColor: 'black', descriptionHtml: '' },
@@ -134,6 +136,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
   it('renders allowlisted formatting while stripping unsafe rich-text content', () => {
     const dom = new JSDOM('<!doctype html><div id="root"></div>')
     globalThis.document = dom.window.document
+    globalThis.window = dom.window
 
     const model = {
       puzzle: {
@@ -182,6 +185,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
   it('renders solved-with-next banner as explicit multi-line state with headline and action rows', () => {
     const dom = new JSDOM('<!doctype html><div id="root"></div>')
     globalThis.document = dom.window.document
+    globalThis.window = dom.window
 
     const model = {
       puzzle: { goalType: 'reach-all-goal-squares', targetColor: 'black', descriptionHtml: '' },
@@ -217,6 +221,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
   it('renders terminal solved banner as distinct all-solved state block', () => {
     const dom = new JSDOM('<!doctype html><div id="root"></div>')
     globalThis.document = dom.window.document
+    globalThis.window = dom.window
 
     const model = {
       puzzle: { goalType: 'capture-all-targets', targetColor: 'black', descriptionHtml: '' },
