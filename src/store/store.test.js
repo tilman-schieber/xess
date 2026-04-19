@@ -143,6 +143,25 @@ describe('saveProgress', () => {
     const count = store.solvedIds.filter(id => id === VALID_ID_A).length
     expect(count).toBe(1)
   })
+
+  it('persists solved move-count metadata per puzzle across reload', () => {
+    saveProgress([VALID_ID_A, VALID_ID_B], { [VALID_ID_A]: 7, [VALID_ID_B]: 12 })
+    const store = loadStore()
+    expect(store.solvedMoveCounts).toEqual({ [VALID_ID_A]: 7, [VALID_ID_B]: 12 })
+  })
+
+  it('sanitizes malformed solved metadata without dropping valid solved IDs', () => {
+    _storage['xess_v1'] = JSON.stringify({
+      schemaVersion: 1,
+      solvedIds: [VALID_ID_A, 'stale-id'],
+      solvedMoveCounts: { [VALID_ID_A]: 'bad', 'stale-id': 9, [VALID_ID_B]: 3 },
+      activeState: null,
+    })
+
+    const store = loadStore()
+    expect(store.solvedIds).toEqual([VALID_ID_A])
+    expect(store.solvedMoveCounts).toEqual({ [VALID_ID_B]: 3 })
+  })
 })
 
 // ─── Group: saveActiveState / round-trip ─────────────────────────────────────
