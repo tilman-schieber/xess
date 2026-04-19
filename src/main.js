@@ -142,8 +142,6 @@ export function createGameUiController({
       const legal = controller.selectPiece(positionKey)
       if (legal.length > 0) {
         feedback.select(positionKey, legal)
-      } else {
-        feedback.triggerIllegal(positionKey)
       }
       _lastMoveResult = null
       return getRenderModel()

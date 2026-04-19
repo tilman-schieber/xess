@@ -41,6 +41,32 @@ describe('main UI interaction flow', () => {
     vi.clearAllMocks()
   })
 
+  it('initial render has no selected or legal interaction frame by default', () => {
+    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const model = ui.getRenderModel()
+
+    const highlighted = model.cells.filter(cell =>
+      cell.interactionClasses.includes('is-selected') ||
+      cell.interactionClasses.includes('is-legal') ||
+      cell.interactionClasses.includes('is-illegal-feedback')
+    )
+
+    expect(highlighted).toHaveLength(0)
+    expect(ui.getState().selectedKey).toBeNull()
+  })
+
+  it('tapping an empty square without a selected piece does not show selection feedback', () => {
+    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+
+    ui.tapCell('2,2')
+    const model = ui.getRenderModel()
+    const cells = byKey(model)
+
+    expect(cells.get('2,2').interactionClasses).not.toContain('is-selected')
+    expect(cells.get('2,2').interactionClasses).not.toContain('is-illegal-feedback')
+    expect(ui.getState().selectedKey).toBeNull()
+  })
+
   it('selecting a white piece marks legal destination cells (INT-01)', () => {
     const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
 
