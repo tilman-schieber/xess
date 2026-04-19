@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Puzzle Logic Improvement
 status: planning
-stopped_at: Completed 11-02-PLAN.md
-last_updated: "2026-04-19T14:43:22.293Z"
+stopped_at: Completed 11-03-PLAN.md
+last_updated: "2026-04-19T14:53:19.247Z"
 last_activity: 2026-04-19 - Created roadmap for milestone v1.2
 progress:
   total_phases: 2
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 2
-  percent: 67
+  completed_plans: 3
+  percent: 100
 ---
 
 # Project State
@@ -76,6 +76,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 10-ux-and-audio-launch-polish P02 | 250 | 2 tasks | 4 files |
 | Phase 11-move-legality-hardening P01 | 540 | 2 tasks | 4 files |
 | Phase 11-move-legality-hardening P02 | 480 | 2 tasks | 5 files |
+| Phase 11-move-legality-hardening P03 | 600 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -136,6 +137,8 @@ Recent decisions affecting current work:
 - [Phase 11-move-legality-hardening]: parsePuzzle now emits default controllable/capturable/promote policy fields for downstream legality enforcement.
 - [Phase 11-move-legality-hardening]: Pawns now always move upward (row-1) and engine ignores direction metadata.
 - [Phase 11-move-legality-hardening]: applyMove now auto-promotes to queen only when promote===true and destination row is 0.
+- [Phase 11-move-legality-hardening]: Controller now enforces controllableColors and capturableByColor before move mutation.
+- [Phase 11-move-legality-hardening]: selectPiece and makeMove now share capture-policy filtering so blocked captures are never surfaced as legal.
 
 ### Pending Todos
 
@@ -162,6 +165,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T14:43:22.278Z
-Stopped at: Completed 11-02-PLAN.md
+Last session: 2026-04-19T14:53:19.232Z
+Stopped at: Completed 11-03-PLAN.md
 Resume file: None

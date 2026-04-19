@@ -23,7 +23,7 @@
 
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
-| 11 | Move Legality Hardening | 2/3 | In Progress|  |
+| 11 | Move Legality Hardening | 3/3 | Complete   | 2026-04-19 |
 | 12 | Tracking State and UX Verification | Introduce canonical move events plus synced move-history UX with undo/redo/reload-safe tracking state | LOGIC-03, MOVE-01, MOVE-02, MOVE-03, MOVE-04 | 7 |
 
 ### Phase 11: Move Legality Hardening
@@ -32,12 +32,12 @@ Goal: Remove geometry-edge move inconsistencies and enforce strict invalid-move 
 
 Requirements: LOGIC-01, LOGIC-02
 
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 11-01-PLAN.md — Normalize puzzle schema/content to canonical case and policy defaults
 - [x] 11-02-PLAN.md — Refactor engine legality + opt-in promotion with edge-path regression tests
-- [ ] 11-03-PLAN.md — Enforce controller policy gates and strict invalid-move non-mutation
+- [x] 11-03-PLAN.md — Enforce controller policy gates and strict invalid-move non-mutation
 
 Success criteria:
 1. Legal move generation behaves consistently across representative non-rectangular and blocked-board fixtures.
