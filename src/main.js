@@ -66,6 +66,20 @@ function buildInteractionRenderModel({ puzzle, board, renderBoardView, feedback 
   }
 }
 
+function getTrackingSnapshot(controller) {
+  if (!controller || typeof controller.getTrackingState !== 'function') {
+    return { moveEvents: [], moveCount: 0, canUndo: false, canRedo: false }
+  }
+
+  const snapshot = controller.getTrackingState()
+  return {
+    moveEvents: Array.isArray(snapshot?.moveEvents) ? snapshot.moveEvents : [],
+    moveCount: Number.isInteger(snapshot?.moveCount) ? snapshot.moveCount : 0,
+    canUndo: snapshot?.canUndo === true,
+    canRedo: snapshot?.canRedo === true,
+  }
+}
+
 export function getPuzzleObjectiveText(puzzle) {
   if (!puzzle || typeof puzzle !== 'object') {
     return 'Solve the puzzle objective.'
@@ -119,12 +133,25 @@ export function createGameUiController({
 
   let _lastMoveResult = null
 
-  const getRenderModel = () => buildInteractionRenderModel({
-    puzzle: state.puzzle,
-    board: state.board,
-    renderBoardView,
-    feedback,
-  })
+  const getRenderModel = () => {
+    const tracking = getTrackingSnapshot(controller)
+    const model = buildInteractionRenderModel({
+      puzzle: state.puzzle,
+      board: state.board,
+      renderBoardView,
+      feedback,
+    })
+
+    return {
+      ...model,
+      moveEvents: tracking.moveEvents,
+      moveCount: tracking.moveCount,
+      moveCounterText: `Moves: ${tracking.moveCount}`,
+      canUndo: tracking.canUndo,
+      canRedo: tracking.canRedo,
+      historyListRendered: false,
+    }
+  }
 
   const tapCell = (positionKey) => {
     if (typeof positionKey !== 'string' || positionKey.length === 0) {
@@ -181,6 +208,26 @@ export function createGameUiController({
 
   return {
     tapCell,
+    undo() {
+      if (typeof controller.undo !== 'function') return getRenderModel()
+      const result = controller.undo()
+      if (result?.board) {
+        state.board = result.board
+      }
+      feedback.applyMove(null, false)
+      _lastMoveResult = null
+      return getRenderModel()
+    },
+    redo() {
+      if (typeof controller.redo !== 'function') return getRenderModel()
+      const result = controller.redo()
+      if (result?.board) {
+        state.board = result.board
+      }
+      feedback.applyMove(null, false)
+      _lastMoveResult = null
+      return getRenderModel()
+    },
     restart() {
       const result = controller.reset()
       if (result.error) return getRenderModel()
@@ -195,11 +242,17 @@ export function createGameUiController({
     },
     getState() {
       const snapshot = feedback.snapshot()
+      const tracking = getTrackingSnapshot(controller)
       return {
         ...snapshot,
         puzzleId: state.puzzleId,
         board: state.board,
         puzzleList: controller.getPuzzleList(),
+        moveEvents: tracking.moveEvents,
+        moveCount: tracking.moveCount,
+        canUndo: tracking.canUndo,
+        canRedo: tracking.canRedo,
+        historyListRendered: false,
       }
     },
   }
@@ -378,6 +431,34 @@ export function renderToDom(root, model) {
   restartBtn.textContent = '↺'
 
   nav.append(prevBtn, restartBtn, nextNavBtn)
+
+  const trackingControls = document.createElement('div')
+  trackingControls.className = 'tracking-controls'
+  trackingControls.setAttribute('data-tracking-controls', 'true')
+
+  const counter = document.createElement('span')
+  counter.className = 'tracking-counter'
+  counter.setAttribute('data-move-counter', 'true')
+  counter.textContent = model.moveCounterText ?? `Moves: ${model.moveCount ?? 0}`
+
+  const undoBtn = document.createElement('button')
+  undoBtn.type = 'button'
+  undoBtn.className = 'nav-btn tracking-btn'
+  undoBtn.setAttribute('data-undo-move', 'true')
+  undoBtn.setAttribute('aria-label', 'Undo move')
+  if (!model.canUndo) undoBtn.setAttribute('aria-disabled', 'true')
+  undoBtn.textContent = '↶'
+
+  const redoBtn = document.createElement('button')
+  redoBtn.type = 'button'
+  redoBtn.className = 'nav-btn tracking-btn'
+  redoBtn.setAttribute('data-redo-move', 'true')
+  redoBtn.setAttribute('aria-label', 'Redo move')
+  if (!model.canRedo) redoBtn.setAttribute('aria-disabled', 'true')
+  redoBtn.textContent = '↷'
+
+  trackingControls.append(counter, undoBtn, redoBtn)
+  nav.append(trackingControls)
   app.append(nav)
 
   // Win banner
@@ -627,6 +708,14 @@ export function mountGameUi(root = document.querySelector('#app')) {
     })
     bindPrimaryAction(root.querySelector('[data-restart-puzzle]'), () => {
       ui.restart()
+      rerender()
+    })
+    bindPrimaryAction(root.querySelector('[data-undo-move]'), () => {
+      ui.undo()
+      rerender()
+    })
+    bindPrimaryAction(root.querySelector('[data-redo-move]'), () => {
+      ui.redo()
       rerender()
     })
     bindPrimaryAction(root.querySelector('[data-back-to-tracks]'), () => {
