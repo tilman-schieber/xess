@@ -214,9 +214,30 @@ body {
 
 .puzzle-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-sm);
   justify-content: center;
   padding: var(--space-sm) 0;
+}
+
+.tracking-controls {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+}
+
+.tracking-counter {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-inline-size: 7ch;
+  text-align: center;
+}
+
+.tracking-btn {
+  font-size: var(--text-label);
 }
 
 .nav-btn {
