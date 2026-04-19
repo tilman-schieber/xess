@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import catalogue from './catalogue.js'
+import { parsePuzzle } from './loader.js'
 
 describe('catalogue', () => {
   it('all puzzle IDs are unique', () => {
@@ -20,5 +21,17 @@ describe('catalogue', () => {
     catalogue
       .filter(p => p.goalType === 'capture-all-targets')
       .forEach(p => expect(p.targetColor).not.toBeNull())
+  })
+
+  it('all catalogue puzzles parse under the normalized loader contract', () => {
+    catalogue.forEach(raw => {
+      expect(() => parsePuzzle(raw)).not.toThrow()
+    })
+  })
+
+  it('does not include deprecated pawnDirections in active puzzles', () => {
+    catalogue.forEach(puzzle => {
+      expect(Object.hasOwn(puzzle, 'pawnDirections')).toBe(false)
+    })
   })
 })
