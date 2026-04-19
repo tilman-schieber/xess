@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-19)
 Phase: None (milestone archived)
 Plan: N/A
 Status: v1.1 complete
-Last activity: 2026-04-19
+Last activity: 2026-04-19 - Completed quick task 260419-krg: adjust active-square selection behavior in gameplay ui
 
 Progress: [██████████] 100%
 
@@ -146,6 +146,7 @@ None yet.
 |---|-------------|------|--------|-----------|
 | 260417-r18 | implement a way to easily restart a puzzle and remove progress blocking so puzzles are freely selectable | 2026-04-17 | 0d67da5 | [260417-r18-implement-a-way-to-easily-restart-a-puzz](./quick/260417-r18-implement-a-way-to-easily-restart-a-puzz/) |
 | 260417-ugk | show ghost target piece on goal squares for reach puzzles; update encoding if needed and simplify to one piece to one goal if necessary | 2026-04-17 | affac9a | [260417-ugk-show-ghost-target-piece-on-goal-squares-](./quick/260417-ugk-show-ghost-target-piece-on-goal-squares-/) |
+| 260419-krg | adjust active-square selection behavior in gameplay ui | 2026-04-19 | e0163a8 | [260419-krg-adjust-active-square-selection-behavior-](./quick/260419-krg-adjust-active-square-selection-behavior-/) |
 
 ## Deferred Items
 
