@@ -37,8 +37,24 @@ function _sanitizeActiveState(activeState) {
 
   const boardEntries = Array.isArray(activeState.boardEntries) ? activeState.boardEntries : []
   const undoEntries = Array.isArray(activeState.undoEntries) ? activeState.undoEntries : []
+  const moveEvents = Array.isArray(activeState.moveEvents)
+    ? activeState.moveEvents.filter(
+        event =>
+          event &&
+          typeof event === 'object' &&
+          typeof event.from === 'string' &&
+          typeof event.to === 'string',
+      )
+    : []
+  const redoEntries = Array.isArray(activeState.redoEntries)
+    ? activeState.redoEntries.filter(entries => Array.isArray(entries))
+    : []
+  const moveCount =
+    Number.isInteger(activeState.moveCount) && activeState.moveCount >= 0
+      ? activeState.moveCount
+      : 0
 
-  return { puzzleId, boardEntries, undoEntries }
+  return { puzzleId, boardEntries, undoEntries, moveEvents, redoEntries, moveCount }
 }
 
 function _sanitizeStore(parsed) {
@@ -108,11 +124,16 @@ function _writeActive(state) {
  * @param {string} puzzleId
  * @param {Map<string, Cell>} board
  * @param {Map<string, Cell>[]} undoStack
+ * @param {{ moveEvents?: object[], redoEntries?: any[], moveCount?: number }} [tracking]
  */
-export function saveActiveState(puzzleId, board, undoStack) {
+export function saveActiveState(puzzleId, board, undoStack, tracking = {}) {
   const boardEntries = Array.from(board.entries())
   const undoEntries = undoStack.map(b => Array.from(b.entries()))
-  pendingWrite = { puzzleId, boardEntries, undoEntries }
+  const moveEvents = Array.isArray(tracking.moveEvents) ? tracking.moveEvents : []
+  const redoEntries = Array.isArray(tracking.redoEntries) ? tracking.redoEntries : []
+  const moveCount = Number.isInteger(tracking.moveCount) && tracking.moveCount >= 0 ? tracking.moveCount : 0
+
+  pendingWrite = { puzzleId, boardEntries, undoEntries, moveEvents, redoEntries, moveCount }
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
     _writeActive(pendingWrite)
