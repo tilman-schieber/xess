@@ -32,6 +32,13 @@ Goal: Remove geometry-edge move inconsistencies and enforce strict invalid-move 
 
 Requirements: LOGIC-01, LOGIC-02
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Normalize puzzle schema/content to canonical case and policy defaults
+- [ ] 11-02-PLAN.md — Refactor engine legality + opt-in promotion with edge-path regression tests
+- [ ] 11-03-PLAN.md — Enforce controller policy gates and strict invalid-move non-mutation
+
 Success criteria:
 1. Legal move generation behaves consistently across representative non-rectangular and blocked-board fixtures.
 2. Invalid move attempts never mutate board state, move counter, or history stacks.
