@@ -1,5 +1,20 @@
 # Milestones
 
+## v1.2 Puzzle Logic Improvement (Shipped: 2026-04-19)
+
+**Phases completed:** 2 phases, 6 plans, 12 tasks
+
+**Key accomplishments:**
+
+- Puzzle parsing now enforces canonical case semantics, removes pawnDirections legacy fields, and emits default control/capture/promotion policy metadata for downstream legality layers.
+- Engine legality now treats pawns as fixed-upward movers and applies deterministic, opt-in top-row auto-promotion to queen before win evaluation.
+- Controller move handling now enforces puzzle-level controllable and capture permissions before mutation, while proving rejected moves remain fully non-mutating across board, undo, and persistence paths.
+- Replay-safe active puzzle tracking and per-puzzle solved move-count metadata now persist through localStorage with fail-soft sanitization and legacy compatibility.
+- Controller runtime now emits deterministic canonical move events and keeps board history, undo/redo, and move counters synchronized across commit, divergence, and reload paths.
+- Gameplay UI now shows synchronized move counts with undo/redo controls while keeping chronological move-history list rendering intentionally deferred.
+
+---
+
 ## v1.1 UX Launch Polish (Shipped: 2026-04-19)
 
 **Phases completed:** 4 phases, 10 plans, 22 tasks
