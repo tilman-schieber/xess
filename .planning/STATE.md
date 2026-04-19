@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Puzzle Logic Improvement
 status: planning
-stopped_at: Completed 11-01-PLAN.md
-last_updated: "2026-04-19T14:39:53.899Z"
+stopped_at: Completed 11-02-PLAN.md
+last_updated: "2026-04-19T14:43:22.293Z"
 last_activity: 2026-04-19 - Created roadmap for milestone v1.2
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
-  percent: 33
+  completed_plans: 2
+  percent: 67
 ---
 
 # Project State
@@ -75,6 +75,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 10-ux-and-audio-launch-polish P03 | 220 | 2 tasks | 2 files |
 | Phase 10-ux-and-audio-launch-polish P02 | 250 | 2 tasks | 4 files |
 | Phase 11-move-legality-hardening P01 | 540 | 2 tasks | 4 files |
+| Phase 11-move-legality-hardening P02 | 480 | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -133,6 +134,8 @@ Recent decisions affecting current work:
 - [Phase 10-ux-and-audio-launch-polish]: Standardize primary actions on pointer events while keeping keyboard Enter/Space activation in parallel.
 - [Phase 11-move-legality-hardening]: No compatibility path for pawnDirections; active catalogue data was normalized in place.
 - [Phase 11-move-legality-hardening]: parsePuzzle now emits default controllable/capturable/promote policy fields for downstream legality enforcement.
+- [Phase 11-move-legality-hardening]: Pawns now always move upward (row-1) and engine ignores direction metadata.
+- [Phase 11-move-legality-hardening]: applyMove now auto-promotes to queen only when promote===true and destination row is 0.
 
 ### Pending Todos
 
@@ -159,6 +162,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-19T14:39:53.879Z
-Stopped at: Completed 11-01-PLAN.md
+Last session: 2026-04-19T14:43:22.278Z
+Stopped at: Completed 11-02-PLAN.md
 Resume file: None
