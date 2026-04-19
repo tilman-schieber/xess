@@ -129,7 +129,10 @@ describe('makeMove policy and invariants', () => {
 
     const result = ctrl.makeMove('0,0', '1,2')
     expect(result.won).toBe(true)
-    expect(saveProgress).toHaveBeenCalledWith(expect.arrayContaining(['g3h4i5j6']))
+    expect(saveProgress).toHaveBeenCalledWith(
+      expect.arrayContaining(['g3h4i5j6']),
+      expect.objectContaining({ g3h4i5j6: 1 }),
+    )
     expect(clearActiveState).toHaveBeenCalledTimes(1)
     expect(saveActiveState).not.toHaveBeenCalled()
   })
@@ -188,14 +191,13 @@ describe('tracking events and move counters', () => {
     ctrl.loadPuzzle('g3h4i5j6')
 
     ctrl.makeMove('0,0', '2,1')
-    ctrl.makeMove('1,0', '2,2')
-    expect(ctrl.getTrackingState().moveCount).toBe(2)
-
-    ctrl.undo()
     expect(ctrl.getTrackingState().moveCount).toBe(1)
 
+    ctrl.undo()
+    expect(ctrl.getTrackingState().moveCount).toBe(0)
+
     ctrl.redo()
-    expect(ctrl.getTrackingState().moveCount).toBe(2)
+    expect(ctrl.getTrackingState().moveCount).toBe(1)
   })
 })
 

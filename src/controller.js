@@ -30,8 +30,24 @@ export function createController() {
     puzzle: null,       // parsed puzzle object (id, goalType, targetColor, board, …)
     board: null,        // current board Map (mutable pointer; each move creates new Map)
     undoStack: [],      // array of board Maps (pre-move snapshots)
+    redoStack: [],      // array of board Maps (redo snapshots)
+    moveEvents: [],     // canonical committed move events
+    moveCount: 0,       // applied move index in moveEvents timeline
     solvedIds: [],      // array of solved puzzle IDs (loaded from store on loadPuzzle)
+    solvedMoveCounts: {}, // map puzzleId -> moveCount at solve time
     won: false,         // true after a winning move until next loadPuzzle
+  }
+
+  function _trackingPayload() {
+    return {
+      moveEvents: state.moveEvents,
+      redoEntries: state.redoStack.map(b => Array.from(b.entries())),
+      moveCount: state.moveCount,
+    }
+  }
+
+  function _persistActiveState() {
+    saveActiveState(state.puzzle.id, state.board, state.undoStack, _trackingPayload())
   }
 
   /** Find raw catalogue entry by id; throws if not found (T-02-09). */
@@ -73,24 +89,41 @@ export function createController() {
       const parsed = parsePuzzle(raw)
       const store = loadStore()
       state.solvedIds = sanitizeSolvedIds(store.solvedIds)
+      state.solvedMoveCounts = store.solvedMoveCounts && typeof store.solvedMoveCounts === 'object'
+        ? store.solvedMoveCounts
+        : {}
 
       // Re-hydration: only if store has activeState for exactly this puzzle (T-02-10)
       let board = parsed.board
       let undoStack = []
+      let redoStack = []
+      let moveEvents = []
+      let moveCount = 0
       if (store.activeState && store.activeState.puzzleId === puzzleId) {
         try {
           board = new Map(store.activeState.boardEntries)
           undoStack = store.activeState.undoEntries.map(entries => new Map(entries))
+          redoStack = store.activeState.redoEntries.map(entries => new Map(entries))
+          moveEvents = Array.isArray(store.activeState.moveEvents) ? store.activeState.moveEvents : []
+          moveCount = Number.isInteger(store.activeState.moveCount) ? store.activeState.moveCount : 0
+          if (moveCount < 0) moveCount = 0
+          if (moveCount > moveEvents.length) moveCount = moveEvents.length
         } catch {
           // T-02-10: malformed entries — fall back to fresh start
           board = parsed.board
           undoStack = []
+          redoStack = []
+          moveEvents = []
+          moveCount = 0
         }
       }
 
       state.puzzle = parsed
       state.board = board
       state.undoStack = undoStack
+      state.redoStack = redoStack
+      state.moveEvents = moveEvents
+      state.moveCount = moveCount
       state.won = false
 
       return {
@@ -152,17 +185,25 @@ export function createController() {
       const prev = state.board
       const { board: next, won, captured } = applyMove(state.board, from, to, state.puzzle)
 
+      if (state.moveCount < state.moveEvents.length) {
+        state.moveEvents = state.moveEvents.slice(0, state.moveCount)
+      }
+
       state.undoStack.push(prev)
+      state.redoStack = []
       state.board = next
+      state.moveEvents = [...state.moveEvents, { from, to, captured }]
+      state.moveCount += 1
       state.won = won
 
       if (won) {
         // Unlock the next puzzle by recording this one as solved
         state.solvedIds = [...new Set([...state.solvedIds, state.puzzle.id])]
-        saveProgress(state.solvedIds)
+        state.solvedMoveCounts = { ...state.solvedMoveCounts, [state.puzzle.id]: state.moveCount }
+        saveProgress(state.solvedIds, state.solvedMoveCounts)
         clearActiveState()
       } else {
-        saveActiveState(state.puzzle.id, state.board, state.undoStack)
+        _persistActiveState()
       }
 
       return { board: state.board, won, captured }
@@ -175,12 +216,30 @@ export function createController() {
      */
     undo() {
       if (state.undoStack.length === 0) {
-        return { board: state.board, undoStack: [] }
+        return { board: state.board, undoStack: [], redoStack: state.redoStack }
       }
+      state.redoStack.push(state.board)
       state.board = state.undoStack.pop()
+      state.moveCount = Math.max(0, state.moveCount - 1)
       state.won = false  // undoing a winning move un-wins it
-      saveActiveState(state.puzzle.id, state.board, state.undoStack)
-      return { board: state.board, undoStack: state.undoStack }
+      _persistActiveState()
+      return { board: state.board, undoStack: state.undoStack, redoStack: state.redoStack }
+    },
+
+    /**
+     * Redo the last undone move. No-op on empty redo stack.
+     *
+     * @returns {{ board, undoStack, redoStack }}
+     */
+    redo() {
+      if (state.redoStack.length === 0) {
+        return { board: state.board, undoStack: state.undoStack, redoStack: [] }
+      }
+      state.undoStack.push(state.board)
+      state.board = state.redoStack.pop()
+      state.moveCount = Math.min(state.moveEvents.length, state.moveCount + 1)
+      _persistActiveState()
+      return { board: state.board, undoStack: state.undoStack, redoStack: state.redoStack }
     },
 
     /**
@@ -193,9 +252,21 @@ export function createController() {
       const fresh = parsePuzzle(_rawEntry(state.puzzle.id))
       state.board = fresh.board
       state.undoStack = []
+      state.redoStack = []
+      state.moveEvents = []
+      state.moveCount = 0
       state.won = false
       clearActiveState()
       return { board: state.board }
+    },
+
+    getTrackingState() {
+      return {
+        moveEvents: state.moveEvents,
+        moveCount: state.moveCount,
+        canUndo: state.undoStack.length > 0,
+        canRedo: state.redoStack.length > 0,
+      }
     },
 
     /**
