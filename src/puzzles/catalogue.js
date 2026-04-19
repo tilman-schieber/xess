@@ -18,9 +18,6 @@ export default [
       '-p-',
       'n-x',
     ],
-    pawnDirections: {
-      '1,1': [0, -1],
-    },
   },
   {
     // Puzzle 2 — Find the Square
@@ -109,9 +106,6 @@ export default [
       '----',
       '-Pn-',
     ],
-    pawnDirections: {
-      '1,2': [0, -1],
-    },
   },
   {
     // Puzzle 8 — Triple Threat
@@ -211,11 +205,6 @@ export default [
       '-PPP',
       '----',
     ],
-    pawnDirections: {
-      '1,2': [0, -1],
-      '2,2': [0, -1],
-      '3,2': [0, -1],
-    },
   },
   {
     // Puzzle 15 — Clear the Path
@@ -308,9 +297,6 @@ export default [
       'P--b',
       'x--x',
     ],
-    pawnDirections: {
-      '0,2': [0, -1],
-    },
   },
   {
     // Puzzle 21 — T-Board
