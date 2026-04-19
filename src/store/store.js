@@ -15,7 +15,7 @@ let pendingWrite = null
  * Default store shape when localStorage is empty or invalid.
  */
 function _defaultStore() {
-  return { schemaVersion: CURRENT_SCHEMA_VERSION, solvedIds: [], activeState: null }
+  return { schemaVersion: CURRENT_SCHEMA_VERSION, solvedIds: [], solvedMoveCounts: {}, activeState: null }
 }
 
 const VALID_PUZZLE_IDS = new Set(catalogue.map(entry => entry.id))
@@ -61,10 +61,19 @@ function _sanitizeStore(parsed) {
   const solvedIds = Array.isArray(parsed?.solvedIds)
     ? [...new Set(parsed.solvedIds.filter(id => typeof id === 'string' && VALID_PUZZLE_IDS.has(id)))]
     : []
+  const solvedMoveCounts = parsed?.solvedMoveCounts && typeof parsed.solvedMoveCounts === 'object'
+    ? Object.fromEntries(
+        Object.entries(parsed.solvedMoveCounts).filter(
+          ([puzzleId, count]) =>
+            VALID_PUZZLE_IDS.has(puzzleId) && Number.isInteger(count) && count >= 0,
+        ),
+      )
+    : {}
 
   return {
     schemaVersion: CURRENT_SCHEMA_VERSION,
     solvedIds,
+    solvedMoveCounts,
     activeState: _sanitizeActiveState(parsed?.activeState),
   }
 }
@@ -105,9 +114,19 @@ function _write(patch) {
  * Deduplicates before writing.
  *
  * @param {string[]} solvedIds
+ * @param {Record<string, number>} [solvedMoveCounts]
  */
-export function saveProgress(solvedIds) {
-  _write({ solvedIds: [...new Set(solvedIds)] })
+export function saveProgress(solvedIds, solvedMoveCounts) {
+  const patch = { solvedIds: [...new Set(solvedIds)] }
+  if (solvedMoveCounts && typeof solvedMoveCounts === 'object') {
+    patch.solvedMoveCounts = Object.fromEntries(
+      Object.entries(solvedMoveCounts).filter(
+        ([puzzleId, count]) =>
+          VALID_PUZZLE_IDS.has(puzzleId) && Number.isInteger(count) && count >= 0,
+      ),
+    )
+  }
+  _write(patch)
 }
 
 /**

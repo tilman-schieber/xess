@@ -35,6 +35,7 @@ describe('loadStore', () => {
     expect(store).toEqual({
       schemaVersion: 1,
       solvedIds: [],
+      solvedMoveCounts: {},
       activeState: null,
     })
   })
@@ -54,6 +55,7 @@ describe('loadStore', () => {
     expect(store).toEqual({
       schemaVersion: 1,
       solvedIds: [],
+      solvedMoveCounts: {},
       activeState: null,
     })
   })
@@ -64,6 +66,7 @@ describe('loadStore', () => {
     expect(store).toEqual({
       schemaVersion: 1,
       solvedIds: [],
+      solvedMoveCounts: {},
       activeState: null,
     })
   })
@@ -122,6 +125,7 @@ describe('loadStore', () => {
     expect(loadStore()).toEqual({
       schemaVersion: 1,
       solvedIds: ['xk3m9pq2'],
+      solvedMoveCounts: {},
       activeState: null,
     })
   })
