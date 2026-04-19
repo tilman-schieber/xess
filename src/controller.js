@@ -50,6 +50,16 @@ export function createController() {
     return moves.map(([c, r]) => posKey(c, r))
   }
 
+  function _isControllable(color) {
+    return state.puzzle?.controllableColors?.includes(color) === true
+  }
+
+  function _canCapture(moverColor, targetColor) {
+    const allowed = state.puzzle?.capturableByColor?.[moverColor]
+    if (!Array.isArray(allowed)) return false
+    return allowed.includes(targetColor)
+  }
+
   return {
     /**
      * Load a puzzle by id. Re-hydrates from persisted active state if puzzle ID matches.
@@ -103,8 +113,7 @@ export function createController() {
       if (!state.puzzle) return []
       const cell = state.board.get(positionKey)
       if (!cell || !cell.piece) return []
-      // T-02-12: opponent pieces are not player-controlled
-      if (cell.piece.color !== 'white') return []
+      if (!_isControllable(cell.piece.color)) return []
       return _movesToKeys(getLegalMoves(state.board, positionKey))
     },
 
@@ -122,8 +131,16 @@ export function createController() {
       // T-02-11: prevent moves after game is won
       if (state.won) return { error: 'game_over' }
 
-      // T-02-08: validate that `to` is among legal destinations
-      const legal = _movesToKeys(getLegalMoves(state.board, from))
+      const fromCell = state.board.get(from)
+      if (!fromCell?.piece) return { error: 'illegal_move' }
+      if (!_isControllable(fromCell.piece.color)) return { error: 'illegal_move' }
+
+      // Validate destination by geometry first, then enforce capture policy.
+      const legal = _movesToKeys(getLegalMoves(state.board, from)).filter((destKey) => {
+        const destination = state.board.get(destKey)
+        if (!destination?.piece) return true
+        return _canCapture(fromCell.piece.color, destination.piece.color)
+      })
       if (!legal.includes(to)) return { error: 'illegal_move' }
 
       const prev = state.board
