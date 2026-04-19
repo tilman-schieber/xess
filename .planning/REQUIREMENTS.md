@@ -9,14 +9,14 @@
 
 - [x] **LOGIC-01**: Player legal moves are generated consistently across non-rectangular boards and impassable squares.
 - [x] **LOGIC-02**: Player invalid move attempts are rejected without mutating board, progress, or move history state.
-- [ ] **LOGIC-03**: Every committed move produces a canonical tracking event that can be replayed deterministically.
+- [x] **LOGIC-03**: Every committed move produces a canonical tracking event that can be replayed deterministically.
 
 ### Move Tracking and Recovery
 
 - [ ] **MOVE-01**: Player can view a chronological move list for the active puzzle.
 - [ ] **MOVE-02**: Player can see an accurate move counter that stays in sync with undo, redo, and reset actions.
 - [ ] **MOVE-03**: Player can perform multi-step undo and redo during an active puzzle.
-- [ ] **MOVE-04**: Player can reload and resume an in-progress puzzle with board state, move history, and move counter preserved.
+- [x] **MOVE-04**: Player can reload and resume an in-progress puzzle with board state, move history, and move counter preserved.
 
 ## v2 Requirements
 
@@ -44,11 +44,11 @@ Deferred while v1.2 focuses on correctness and tracking.
 |-------------|-------|--------|
 | LOGIC-01 | Phase 11 | Complete |
 | LOGIC-02 | Phase 11 | Complete |
-| LOGIC-03 | Phase 12 | Pending |
+| LOGIC-03 | Phase 12 | Complete |
 | MOVE-01 | Phase 12 | Pending |
 | MOVE-02 | Phase 12 | Pending |
 | MOVE-03 | Phase 12 | Pending |
-| MOVE-04 | Phase 12 | Pending |
+| MOVE-04 | Phase 12 | Complete |
 
 **Coverage:**
 - v1 requirements: 7 total
