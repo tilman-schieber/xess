@@ -6,34 +6,32 @@ import { posKey } from '../puzzles/loader.js'
 
 /**
  * Pawn move generation.
- * Direction is per-piece (D-12, ENG-03) — NEVER inferred from color or row.
- * No double-advance, no en passant, no promotion.
+ * Pawns always move upward (row - 1) and capture on upward diagonals.
+ * No double-advance, no en passant.
  *
  * @param {Map} board
  * @param {number} col
  * @param {number} row
- * @param {Piece} piece - must have piece.direction = [dc, dr]
+ * @param {Piece} piece
  * @returns {Array<[number, number]>}
  */
 function getPawnMoves(board, col, row, piece) {
-  const [dc, dr] = piece.direction
   const moves = []
 
-  // Forward advance — must be an empty square
-  const fwdKey = posKey(col + dc, row + dr)
+  // Forward advance — one row upward
+  const fwdKey = posKey(col, row - 1)
   if (board.has(fwdKey) && !board.get(fwdKey).piece) {
-    moves.push([col + dc, row + dr])
+    moves.push([col, row - 1])
   }
 
-  // Diagonal captures — rotate direction 90° both ways to get capture squares
-  // For [dc, dr]: capture offsets are [dr, dc] and [-dr, -dc]
-  const captureOffsets = [[dr, dc], [-dr, -dc]]
-  for (const [cdc, cdr] of captureOffsets) {
-    const capKey = posKey(col + dc + cdc, row + dr + cdr)
+  // Diagonal captures — upward left and upward right
+  const captureOffsets = [[-1, -1], [1, -1]]
+  for (const [dc, dr] of captureOffsets) {
+    const capKey = posKey(col + dc, row + dr)
     if (board.has(capKey)) {
       const cell = board.get(capKey)
       if (cell.piece && cell.piece.color !== piece.color) {
-        moves.push([col + dc + cdc, row + dr + cdr])
+        moves.push([col + dc, row + dr])
       }
     }
   }
