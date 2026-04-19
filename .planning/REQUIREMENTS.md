@@ -13,7 +13,7 @@
 
 ### Move Tracking and Recovery
 
-- [ ] **MOVE-01**: Player can view a chronological move list for the active puzzle.
+- [x] **MOVE-01**: Player can view a chronological move list for the active puzzle.
 - [x] **MOVE-02**: Player can see an accurate move counter that stays in sync with undo, redo, and reset actions.
 - [x] **MOVE-03**: Player can perform multi-step undo and redo during an active puzzle.
 - [x] **MOVE-04**: Player can reload and resume an in-progress puzzle with board state, move history, and move counter preserved.
@@ -45,7 +45,7 @@ Deferred while v1.2 focuses on correctness and tracking.
 | LOGIC-01 | Phase 11 | Complete |
 | LOGIC-02 | Phase 11 | Complete |
 | LOGIC-03 | Phase 12 | Complete |
-| MOVE-01 | Phase 12 | Pending |
+| MOVE-01 | Phase 12 | Complete |
 | MOVE-02 | Phase 12 | Complete |
 | MOVE-03 | Phase 12 | Complete |
 | MOVE-04 | Phase 12 | Complete |
