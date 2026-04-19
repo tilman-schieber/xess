@@ -42,19 +42,19 @@ Deferred while v1.2 focuses on correctness and tracking.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LOGIC-01 | TBD | Pending |
-| LOGIC-02 | TBD | Pending |
-| LOGIC-03 | TBD | Pending |
-| MOVE-01 | TBD | Pending |
-| MOVE-02 | TBD | Pending |
-| MOVE-03 | TBD | Pending |
-| MOVE-04 | TBD | Pending |
+| LOGIC-01 | Phase 11 | Pending |
+| LOGIC-02 | Phase 11 | Pending |
+| LOGIC-03 | Phase 12 | Pending |
+| MOVE-01 | Phase 13 | Pending |
+| MOVE-02 | Phase 12 | Pending |
+| MOVE-03 | Phase 12 | Pending |
+| MOVE-04 | Phase 12 | Pending |
 
 **Coverage:**
 - v1 requirements: 7 total
-- Mapped to phases: 0
-- Unmapped: 7 ⚠️
+- Mapped to phases: 7
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-19*
-*Last updated: 2026-04-19 after milestone v1.2 requirement definition*
+*Last updated: 2026-04-19 after roadmap mapping for milestone v1.2*

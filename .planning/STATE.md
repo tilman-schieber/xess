@@ -3,11 +3,11 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Puzzle Logic Improvement
 status: planning
-stopped_at: Milestone initialized
-last_updated: "2026-04-19T11:10:00.000Z"
+stopped_at: Roadmap approved for v1.2
+last_updated: "2026-04-19T11:24:00.000Z"
 last_activity: 2026-04-19
 progress:
-  total_phases: 0
+  total_phases: 3
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-19)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** v1.2 puzzle logic and move tracking requirements + roadmap
+**Current focus:** plan and execute Phase 11 (Move Legality Hardening)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: -
-Status: Defining requirements
-Last activity: 2026-04-19 - Milestone v1.2 started
+Phase: 11 (Move Legality Hardening) - not started
+Plan: Pending /gsd-discuss-phase 11 or /gsd-plan-phase 11
+Status: Roadmap approved, ready for phase planning
+Last activity: 2026-04-19 - Created roadmap for milestone v1.2
 
 Progress: [░░░░░░░░░░] 0%
 
