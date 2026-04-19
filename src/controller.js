@@ -114,7 +114,13 @@ export function createController() {
       const cell = state.board.get(positionKey)
       if (!cell || !cell.piece) return []
       if (!_isControllable(cell.piece.color)) return []
-      return _movesToKeys(getLegalMoves(state.board, positionKey))
+
+      const moverColor = cell.piece.color
+      return _movesToKeys(getLegalMoves(state.board, positionKey)).filter((destKey) => {
+        const destination = state.board.get(destKey)
+        if (!destination?.piece) return true
+        return _canCapture(moverColor, destination.piece.color)
+      })
     },
 
     /**
