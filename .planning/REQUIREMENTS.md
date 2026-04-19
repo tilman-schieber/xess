@@ -7,7 +7,7 @@
 
 ### Puzzle Logic Integrity
 
-- [ ] **LOGIC-01**: Player legal moves are generated consistently across non-rectangular boards and impassable squares.
+- [x] **LOGIC-01**: Player legal moves are generated consistently across non-rectangular boards and impassable squares.
 - [ ] **LOGIC-02**: Player invalid move attempts are rejected without mutating board, progress, or move history state.
 - [ ] **LOGIC-03**: Every committed move produces a canonical tracking event that can be replayed deterministically.
 
@@ -42,7 +42,7 @@ Deferred while v1.2 focuses on correctness and tracking.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LOGIC-01 | Phase 11 | Pending |
+| LOGIC-01 | Phase 11 | Complete |
 | LOGIC-02 | Phase 11 | Pending |
 | LOGIC-03 | Phase 12 | Pending |
 | MOVE-01 | Phase 12 | Pending |
