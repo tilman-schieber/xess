@@ -10,19 +10,19 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 
 ## Current State
 
-- Shipped **v1.1 UX Launch Polish** on 2026-04-19.
-- Launch UX now includes a start screen, track-first navigation, and track-scoped puzzle selection.
-- Puzzle metadata supports safe curated rich-text descriptions.
-- Audio remains explicit opt-in and robust across browser/runtime failures.
+- Shipped **v1.2 Puzzle Logic Improvement** on 2026-04-19.
+- Core move legality, undo/redo tracking, and replay-safe persistence are now stable and verified.
+- Launch UX includes start + tracks + play modes, but onboarding and visual affordances remain minimal.
+- Next milestone focuses on presentation clarity and puzzle-mode comprehension.
 
-## Current Milestone: v1.2 Puzzle Logic Improvement
+## Current Milestone: v1.3 Interface and Onboarding Clarity
 
-**Goal:** Tune move legality and state transitions so puzzle play feels consistent and trustworthy, then make move tracking visible and recoverable during play.
+**Goal:** Make Xess feel polished and immediately understandable by improving visual interaction patterns, onboarding flow, and explicit puzzle-mode presentation.
 
 **Target features:**
-- Tighten move legality on irregular boards and blocked geometry
-- Improve invalid-move feedback and move-state clarity in play
-- Add robust move tracking (history, counters, and state recovery)
+- Add polished app shell and responsive navigation (header/footer/menu + mobile hamburger)
+- Improve board interaction visuals for selected pieces and legal destinations with transparent overlays
+- Introduce clear onboarding: richer landing page, contextual actions, tutorial track, and explicit dual puzzle modes
 
 ## Requirements
 
@@ -33,14 +33,15 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 - [x] Start-screen and track-based navigation flow is shipped (`TRK-01`..`TRK-06`) — v1.1
 - [x] Puzzle rich-text descriptions are sanitized and rendered in-play (`TXT-01`, `TXT-02`, `TXT-03`) — v1.1
 - [x] Touch-target and completion-flow UX polish delivered (`UXP-01`..`UXP-04`) — v1.1
+- [x] Move legality and tracking reliability shipped (`LOGIC-01`..`LOGIC-03`, `MOVE-01`..`MOVE-04`) — v1.2
 
 ### Active
 
-- [ ] Player move legality is consistent for irregular geometry and impassable squares (`LOGIC-01`)
-- [ ] Invalid move attempts are rejected with explicit in-play feedback (`LOGIC-02`)
-- [ ] Player can inspect move history for the active puzzle (`MOVE-01`)
-- [ ] Player can undo and redo across multiple moves in the active puzzle (`MOVE-02`)
-- [ ] Move tracking state resumes correctly after reload for in-progress puzzles (`MOVE-03`)
+- [ ] Player sees a polished responsive app shell with clear desktop/mobile navigation patterns (`NAV-01`)
+- [ ] Board interactions use clear overlay affordances for selection and legal destinations (`VIS-01`)
+- [ ] Landing and resume flow presents contextual next actions for new and returning players (`ONB-01`)
+- [ ] Tutorial track explains core puzzle concepts and mode differences (`TUT-01`)
+- [ ] Capture mode and move-to-goal mode are explicit, visually distinct, and rule-consistent (`MODE-04`, `MODE-05`)
 
 ### Out of Scope
 
@@ -50,8 +51,9 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 - Pawn promotion — pawns move and capture normally but never promote
 - Online multiplayer or leaderboards — purely local single-player
 - Server-side persistence — everything lives in local storage
-- Random/guided/tutorial mode rollout (`MODE-01`..`MODE-03`) — deferred while gameplay correctness and move tracking are prioritized
-- Track tagging/filtering expansion (`CNT-V2-01`, `CNT-V2-02`) — deferred until post-logic milestone
+- Random mode rollout (`MODE-01`) — deferred while tutorial and core mode clarity are prioritized
+- Guided meta-progression mode (`MODE-02`) — deferred until onboarding patterns stabilize
+- Track tagging/filtering expansion (`CNT-V2-01`, `CNT-V2-02`) — deferred until post-onboarding milestone
 
 ## Context
 
@@ -61,7 +63,7 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 - v1.1 established stable screen modes (`start`, `tracks`, `play`) and track context preservation on back navigation
 - Rich text rendering now uses allowlist sanitization and test coverage to keep authoring safe
 - Touch interaction contracts and opt-in audio behavior are now validated by automated regression tests
-- New milestone focus is gameplay correctness and move-state visibility before adding additional mode breadth
+- New milestone focus is UX clarity and mode comprehension after shipping core gameplay correctness
 
 ## Constraints
 
@@ -78,12 +80,22 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 | Track launch fallback order: active-in-track -> first-unsolved -> first-track -> null | Preserve resume-first UX while staying deterministic for empty/unknown progress states | ✓ Good |
 | Sanitized rich-text rendering with strict allowlist | Allow puzzle flavor text without introducing XSS in browser runtime | ✓ Good |
 | Explicit user opt-in for audio with fail-silent runtime behavior | Prevent surprise audio and keep game stable when audio/storage APIs fail | ✓ Good |
-| Milestone v1.2 prioritizes puzzle logic and move tracking over mode expansion | Trust in core move behavior is prerequisite for additional game modes/content growth | — Pending |
+| Milestone v1.2 prioritizes puzzle logic and move tracking over mode expansion | Trust in core move behavior is prerequisite for additional game modes/content growth | ✓ Good |
+| Milestone v1.3 prioritizes polished interaction affordances and onboarding clarity | New users need immediate visual comprehension of legal moves and mode rules before content scale-up | — Pending |
 | Sequential unlock (not open) | Original v1.0 progression plan; now under milestone reconsideration as tracks are introduced | ⚠️ Revisit |
 | No hints system | Keeps the puzzle honest; undo/reset is the safety net | — Pending |
 | Pawns don't promote | Avoids complexity on non-standard boards where promotion zones are ambiguous | — Pending |
 
 ## Milestone History
+
+<details>
+<summary>v1.2 Puzzle Logic Improvement (shipped 2026-04-19)</summary>
+
+- Archive: `.planning/milestones/v1.2-ROADMAP.md`
+- Requirements archive: `.planning/milestones/v1.2-REQUIREMENTS.md`
+- Planning history: `.planning/milestones/v1.2-phases/`
+
+</details>
 
 <details>
 <summary>v1.1 UX Launch Polish (shipped 2026-04-19)</summary>
@@ -112,4 +124,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-19 after starting v1.2 milestone*
+*Last updated: 2026-04-20 after starting v1.3 milestone*

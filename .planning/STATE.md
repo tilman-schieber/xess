@@ -1,42 +1,42 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: Puzzle Logic Improvement
+milestone: v1.3
+milestone_name: Interface and Onboarding Clarity
 status: planning
-stopped_at: Completed quick task 260420-rst
-last_updated: "2026-04-20T11:39:30.000Z"
+stopped_at: Milestone initialized; roadmap pending approval
+last_updated: "2026-04-20T13:30:00.000Z"
 last_activity: 2026-04-20
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-19)
+See: .planning/PROJECT.md (updated 2026-04-20)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** v1.2 complete; maintain consistency across planning artifacts
+**Current focus:** v1.3 interface polish, onboarding clarity, and dual-mode comprehension
 
 ## Current Position
 
-Phase: 12 (Tracking State and UX Verification) - completed
-Plan: 03/03 complete
-Status: Phase 12 complete; v1.2 planning state reconciled
-Last activity: 2026-04-19
+Phase: Not started (defining requirements)
+Plan: -
+Status: Defining requirements
+Last activity: 2026-04-20 - Milestone v1.3 started
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 6
+- Total plans completed: 0
 - Average duration: —
 - Total execution time: 0 hours
 
@@ -44,8 +44,7 @@ Progress: [██████████] 100%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 11 | 3 | - | - |
-| 12 | 3 | - | - |
+| - | - | - | - |
 
 **Recent Trend:**
 
@@ -53,33 +52,7 @@ Progress: [██████████] 100%
 - Trend: —
 
 *Updated after each plan completion*
-| Phase 01-puzzle-format-and-engine P01 | 186s | 2 tasks | 10 files |
-| Phase 01-puzzle-format-and-engine P02 | 285s | 2 tasks | 14 files |
-| Phase 01-puzzle-format-and-engine P03 | 118s | 2 tasks | 6 files |
-| Phase 02-game-controller-and-persistence P01 | 86 | 2 tasks | 2 files |
-| Phase 02-game-controller-and-persistence P02 | 240 | 2 tasks | 2 files |
-| Phase 02-game-controller-and-persistence P03 | 2 min | 2 tasks | 2 files |
-| Phase 03-board-renderer-and-core-ui P01 | 2 min | 2 tasks | 3 files |
-| Phase 03-board-renderer-and-core-ui P02 | 3 min | 2 tasks | 3 files |
-| Phase 03-board-renderer-and-core-ui P03 | 17 min | 2 tasks | 4 files |
-| Phase 03-board-renderer-and-core-ui P04 | 1 min | 2 tasks | 4 files |
-| Phase 03-board-renderer-and-core-ui P05 | 5 min | 2 tasks | 15 files |
-| Phase 07-start-screen-and-track-navigation P01 | 75 | 2 tasks | 3 files |
-| Phase 07-start-screen-and-track-navigation P02 | 181 | 3 tasks | 8 files |
-| Phase 07-start-screen-and-track-navigation P03 | 208 | 3 tasks | 5 files |
-| Phase 08-track-compatibility-and-launch-content-robustness P01 | 720 | 2 tasks | 5 files |
-| Phase 08-track-compatibility-and-launch-content-robustness P02 | 900 | 2 tasks | 4 files |
-| Phase 09-puzzle-rich-text-content P01 | 360 | 2 tasks | 6 files |
-| Phase 09-puzzle-rich-text-content P02 | 480 | 2 tasks | 4 files |
-| Phase 10-ux-and-audio-launch-polish P01 | 269 | 2 tasks | 4 files |
-| Phase 10-ux-and-audio-launch-polish P03 | 220 | 2 tasks | 2 files |
-| Phase 10-ux-and-audio-launch-polish P02 | 250 | 2 tasks | 4 files |
-| Phase 11-move-legality-hardening P01 | 540 | 2 tasks | 4 files |
-| Phase 11-move-legality-hardening P02 | 480 | 2 tasks | 5 files |
-| Phase 11-move-legality-hardening P03 | 600 | 2 tasks | 4 files |
-| Phase 12 P01 | 321 | 2 tasks | 2 files |
-| Phase 12 P02 | 600 | 2 tasks | 2 files |
-| Phase 12 P03 | 660 | 2 tasks | 3 files |
+None yet for v1.3.
 
 ## Accumulated Context
 
