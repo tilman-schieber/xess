@@ -122,13 +122,6 @@
   filter: saturate(0.35);
 }
 
-.board[data-goal-type='reach-all-goal-squares'] .piece[data-piece-key^='black-']:not(.piece--ghost) {
-  filter: sepia(1) saturate(4) hue-rotate(320deg) brightness(0.75);
-}
-
-.board[data-goal-type='capture-all-targets'] .piece[data-piece-key^='black-']:not(.piece--ghost) {
-  filter: none;
-}
 
 .board.is-moving .piece.is-moving {
   transition: transform var(--piece-move-ms, 180ms) ease;

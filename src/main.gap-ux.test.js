@@ -292,11 +292,23 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     expect(captureBoard?.className).toContain('board--mode-capture')
   })
 
-  it('styles reach-mode opponents via board-scoped selector while leaving ghost styling neutral', () => {
+  it('styles reach-mode opponents via red SVG assets while leaving ghost styling neutral', () => {
     const boardCss = getCssFile('./styles/board.css')
     expect(boardCss.exists).toBe(true)
 
-    expect(boardCss.content).toMatch(/\.board\[data-goal-type='reach-all-goal-squares'\]\s+\.piece\[data-piece-key\^='black-'\]:not\(\.piece--ghost\)/)
+    // Red opponent coloring is now achieved via dedicated red-*.svg assets in the
+    // boardRenderer (not via CSS filter), so the old board-scoped CSS selector is gone.
+    // Verify ghost neutrality is still enforced by CSS.
     expect(boardCss.content).toMatch(/\.piece--ghost\s*\{[\s\S]*saturate\(0\.35\)/s)
+
+    // Verify red piece asset files exist on disk for all piece types
+    const __dirname = path.dirname(fileURLToPath(import.meta.url))
+    for (const type of ['k', 'q', 'r', 'b', 'n', 'p']) {
+      const redPath = path.resolve(__dirname, `ui/piece-assets/red-${type}.svg`)
+      expect(existsSync(redPath), `red-${type}.svg missing`).toBe(true)
+      const content = readFileSync(redPath, 'utf8')
+      expect(content).toContain('<svg')
+      expect(content).toContain('#8b1a1a')
+    }
   })
 })

@@ -14,10 +14,16 @@ const EXPECTED_KEYS = [
   'black-b',
   'black-n',
   'black-p',
+  'red-k',
+  'red-q',
+  'red-r',
+  'red-b',
+  'red-n',
+  'red-p',
 ]
 
 describe('piece asset contracts', () => {
-  it('resolves all 12 whitelisted keys to non-empty SVG payloads', () => {
+  it('resolves all 18 whitelisted keys to non-empty SVG payloads', () => {
     expect(Object.keys(PIECE_SVGS).sort()).toEqual([...EXPECTED_KEYS].sort())
 
     for (const key of EXPECTED_KEYS) {

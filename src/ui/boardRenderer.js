@@ -64,23 +64,32 @@ export function createBoardRenderModel({
       if (legalSet.has(key)) classes.push('cell--legal')
       if (key === illegalKey) classes.push('cell--illegal')
 
+      const isReachMode = puzzle.goalType === 'reach-all-goal-squares'
       const piece = cell.piece
-        ? {
-          type: cell.piece.type,
-          color: cell.piece.color,
-          svgKey: getPieceSvgKey(cell.piece),
-          svg: getPieceSvg(cell.piece),
-        }
+        ? (() => {
+          const displayColor = isReachMode && cell.piece.color === 'black' ? 'red' : cell.piece.color
+          const displayPiece = { ...cell.piece, color: displayColor }
+          return {
+            type: cell.piece.type,
+            color: cell.piece.color,
+            svgKey: getPieceSvgKey(displayPiece),
+            svg: getPieceSvg(displayPiece),
+          }
+        })()
         : null
 
       const goalTarget = puzzle.goalTargets?.get?.(key)
       const goalGhost = cell.isGoal && !piece && goalTarget
-        ? {
-          type: goalTarget.type,
-          color: goalTarget.color,
-          svgKey: getPieceSvgKey(goalTarget),
-          svg: getPieceSvg(goalTarget),
-        }
+        ? (() => {
+          const ghostDisplayColor = isReachMode && goalTarget.color === 'black' ? 'red' : goalTarget.color
+          const ghostDisplayPiece = { ...goalTarget, color: ghostDisplayColor }
+          return {
+            type: goalTarget.type,
+            color: goalTarget.color,
+            svgKey: getPieceSvgKey(ghostDisplayPiece),
+            svg: getPieceSvg(ghostDisplayPiece),
+          }
+        })()
         : null
 
       cells.push({
