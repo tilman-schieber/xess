@@ -335,4 +335,13 @@ describe('tracking runtime and UI contracts', () => {
     reachUi.tapCell('2,2')
     expect(reachUi.getState().won).toBe(true)
   })
+
+  it('reach-mode dual-control puzzle still blocks captures through UI legality gates', () => {
+    const ui = createGameUiController({ puzzleId: 'b4c5d6e7' })
+
+    ui.tapCell('0,0')
+    const pre = ui.getRenderModel()
+    const preMap = byKey(pre)
+    expect(preMap.get('2,1').interactionClasses).not.toContain('is-legal')
+  })
 })

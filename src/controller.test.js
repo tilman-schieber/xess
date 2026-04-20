@@ -139,6 +139,32 @@ describe('makeMove policy and invariants', () => {
     expect(saveActiveState).not.toHaveBeenCalled()
   })
 
+  it('reach-mode no-capture puzzles reject capture attempts through policy gates (MODE-05)', () => {
+    const ctrl = createController()
+    ctrl.loadPuzzle('b4c5d6e7')
+
+    const legalFromKnightStart = ctrl.selectPiece('0,0')
+    expect(legalFromKnightStart).not.toContain('2,1')
+
+    const captureAttempt = ctrl.makeMove('0,0', '2,1')
+    expect(captureAttempt).toEqual({ error: 'illegal_move' })
+    expect(saveActiveState).not.toHaveBeenCalled()
+  })
+
+  it('capture-mode completion remains tied to legal captures (MODE-04)', () => {
+    const ctrl = createController()
+    ctrl.loadPuzzle('g3h4i5j6')
+
+    const nonCapture = ctrl.makeMove('0,0', '2,1')
+    expect(nonCapture.error).toBeUndefined()
+    expect(nonCapture.won).toBe(false)
+
+    ctrl.reset()
+    const winningCapture = ctrl.makeMove('0,0', '1,2')
+    expect(winningCapture.error).toBeUndefined()
+    expect(winningCapture.won).toBe(true)
+  })
+
   it('rejected moves are fully non-mutating (board, undo stack, persistence)', () => {
     const ctrl = createController()
     const { board: initialBoard } = ctrl.loadPuzzle('g3h4i5j6')
