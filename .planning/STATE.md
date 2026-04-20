@@ -145,6 +145,7 @@ None yet.
 | 260420-fof | add promotion-required queen-goal puzzle to active catalogue, track metadata, and parser/engine test contracts | 2026-04-20 | pending | [260420-fof-add-promotion-required-reach-puzzle-with](./quick/260420-fof-add-promotion-required-reach-puzzle-with/) |
 | 260420-rst | restart/reset reloads current catalogue puzzle definition instead of stale active-state snapshot | 2026-04-20 | pending | [260420-rst-restart-reloads-catalogue-state](./quick/260420-rst-restart-reloads-catalogue-state/) |
 | 260420-vux | condense v1.3 roadmap to exactly two phases (UI/UX), strengthen visual direction, and remap requirements traceability | 2026-04-20 | pending | [260420-vux-condense-v13-to-ui-ux-phases](./quick/260420-vux-condense-v13-to-ui-ux-phases/) |
+| 260420-n4p | fix phase 13 FLIP clip bug, red recoloring, and apply glass tokens to start and track screens | 2026-04-20 | f01f894 | [260420-n4p-fix-phase-13-flip-clip-bug-red-recolorin](./quick/260420-n4p-fix-phase-13-flip-clip-bug-red-recolorin/) |
 
 ## Deferred Items
 
@@ -154,6 +155,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-20T13:52:37.883Z
-Stopped at: Completed 13-02-PLAN.md
+Last session: 2026-04-20T14:39:14.652Z
+Stopped at: Completed quick task 260420-n4p: fix phase 13 FLIP clip bug, red recoloring, and apply glass tokens to start and track screens
 Resume file: None
