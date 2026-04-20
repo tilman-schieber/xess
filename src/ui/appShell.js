@@ -103,6 +103,20 @@ export function renderAppShell({
     body.append(content)
   }
 
-  shell.append(body)
+  const footer = document.createElement('footer')
+  footer.className = 'app-shell-footer'
+  footer.setAttribute('data-shell-footer', 'true')
+
+  const footerBrand = document.createElement('span')
+  footerBrand.className = 'app-shell-footer-brand'
+  footerBrand.textContent = 'Xess'
+
+  const footerCopy = document.createElement('span')
+  footerCopy.className = 'app-shell-footer-copy'
+  footerCopy.textContent = 'Local-first puzzle progress'
+
+  footer.append(footerBrand, footerCopy)
+
+  shell.append(body, footer)
   return shell
 }

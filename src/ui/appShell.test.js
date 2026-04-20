@@ -22,6 +22,27 @@ describe('renderAppShell', () => {
     expect(startView.querySelector('[data-shell-topbar]')).not.toBeNull()
     expect(tracksView.querySelector('[data-shell-topbar]')).not.toBeNull()
     expect(playView.querySelector('[data-shell-topbar]')).not.toBeNull()
+
+    expect(startView.querySelector('[data-shell-footer]')).not.toBeNull()
+    expect(tracksView.querySelector('[data-shell-footer]')).not.toBeNull()
+    expect(playView.querySelector('[data-shell-footer]')).not.toBeNull()
+  })
+
+  it('renders static footer copy for all shell modes', () => {
+    const startView = renderAppShell({ mode: 'start', title: 'Start', content: buildContent() })
+    const tracksView = renderAppShell({ mode: 'tracks', title: 'Tracks', content: buildContent() })
+    const playView = renderAppShell({ mode: 'play', title: 'Play', content: buildContent() })
+
+    const startFooter = startView.querySelector('[data-shell-footer]')
+    const tracksFooter = tracksView.querySelector('[data-shell-footer]')
+    const playFooter = playView.querySelector('[data-shell-footer]')
+
+    expect(startFooter?.textContent).toContain('Xess')
+    expect(startFooter?.textContent).toContain('Local-first puzzle progress')
+    expect(tracksFooter?.textContent).toContain('Xess')
+    expect(tracksFooter?.textContent).toContain('Local-first puzzle progress')
+    expect(playFooter?.textContent).toContain('Xess')
+    expect(playFooter?.textContent).toContain('Local-first puzzle progress')
   })
 
   it('renders menu toggle only in play mode with aria-expanded', () => {
