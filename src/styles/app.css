@@ -33,6 +33,19 @@
   --destructive: #ff6f7a;
   --accent-win: #61d9a7;
 
+  /* Liquid-glass gameplay tokens */
+  --glass-bg-1: rgba(27, 41, 72, 0.42);
+  --glass-bg-2: rgba(16, 26, 50, 0.24);
+  --glass-border-soft: rgba(206, 223, 255, 0.34);
+  --glass-border-strong: rgba(230, 240, 255, 0.5);
+  --glass-highlight: rgba(255, 255, 255, 0.22);
+  --glass-shadow-soft: 0 12px 32px rgba(3, 9, 21, 0.46);
+  --glass-shadow-deep: 0 22px 42px rgba(2, 7, 17, 0.5);
+  --glass-blur: saturate(140%) blur(16px);
+  --glass-meta-bg: linear-gradient(155deg, var(--glass-bg-1) 0%, var(--glass-bg-2) 100%);
+  --glass-control-bg: linear-gradient(155deg, rgba(37, 55, 95, 0.52) 0%, rgba(20, 31, 56, 0.3) 100%);
+  --glass-chip-bg: rgba(31, 46, 84, 0.44);
+
   /* Text */
   --text-primary: #f5f7ff;
   --text-secondary: #c7d2f4;
@@ -70,7 +83,10 @@ body {
 
 body {
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background: radial-gradient(circle at top, #1a2338 0%, var(--surface-bg) 62%);
+  background:
+    radial-gradient(circle at 10% 8%, rgba(112, 155, 255, 0.24) 0%, rgba(112, 155, 255, 0) 36%),
+    radial-gradient(circle at 88% 10%, rgba(85, 235, 188, 0.2) 0%, rgba(85, 235, 188, 0) 42%),
+    radial-gradient(circle at top, #1a2338 0%, var(--surface-bg) 62%);
   color: var(--text-primary);
 }
 
@@ -87,6 +103,7 @@ body {
   display: grid;
   justify-items: center;
   gap: var(--app-gap);
+  padding-block: var(--space-xs);
 }
 
 .xess-ui,
@@ -99,9 +116,13 @@ body {
 .puzzle-meta {
   width: 100%;
   padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--border-subtle);
-  background: var(--surface-card);
+  border-radius: 1rem;
+  border: 1px solid var(--glass-border-soft);
+  border-top-color: var(--glass-border-strong);
+  background: var(--glass-meta-bg);
+  box-shadow: var(--glass-shadow-soft);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
   display: grid;
   gap: 0.5rem;
 }
@@ -195,9 +216,15 @@ body {
 }
 
 .goal-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
+  inline-size: fit-content;
+  padding: 0.24rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border-soft);
+  background: var(--glass-chip-bg);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
 
 .goal-badge-label {
@@ -217,7 +244,15 @@ body {
   flex-wrap: wrap;
   gap: var(--space-sm);
   justify-content: center;
-  padding: var(--space-sm) 0;
+  padding: var(--space-sm) var(--space-sm);
+  width: 100%;
+  border-radius: 0.95rem;
+  border: 1px solid var(--glass-border-soft);
+  border-top-color: var(--glass-border-strong);
+  background: var(--glass-meta-bg);
+  box-shadow: var(--glass-shadow-soft);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
 }
 
 .tracking-controls {
@@ -234,6 +269,11 @@ body {
   color: var(--text-secondary);
   min-inline-size: 7ch;
   text-align: center;
+  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border-soft);
+  background: var(--glass-chip-bg);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
 
 .tracking-btn {
@@ -243,12 +283,22 @@ body {
 .nav-btn {
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
-  background: var(--surface-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 0.5rem;
+  background: var(--glass-control-bg);
+  border: 1px solid var(--glass-border-soft);
+  border-top-color: var(--glass-border-strong);
+  border-radius: 0.65rem;
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 10px 22px rgba(5, 12, 28, 0.42);
+  -webkit-backdrop-filter: saturate(125%) blur(10px);
+  backdrop-filter: saturate(125%) blur(10px);
   color: var(--text-primary);
   font-size: var(--text-heading);
   cursor: pointer;
+}
+
+.nav-btn:not([aria-disabled='true']):active {
+  transform: translateY(1px);
 }
 
 .nav-btn[aria-disabled="true"] {
@@ -259,10 +309,11 @@ body {
 .btn-next-puzzle {
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
-  background: var(--accent);
+  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 86%, white) 0%, var(--accent) 100%);
   color: var(--surface-bg);
-  border: none;
-  border-radius: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 70%, white);
+  border-radius: 0.65rem;
+  box-shadow: 0 12px 20px rgba(32, 126, 93, 0.36);
   padding: var(--space-sm) var(--space-md);
   font-size: var(--text-label);
   font-weight: 600;
@@ -307,8 +358,9 @@ body {
 
 /* ─── Sound toggle button ────────────────────────────────────────────────── */
 .sound-toggle {
-  background: none;
-  border: 1px solid var(--border-subtle, #2a365d);
+  background: var(--glass-control-bg);
+  border: 1px solid var(--glass-border-soft, rgba(206, 223, 255, 0.34));
+  border-top-color: var(--glass-border-strong, rgba(230, 240, 255, 0.5));
   border-radius: 6px;
   color: var(--text-muted, #6b7aa3);
   cursor: pointer;
@@ -320,6 +372,11 @@ body {
   align-items: center;
   justify-content: center;
   padding: var(--space-xs, 0.25rem);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight, rgba(255, 255, 255, 0.22)),
+    0 10px 20px rgba(5, 12, 28, 0.4);
+  -webkit-backdrop-filter: saturate(125%) blur(10px);
+  backdrop-filter: saturate(125%) blur(10px);
   transition: color 0.15s, border-color 0.15s;
 }
 
