@@ -515,9 +515,18 @@ export function renderToDom(root, model) {
 
   app.append(winBanner)
 
+  const boardGoalType = typeof model?.puzzle?.goalType === 'string' ? model.puzzle.goalType : 'unknown'
+  const boardModeClass = boardGoalType === 'capture-all-targets'
+    ? 'board--mode-capture'
+    : boardGoalType === 'reach-all-goal-squares'
+      ? 'board--mode-reach'
+      : 'board--mode-unknown'
+
   const board = document.createElement('div')
-  board.className = ['board', ...model.boardClasses].join(' ').trim()
+  board.className = ['board', boardModeClass, ...model.boardClasses].join(' ').trim()
   board.setAttribute('data-board', 'true')
+  board.setAttribute('data-goal-type', boardGoalType)
+  board.setAttribute('data-board-mode', boardModeClass.replace('board--mode-', ''))
   board.style.setProperty('--cols', String(model.width))
   board.style.setProperty('--rows', String(model.height))
   board.style.setProperty('--piece-move-ms', `${model.animationMs}ms`)
