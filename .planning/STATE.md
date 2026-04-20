@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: Puzzle Logic Improvement
 status: planning
-stopped_at: Completed quick task 260420-fof
-last_updated: "2026-04-20T12:21:16.000Z"
+stopped_at: Completed quick task 260420-rst
+last_updated: "2026-04-20T11:39:30.000Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 2
@@ -169,6 +169,7 @@ None yet.
 | 260420-pfr | add concise single-source puzzle format reference doc based on current loader/tests/catalogue behavior | 2026-04-20 | pending | [260420-pfr-add-puzzle-format-reference-doc](./quick/260420-pfr-add-puzzle-format-reference-doc/) |
 | 260420-qkn | add no-capture dual-control puzzle that routes a black knight to a goal square and keep track/catalogue contracts valid | 2026-04-20 | pending | [260420-qkn-add-no-capture-dual-control-knight-goal-puzzle](./quick/260420-qkn-add-no-capture-dual-control-knight-goal-puzzle/) |
 | 260420-fof | add promotion-required queen-goal puzzle to active catalogue, track metadata, and parser/engine test contracts | 2026-04-20 | pending | [260420-fof-add-promotion-required-reach-puzzle-with](./quick/260420-fof-add-promotion-required-reach-puzzle-with/) |
+| 260420-rst | restart/reset reloads current catalogue puzzle definition instead of stale active-state snapshot | 2026-04-20 | pending | [260420-rst-restart-reloads-catalogue-state](./quick/260420-rst-restart-reloads-catalogue-state/) |
 
 ## Deferred Items
 
@@ -179,5 +180,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-20T12:21:16Z
-Stopped at: Completed quick task 260420-fof
+Stopped at: Completed quick task 260420-rst
 Resume file: None

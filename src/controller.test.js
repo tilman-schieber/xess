@@ -292,15 +292,42 @@ describe('undo/reset and nav delegation', () => {
     expect(saveActiveState).toHaveBeenCalled()
   })
 
-  it('reset clears active state and restores initial board', () => {
-    const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
-    ctrl.makeMove('0,0', '2,1')
+  it('reset clears active state and reloads latest catalogue puzzle over persisted active snapshot', () => {
+    const raw = getRawPuzzle('g3h4i5j6')
+    const parsed = parsePuzzle(raw)
+    const moved = applyMove(parsed.board, '0,0', '2,1', parsed)
 
-    vi.clearAllMocks()
-    const { board } = ctrl.reset()
-    expect(board.get('0,0').piece).toEqual({ type: 'n', color: 'white' })
-    expect(clearActiveState).toHaveBeenCalledTimes(1)
+    loadStore.mockReturnValue({
+      schemaVersion: 1,
+      solvedIds: [],
+      solvedMoveCounts: {},
+      activeState: {
+        puzzleId: 'g3h4i5j6',
+        boardEntries: Array.from(moved.board.entries()),
+        undoEntries: [Array.from(parsed.board.entries())],
+        redoEntries: [],
+        moveEvents: [{ from: '0,0', to: '2,1', captured: null }],
+        moveCount: 1,
+      },
+    })
+
+    const ctrl = createController()
+    const loaded = ctrl.loadPuzzle('g3h4i5j6')
+    expect(loaded.board.get('0,0').piece).toBeNull()
+
+    const previousTitle = raw.title
+    raw.title = 'Knight Leap (updated)'
+
+    try {
+      vi.clearAllMocks()
+      const { puzzle, board } = ctrl.reset()
+      expect(puzzle.title).toBe('Knight Leap (updated)')
+      expect(board.get('0,0').piece).toEqual({ type: 'n', color: 'white' })
+      expect(board.get('2,1').piece).toBeNull()
+      expect(clearActiveState).toHaveBeenCalledTimes(1)
+    } finally {
+      raw.title = previousTitle
+    }
   })
 
   it('delegates navigation helpers with current solved state', () => {

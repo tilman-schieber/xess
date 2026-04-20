@@ -231,6 +231,9 @@ export function createGameUiController({
     restart() {
       const result = controller.reset()
       if (result.error) return getRenderModel()
+      if (result.puzzle) {
+        state.puzzle = result.puzzle
+      }
       state.board = result.board
       feedback.applyMove(null, false)
       _lastMoveResult = null

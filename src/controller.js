@@ -243,13 +243,14 @@ export function createController() {
     },
 
     /**
-     * Reset to the puzzle's initial board state. Clears undo stack.
+     * Reset to the puzzle's initial catalogue state. Clears local move history.
      *
-     * @returns {{ board }}
+     * @returns {{ puzzle, board }}
      */
     reset() {
       if (!state.puzzle) return { error: 'no_puzzle' }
       const fresh = parsePuzzle(_rawEntry(state.puzzle.id))
+      state.puzzle = fresh
       state.board = fresh.board
       state.undoStack = []
       state.redoStack = []
@@ -257,7 +258,7 @@ export function createController() {
       state.moveCount = 0
       state.won = false
       clearActiveState()
-      return { board: state.board }
+      return { puzzle: state.puzzle, board: state.board }
     },
 
     getTrackingState() {
