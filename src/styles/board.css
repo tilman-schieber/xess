@@ -118,7 +118,6 @@
 
 .piece--ghost {
   opacity: 0.28;
-  filter: saturate(0.35);
 }
 
 

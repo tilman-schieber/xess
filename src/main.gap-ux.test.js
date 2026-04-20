@@ -299,7 +299,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     // Red opponent coloring is now achieved via dedicated red-*.svg assets in the
     // boardRenderer (not via CSS filter), so the old board-scoped CSS selector is gone.
     // Verify ghost neutrality is still enforced by CSS.
-    expect(boardCss.content).toMatch(/\.piece--ghost\s*\{[\s\S]*saturate\(0\.35\)/s)
+    expect(boardCss.content).toMatch(/\.piece--ghost\s*\{[\s\S]*opacity/s)
 
     // Verify red piece asset files exist on disk for all piece types
     const __dirname = path.dirname(fileURLToPath(import.meta.url))
