@@ -41,7 +41,10 @@ Goal: Create a polished, modern liquid-glass presentation while delivering clear
 
 Requirements: VIS-01, VIS-02, VIS-03, MODE-04, MODE-05
 
-Plans: TBD
+Plans: 2 plans
+
+- [ ] 13-01-PLAN.md — Establish liquid-glass gameplay tokens, overlays, and mode styling hooks
+- [ ] 13-02-PLAN.md — Add regression guards for visual affordances and MODE-04/MODE-05 behavior
 
 Success criteria:
 1. Board and surrounding UI adopt a deliberate liquid-glass visual direction (depth, translucency, polish) that feels modern and non-boring on desktop and mobile.
