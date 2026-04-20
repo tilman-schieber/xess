@@ -376,7 +376,7 @@ export default [
       'NNNN',
       'BBBB',
       'RRRR',
-      'G--P',
+      'GxxP',
     ],
     goalTargets: {
       '0,3': 'Q',
