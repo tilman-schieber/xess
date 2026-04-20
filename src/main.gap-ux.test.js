@@ -268,4 +268,35 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     expect(mainSource.content).toMatch(/addEventListener\('keydown'/)
     expect(mainSource.content).toMatch(/event\.key\s*===\s*'Enter'\s*\|\|\s*event\.key\s*===\s*' '/)
   })
+
+  it('renders board with explicit mode metadata hooks for reach and capture puzzles', () => {
+    const dom = new JSDOM('<!doctype html><div id="root"></div>')
+    globalThis.document = dom.window.document
+    globalThis.window = dom.window
+    globalThis.DOMParser = dom.window.DOMParser
+
+    const reachUi = createGameUiController({ puzzleId: 'b4c5d6e7' })
+    const reachRoot = dom.window.document.querySelector('#root')
+    renderToDom(reachRoot, { ...reachUi.getRenderModel(), puzzleId: 'b4c5d6e7', prevId: null, nextId: null })
+
+    const reachBoard = reachRoot.querySelector('[data-board]')
+    expect(reachBoard?.getAttribute('data-goal-type')).toBe('reach-all-goal-squares')
+    expect(reachBoard?.getAttribute('data-board-mode')).toBe('reach')
+    expect(reachBoard?.className).toContain('board--mode-reach')
+
+    const captureUi = createGameUiController({ puzzleId: 'xk3m9pq2' })
+    renderToDom(reachRoot, { ...captureUi.getRenderModel(), puzzleId: 'xk3m9pq2', prevId: null, nextId: null })
+    const captureBoard = reachRoot.querySelector('[data-board]')
+    expect(captureBoard?.getAttribute('data-goal-type')).toBe('capture-all-targets')
+    expect(captureBoard?.getAttribute('data-board-mode')).toBe('capture')
+    expect(captureBoard?.className).toContain('board--mode-capture')
+  })
+
+  it('styles reach-mode opponents via board-scoped selector while leaving ghost styling neutral', () => {
+    const boardCss = getCssFile('./styles/board.css')
+    expect(boardCss.exists).toBe(true)
+
+    expect(boardCss.content).toMatch(/\.board\[data-goal-type='reach-all-goal-squares'\]\s+\.piece\[data-piece-key\^='black-'\]:not\(\.piece--ghost\)/)
+    expect(boardCss.content).toMatch(/\.piece--ghost\s*\{[\s\S]*saturate\(0\.35\)/s)
+  })
 })

@@ -233,6 +233,33 @@ describe('responsive layout and touch target contracts', () => {
   })
 })
 
+describe('phase 13 visual affordance and mode-hook contracts', () => {
+  it('board stylesheet defines translucent cell overlays with piece-safe layering', () => {
+    const boardCss = getCssFile('./styles/board.css')
+    expect(boardCss.exists).toBe(true)
+
+    expect(boardCss.content).toMatch(/\.cell::after\s*\{[\s\S]*opacity:\s*0/s)
+    expect(boardCss.content).toMatch(/\.cell\.is-selected::after\s*\{[\s\S]*background:/s)
+    expect(boardCss.content).toMatch(/\.cell\.is-legal::after\s*\{[\s\S]*background:/s)
+    expect(boardCss.content).toMatch(/\.cell\.is-illegal-feedback::after\s*\{[\s\S]*background:/s)
+    expect(boardCss.content).toMatch(/\.piece\s*\{[\s\S]*z-index:\s*2/s)
+
+    // Regression guard: frame-only ring approach should not reappear.
+    expect(boardCss.content).not.toMatch(/\.cell\.is-selected\s*\{[\s\S]*box-shadow:\s*inset\s+0\s+0\s+0\s+3px/s)
+    expect(boardCss.content).not.toMatch(/\.cell\.is-legal\s*\{[\s\S]*box-shadow:\s*inset\s+0\s+0\s+0\s+3px/s)
+  })
+
+  it('render source keeps explicit board goal-type and board mode hooks for CSS scoping', () => {
+    const mainSource = getSourceFile('./main.js')
+    expect(mainSource.exists).toBe(true)
+
+    expect(mainSource.content).toMatch(/board\.setAttribute\('data-goal-type',\s*boardGoalType\)/)
+    expect(mainSource.content).toMatch(/board\.setAttribute\('data-board-mode',\s*boardModeClass\.replace\('board--mode-',\s*''\)\)/)
+    expect(mainSource.content).toMatch(/board--mode-reach/)
+    expect(mainSource.content).toMatch(/board--mode-capture/)
+  })
+})
+
 describe('tracking runtime and UI contracts', () => {
   it('undo/redo actions keep move counter synchronized across move, undo, redo, and restart', () => {
     const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
@@ -293,5 +320,19 @@ describe('tracking runtime and UI contracts', () => {
 
     expect(appCss.content).toMatch(/\.tracking-controls/)
     expect(appCss.content).toMatch(/\.tracking-counter/)
+  })
+
+  it('capture and reach puzzle objectives stay behaviorally distinct in UI controller flow', () => {
+    const captureUi = createGameUiController({ puzzleId: 'g3h4i5j6' })
+    captureUi.tapCell('0,0')
+    captureUi.tapCell('1,2')
+    expect(captureUi.getState().won).toBe(true)
+
+    const reachUi = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    reachUi.tapCell('0,0')
+    reachUi.tapCell('0,2')
+    reachUi.tapCell('0,2')
+    reachUi.tapCell('2,2')
+    expect(reachUi.getState().won).toBe(true)
   })
 })
