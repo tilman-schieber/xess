@@ -1,34 +1,34 @@
-# Pitfalls Research (Milestone v1.2)
+# Pitfalls Research (Milestone v1.3)
 
 **Project:** Xess
-**Milestone focus:** puzzle logic and move tracking
-**Researched:** 2026-04-19
+**Milestone focus:** UI/UX polish and dual-mode onboarding
+**Researched:** 2026-04-20
 
 ## High-Risk Pitfalls
 
-1. **History drift after undo/redo**
-   - Risk: board state and move list diverge.
-   - Mitigation: test state invariants after every transition.
+1. **Overlay ambiguity on dense irregular boards**
+   - Risk: selected and legal overlays look too similar, reducing clarity.
+   - Mitigation: use same hue family but distinct alpha/intensity and test on smallest mobile viewport.
 
-2. **Invalid move mutates state indirectly**
-   - Risk: rejected intents still alter selection/history/counters.
-   - Mitigation: enforce early-return contract on invalid paths.
+2. **Renderer-only mode logic drift**
+   - Risk: goal mode appears no-capture visually but controller still allows captures.
+   - Mitigation: enforce mode rules in controller first; renderer only reflects state.
 
-3. **Redo branch corruption**
-   - Risk: redo remains available after a new divergent move.
-   - Mitigation: clear redo stack whenever a fresh forward move is committed.
+3. **Hamburger/menu state leaks across screen modes**
+   - Risk: menu remains open during board interactions, causing accidental taps.
+   - Mitigation: centralize menu open/close transitions and close on navigation/action.
 
-4. **Persistence schema mismatch**
-   - Risk: old saved states crash or silently drop tracking fields.
-   - Mitigation: tolerant rehydrate defaults + migration-safe parsing.
+4. **Contextual landing actions point to invalid/stale puzzle IDs**
+   - Risk: continue/tutorial CTA fails after catalogue changes.
+   - Mitigation: sanitize action targets against active catalogue and fall back to safe defaults.
 
-5. **Geometry edge-case regressions**
-   - Risk: fixes for one piece type break another on irregular boards.
-   - Mitigation: piece-by-piece regression suite for representative puzzle fixtures.
+5. **Mode-specific piece tint reduces accessibility**
+   - Risk: dark-red enemy pieces become hard to read on some board colors.
+   - Mitigation: define contrast-checked color tokens and fallback to neutral dark theme if contrast fails.
 
 ## Warning Signs During Implementation
 
-- Move counter does not match history length.
-- Undo restores board but not selected/active UI state.
-- Reloaded game resumes with impossible legal moves.
-- Same intent produces different outcomes from identical start state.
+- Players mis-click legal targets because overlays blend with base cell colors.
+- Goal-mode puzzle accepts a capture despite UX indicating no-capture.
+- Landing page repeatedly suggests "Continue" when no recoverable active puzzle exists.
+- Tutorial copy and actual puzzle behavior disagree on mode rules.

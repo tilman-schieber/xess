@@ -1,38 +1,47 @@
-# Feature Research (Milestone v1.2)
+# Feature Research (Milestone v1.3)
 
 **Project:** Xess
-**Milestone focus:** tune puzzle logic and improve move tracking
-**Researched:** 2026-04-19
+**Milestone focus:** UI/UX polish + tutorial and dual puzzle-mode clarity
+**Researched:** 2026-04-20
 
 ## Table Stakes For This Milestone
 
 | Category | Feature | Complexity | Notes |
 |----------|---------|------------|-------|
-| Logic correctness | Legal moves are deterministic across irregular boards | Medium | Must cover rays, jumps, blocked cells, and capture rules |
-| Logic correctness | Illegal moves are consistently rejected | Low | Never mutate board state on invalid requests |
-| Move tracking | Multi-step undo | Medium | Expected in puzzle games; must remain stable after complex paths |
-| Move tracking | Move list visibility in play UI | Medium | Improves trust and player learning |
-| Move tracking | Accurate move counter + replay consistency | Medium | Counter and history must stay in sync with undo/redo/reset |
-| Persistence | Active puzzle history resumes after reload | Medium | Restore in-progress confidence and prevent player frustration |
+| Interaction visuals | Selected origin square highlighted as filled translucent overlay | Low | Common chess UX baseline; avoid piece recolor on selection |
+| Interaction visuals | Legal move targets shown as subtle filled overlays (not heavy borders) | Low | Best readability on irregular boards with many blocked cells |
+| Navigation shell | Header/footer/menu with responsive hamburger behavior | Medium | Expected for mobile-first PWA navigation clarity |
+| Onboarding | Landing page with contextual next actions (continue/tutorial/start) | Medium | Reduces friction for first-time and return users |
+| Tutorial | Dedicated tutorial track introducing board twist + goal types | Medium | Needed to explain non-standard board assumptions quickly |
+| Mode clarity | Distinct capture mode vs move-to-goal mode rules and visuals | Medium | Core comprehension requirement for broader content growth |
+
+## Major Chess-Site Interaction Patterns (relevant adaptation)
+
+| Pattern | Typical presentation | Recommendation for Xess |
+|---------|----------------------|--------------------------|
+| Selected piece | Soft fill on source square, often with slight glow | Use translucent green overlay on selected cell only |
+| Legal non-capture destinations | Dot/overlay centered on destination cell | Use translucent green destination overlay to match requested style |
+| Legal capture destinations | Distinct stronger marker than quiet moves | Use stronger alpha variant (same hue family) rather than frame ring |
+| Last move/context hints | Light directional or dual-square highlight | Defer unless needed; prioritize selected/legal cues first |
 
 ## Differentiators
 
 | Feature | Value |
 |---------|-------|
-| Redo after undo | Enables exploration without losing branches immediately |
-| Clear invalid-move feedback | Makes unusual board geometry feel understandable |
-| Move history semantics tied to puzzle outcomes | Improves debuggability and future analytics hooks |
+| Goal-mode enemy red treatment (including dark-red SVG tint) | Immediate visual understanding that mode semantics changed |
+| Context-sensitive landing actions | Makes progression feel intentional instead of menu-hunting |
+| Tutorial that explicitly compares both puzzle types | Prevents early confusion and improves retention |
 
-## Anti-Features For v1.2
+## Anti-Features For v1.3
 
 | Anti-feature | Why avoid now |
 |--------------|---------------|
-| Full PGN/FEN export | Not core to player value; unnecessary complexity |
-| Advanced analysis engine | Outside puzzle gameplay scope |
-| Cloud move sync | Violates local-only storage constraint |
+| Fully custom board editor | Expands scope away from polish/onboarding objective |
+| Animated piece effects on every move | Visual noise and performance risk on mobile |
+| Global redesign of all prior puzzle content taxonomy | Not required to ship dual-mode clarity milestone |
 
 ## Dependencies
 
-- Move history UI depends on stable controller-level history contracts.
-- Redo depends on explicit branch invalidation policy after new moves.
-- Persistence recovery depends on schema-safe serialization of history metadata.
+- Visual overlays depend on stable legal move descriptors from controller.
+- Goal-mode color treatment depends on puzzle metadata carrying explicit mode/type.
+- Contextual landing actions depend on reliable active/solved/tutorial state lookup in store.

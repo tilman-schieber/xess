@@ -1,28 +1,29 @@
-# Technology Stack (Milestone v1.2)
+# Technology Stack (Milestone v1.3)
 
 **Project:** Xess
-**Milestone focus:** Puzzle logic tuning and move tracking improvements
-**Researched:** 2026-04-19
+**Milestone focus:** Interface polish, onboarding clarity, and explicit puzzle-mode presentation
+**Researched:** 2026-04-20
 
 ## Stack Additions Needed
 
-No new runtime libraries are required for this milestone.
+No new framework dependency is required; milestone fits current Vanilla JS + CSS architecture.
 
-| Area | Current choice | v1.2 recommendation | Why |
+| Area | Current choice | v1.3 recommendation | Why |
 |------|----------------|---------------------|-----|
-| Movement logic | Custom engine in `src/engine` | Keep custom engine | Board geometry rules are project-specific; external chess libs do not fit |
-| Move tracking | Existing in-memory + persisted state | Extend existing controller/store contracts | Avoid extra state frameworks and keep current architecture stable |
-| Validation/testing | Vitest | Expand engine/controller tests | Logic and replay safety are the core risk for this milestone |
-| UI feedback | Existing DOM/CSS | Use existing UI layer for explicit invalid-move and history cues | No dependency needed; small targeted renderer updates are enough |
+| Interaction highlighting | Existing board cell classes | Add semantic overlay classes/tokens (`is-selected`, `is-legal`, `is-legal-capture`) | Matches major chess-site affordances while preserving board geometry constraints |
+| Piece visuals | Static SVG imports | Keep static SVG pipeline; add CSS tint token for goal-mode opponents | Enables red/dark-red mode distinction without swapping full asset sets |
+| App shell/navigation | Existing mode renderers | Add layout shell module + responsive menu state in UI controller | Keeps routing simple and avoids framework/router introduction |
+| Onboarding flow | Start/tracks/play flow | Extend start model with contextual actions and first-visit heuristics | Preserves local-only architecture with minimal state additions |
+| Testing | Vitest + jsdom | Add UI contract tests for overlays/menu/actions and rule-mode tests for no-capture goal mode | Highest risk is UX/state regressions across responsive and mode-specific behavior |
 
 ## What Not To Add
 
-- Do not introduce a global state library only for move history.
-- Do not add chess.js or notation libraries for engine behavior.
-- Do not move persistence away from localStorage.
+- Do not introduce CSS/UI frameworks solely for header/footer/menu work.
+- Do not fork piece assets per mode unless CSS tinting proves insufficient.
+- Do not add remote analytics or backend-driven onboarding state.
 
 ## Integration Notes
 
-- Keep move validation in pure engine/controller seams.
-- Treat move history as app state metadata, not as a separate subsystem.
-- Persist only what is needed to recover active puzzle state and history.
+- Keep mode semantics in puzzle metadata and controller rule checks, not in renderer-only conditions.
+- Keep overlay rendering driven by legal move data already produced by controller/engine.
+- Keep onboarding/resume context in existing local storage schema, extending with additive safe defaults.
