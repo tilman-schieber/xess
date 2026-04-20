@@ -12,8 +12,16 @@ import {
   getCellInteractionClasses,
   getPieceInteractionClasses,
 } from './ui/interactionFeedback.js'
-import { getPrevId, getNextId, getPuzzlePosition, getTracks, getTrackPuzzleList } from './puzzles/nav.js'
+import {
+  getPrevId,
+  getNextId,
+  getPuzzlePosition,
+  getTracks,
+  getTrackPuzzleList,
+  resolveLandingContinueAction,
+} from './puzzles/nav.js'
 import catalogue from './puzzles/catalogue.js'
+import { loadStore } from './store/store.js'
 import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
 import { initDragDrop } from './ui/dragDrop.js'
 import { initPwaPrompts } from './ui/pwaPrompts.js'
@@ -668,12 +676,28 @@ export function mountGameUi(root = document.querySelector('#app')) {
   }
 
   function renderStartScreenView() {
+    const persisted = loadStore()
+    const solvedIds = Array.isArray(persisted?.solvedIds) ? persisted.solvedIds : []
+    const activePuzzleId = typeof persisted?.activeState?.puzzleId === 'string'
+      ? persisted.activeState.puzzleId
+      : null
+
+    const continueAction = resolveLandingContinueAction({
+      lastTrackId: selectedTrackId,
+      solvedIds,
+      activePuzzleId,
+    })
+
     const startEl = renderStartScreen({
-      canResume: false,
+      canResume: true,
       onStart() {
         goToTrackBrowser(null)
       },
       onResume() {
+        if (continueAction.kind === 'play') {
+          loadPuzzle(continueAction.puzzleId, { trackId: continueAction.trackId })
+          return
+        }
         goToTrackBrowser(null)
       },
     })

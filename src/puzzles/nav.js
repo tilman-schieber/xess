@@ -143,6 +143,34 @@ export function getTrackLaunchPuzzleId({ trackId, solvedIds, activePuzzleId }, t
   return track.puzzleIds[0] ?? null
 }
 
+export function findTrackIdForPuzzleId(puzzleId, tracks = _tracks) {
+  if (typeof puzzleId !== 'string' || puzzleId.length === 0) return null
+  const integritySafeTracks = getIntegritySafeTracks(tracks)
+  const match = integritySafeTracks.find(track => track.puzzleIds.includes(puzzleId))
+  return match?.id ?? null
+}
+
+export function resolveLandingContinueAction(
+  { lastTrackId = null, solvedIds = [], activePuzzleId = null } = {},
+  tracks = _tracks,
+) {
+  const integritySafeTracks = getIntegritySafeTracks(tracks)
+  if (integritySafeTracks.length === 0) return { kind: 'tracks' }
+
+  const activeTrackId = findTrackIdForPuzzleId(activePuzzleId, integritySafeTracks)
+  const preferredTrackIds = [lastTrackId, activeTrackId, ...integritySafeTracks.map(track => track.id)]
+  const uniqueTrackIds = [...new Set(preferredTrackIds.filter(id => typeof id === 'string' && id.length > 0))]
+
+  for (const trackId of uniqueTrackIds) {
+    const puzzleId = getTrackLaunchPuzzleId({ trackId, solvedIds, activePuzzleId }, integritySafeTracks)
+    if (typeof puzzleId === 'string' && puzzleId.length > 0) {
+      return { kind: 'play', trackId, puzzleId }
+    }
+  }
+
+  return { kind: 'tracks' }
+}
+
 /**
  * Returns the id of the puzzle immediately before puzzleId in catalogue order.
  * Returns null if puzzleId is first or not found.
