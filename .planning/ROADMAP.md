@@ -32,7 +32,7 @@
 
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
-| 13 | UI Liquid-Glass Visual Redesign and Mode Affordances | Deliver a modern liquid-glass board/chrome style while implementing selected/legal overlays, mode-aware opponent styling, and minimal mode-regression validation | VIS-01, VIS-02, VIS-03, MODE-04, MODE-05 | 5 |
+| 13 | UI Liquid-Glass Visual Redesign and Mode Affordances | 2/2 | Complete    | 2026-04-20 |
 | 14 | UX Navigation, Landing, and Tutorial Clarity | Ship a coherent shell + onboarding flow so first-time and returning players can reliably start, continue, and learn puzzle concepts | NAV-01, NAV-02, ONB-01, ONB-02, MODE-03 | 5 |
 
 ### Phase 13: UI Liquid-Glass Visual Redesign and Mode Affordances
@@ -43,8 +43,8 @@ Requirements: VIS-01, VIS-02, VIS-03, MODE-04, MODE-05
 
 Plans: 2 plans
 
-- [ ] 13-01-PLAN.md — Establish liquid-glass gameplay tokens, overlays, and mode styling hooks
-- [ ] 13-02-PLAN.md — Add regression guards for visual affordances and MODE-04/MODE-05 behavior
+- [x] 13-01-PLAN.md — Establish liquid-glass gameplay tokens, overlays, and mode styling hooks
+- [x] 13-02-PLAN.md — Add regression guards for visual affordances and MODE-04/MODE-05 behavior
 
 Success criteria:
 1. Board and surrounding UI adopt a deliberate liquid-glass visual direction (depth, translucency, polish) that feels modern and non-boring on desktop and mobile.

@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Interface and Onboarding Clarity
-status: Milestone condensed to two-phase UI/UX structure; ready to discuss/plan Phase 13
-stopped_at: Phase 13 context gathered
-last_updated: "2026-04-20T12:32:46.547Z"
-last_activity: 2026-04-20 - v1.3 roadmap adjusted to UI/UX-only phase structure
+status: verifying
+stopped_at: Completed 13-02-PLAN.md
+last_updated: "2026-04-20T13:53:34.955Z"
+last_activity: 2026-04-20
 progress:
   total_phases: 2
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 2
+  completed_plans: 2
+  percent: 100
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-20)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** Phase 13 planning - UI liquid-glass visual redesign and mode affordances
+**Current focus:** Phase 13 — ui-liquid-glass-visual-redesign-and-mode-affordances
 
 ## Current Position
 
-Phase: 13 (UI Liquid-Glass Visual Redesign and Mode Affordances) - not started
-Plan: -
-Status: Milestone condensed to two-phase UI/UX structure; ready to discuss/plan Phase 13
-Last activity: 2026-04-20 - v1.3 roadmap adjusted to UI/UX-only phase structure
+Phase: 14
+Plan: Not started
+Status: Phase complete — ready for verification
+Last activity: 2026-04-20
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -36,7 +36,7 @@ Progress: [░░░░░░░░░░] 0%
 
 **Velocity:**
 
-- Total plans completed: 0
+- Total plans completed: 2
 - Average duration: —
 - Total execution time: 0 hours
 
@@ -44,15 +44,10 @@ Progress: [░░░░░░░░░░] 0%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 13 | 2 | - | - |
 
-**Recent Trend:**
-
-- Last 5 plans: —
-- Trend: —
-
-*Updated after each plan completion*
-None yet for v1.3.
+| Phase 13 P01 | 8min | 2 tasks | 3 files |
+| Phase 13 P02 | 9min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -122,6 +117,11 @@ Recent decisions affecting current work:
 - [Phase 12]: UI tracking model reads moveCount/canUndo/canRedo/moveEvents from controller snapshot and never keeps independent counters.
 - [Phase 12]: Move-history list rendering remains deferred; UI state publishes historyListRendered=false with moveEvents for future phase consumption.
 - [Roadmap v1.3 adjustment]: Milestone condensed to exactly two phases (UI then UX); standalone mode-rules foundation phase removed in favor of targeted regression checks in UI phase.
+- [Phase 13]: Use shared glass tokens and backdrop styling only on gameplay surfaces (meta, nav, controls), leaving start/track screens untouched.
+- [Phase 13]: Render interaction affordances as cell pseudo-element overlays with piece z-index layering to avoid piece recoloring.
+- [Phase 13]: Expose board-level goal-type mode attributes/classes from renderToDom and scope opponent tinting to reach mode only.
+- [Phase 13]: Validate visual redesign through deterministic CSS/source/DOM contract assertions instead of brittle screenshot tests.
+- [Phase 13]: Anchor MODE-04 and MODE-05 checks at controller level, then mirror critical legality expectations in UI-controller tests.
 
 ### Pending Todos
 
@@ -154,6 +154,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-20T12:32:46.542Z
-Stopped at: Phase 13 context gathered
-Resume file: .planning/phases/13-ui-liquid-glass-visual-redesign-and-mode-affordances/13-CONTEXT.md
+Last session: 2026-04-20T13:52:37.883Z
+Stopped at: Completed 13-02-PLAN.md
+Resume file: None
