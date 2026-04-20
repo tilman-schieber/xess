@@ -54,22 +54,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | - | Pending |
-| NAV-02 | - | Pending |
-| VIS-01 | - | Pending |
-| VIS-02 | - | Pending |
-| VIS-03 | - | Pending |
-| ONB-01 | - | Pending |
-| ONB-02 | - | Pending |
-| MODE-03 | - | Pending |
-| MODE-04 | - | Pending |
-| MODE-05 | - | Pending |
+| NAV-01 | Phase 15 | Pending |
+| NAV-02 | Phase 15 | Pending |
+| VIS-01 | Phase 14 | Pending |
+| VIS-02 | Phase 14 | Pending |
+| VIS-03 | Phase 14 | Pending |
+| ONB-01 | Phase 15 | Pending |
+| ONB-02 | Phase 15 | Pending |
+| MODE-03 | Phase 16 | Pending |
+| MODE-04 | Phase 13 | Pending |
+| MODE-05 | Phase 13 | Pending |
 
 **Coverage:**
 - v1 requirements: 10 total
-- Mapped to phases: 0
-- Unmapped: 10 ⚠️
+- Mapped to phases: 10
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-20*
-*Last updated: 2026-04-20 after v1.3 requirement scoping*
+*Last updated: 2026-04-20 after v1.3 roadmap mapping*
