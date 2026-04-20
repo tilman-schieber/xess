@@ -4,7 +4,7 @@
 
 - ✅ **v1.1 UX Launch Polish** — Phases 7-10 (shipped 2026-04-19, archive: `.planning/milestones/v1.1-ROADMAP.md`)
 - ✅ **v1.2 Puzzle Logic Improvement** — Phases 11-12 (shipped 2026-04-19, archive: `.planning/milestones/v1.2-ROADMAP.md`)
-- ◆ **v1.3 Interface and Onboarding Clarity** — Phases 13-14 (active)
+- ◆ **v1.3 Interface and Onboarding Clarity** — Phases 13-15 (active)
 
 ## Phases
 
@@ -32,8 +32,9 @@
 
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
-| 13 | UI Liquid-Glass Visual Redesign and Mode Affordances | 2/2 | Complete    | 2026-04-20 |
-| 14 | UX Navigation, Landing, and Tutorial Clarity | 3/3 | Complete   | 2026-04-20 |
+| 13 | UI Liquid-Glass Visual Redesign and Mode Affordances | 2/2 | Complete | 2026-04-20 |
+| 14 | UX Navigation, Landing, and Tutorial Clarity | 3/3 | Complete | 2026-04-20 |
+| 15 | Milestone Gap Closure: Shell Contract and Verification Evidence | 0/0 | Pending | TBD |
 
 ### Phase 13: UI Liquid-Glass Visual Redesign and Mode Affordances
 
@@ -71,3 +72,16 @@ Success criteria:
 3. First-time users see a clear guided start path while returning users see contextual continue/tutorial/browse actions from sanitized local progress.
 4. Tutorial track is discoverable and teaches capture vs move-to-goal concepts with language tied to in-game cues.
 5. Landing/tutorial transitions fail safely when stored references are stale, always leaving users with valid next actions.
+
+### Phase 15: Milestone Gap Closure - Shell Contract and Verification Evidence
+
+Goal: Close the v1.3 audit blockers by completing the missing shell footer contract and producing complete phase-level verification evidence for all milestone requirements.
+
+Requirements: NAV-01, NAV-02, VIS-01, VIS-02, VIS-03, ONB-01, ONB-02, MODE-03, MODE-04, MODE-05
+
+Plans: 0 plans (pending planning)
+
+Success criteria:
+1. App shell includes the persistent footer contract required by NAV-01, with regression coverage proving navigation remains safe in play mode.
+2. Phase-level verification artifacts exist for milestone scope and include requirement-by-requirement status/evidence for all ten v1.3 REQ IDs.
+3. Traceability and completion markers in REQUIREMENTS.md are reconciled to match verified evidence and re-audit input expectations.
