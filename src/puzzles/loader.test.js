@@ -188,6 +188,21 @@ describe('parsePuzzle', () => {
     expect(puzzle.goalTargets.get('1,0')).toEqual({ type: 'n', color: 'black' })
   })
 
+  it('parses uppercase goalTargets and explicit promote flag for promotion puzzles', () => {
+    const raw = makeRaw(['G--P'], {
+      goalType: 'reach-all-goal-squares',
+      targetColor: null,
+      goalTargets: { '0,0': 'Q' },
+      capturableByColor: { white: [], black: [] },
+      promote: true,
+    })
+
+    const puzzle = parsePuzzle(raw)
+    expect(puzzle.goalTargets.get('0,0')).toEqual({ type: 'q', color: 'white' })
+    expect(puzzle.promote).toBe(true)
+    expect(puzzle.capturableByColor).toEqual({ white: [], black: [] })
+  })
+
   it('throws when goalTargets points to a non-goal square', () => {
     const raw = makeRaw(['r--'], {
       goalType: 'reach-all-goal-squares',

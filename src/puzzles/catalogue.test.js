@@ -47,4 +47,18 @@ describe('catalogue', () => {
     })
     expect(parsed.goalTargets.get('5,2')).toEqual({ type: 'n', color: 'black' })
   })
+
+  it('supports promotion-required queen goal puzzle policy in active catalogue', () => {
+    const raw = catalogue.find(entry => entry.id === 'c7d8e9f0')
+    expect(raw).toBeDefined()
+
+    const parsed = parsePuzzle(raw)
+    expect(parsed.controllableColors).toEqual(['white'])
+    expect(parsed.capturableByColor).toEqual({
+      white: [],
+      black: [],
+    })
+    expect(parsed.promote).toBe(true)
+    expect(parsed.goalTargets.get('0,3')).toEqual({ type: 'q', color: 'white' })
+  })
 })

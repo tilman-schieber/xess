@@ -118,4 +118,26 @@ describe('applyMove', () => {
     })
     expect(missingPromote.get('1,0').piece).toEqual({ type: 'p', color: 'white' })
   })
+
+  it('allows a promotion puzzle to win only after the promoted queen reaches the targeted goal', () => {
+    const board = new Map([
+      ['1,1', { piece: { type: 'p', color: 'white' }, isGoal: false }],
+      ['1,0', { piece: null, isGoal: false }],
+      ['2,1', { piece: null, isGoal: true }],
+    ])
+    const puzzleWithQueenGoal = {
+      goalType: 'reach-all-goal-squares',
+      targetColor: null,
+      promote: true,
+      goalTargets: new Map([['2,1', { type: 'q', color: 'white' }]]),
+    }
+
+    const afterPromotion = applyMove(board, '1,1', '1,0', puzzleWithQueenGoal)
+    expect(afterPromotion.board.get('1,0').piece).toEqual({ type: 'q', color: 'white' })
+    expect(afterPromotion.won).toBe(false)
+
+    const afterGoal = applyMove(afterPromotion.board, '1,0', '2,1', puzzleWithQueenGoal)
+    expect(afterGoal.board.get('2,1').piece).toEqual({ type: 'q', color: 'white' })
+    expect(afterGoal.won).toBe(true)
+  })
 })

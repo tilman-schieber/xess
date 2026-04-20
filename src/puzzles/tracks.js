@@ -60,6 +60,7 @@ export default [
       'n9o0p1q2',
       'v7w8x9y0',
       'b4c5d6e7',
+      'c7d8e9f0',
     ],
   },
 ]

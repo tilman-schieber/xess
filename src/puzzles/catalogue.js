@@ -1,6 +1,6 @@
 // src/puzzles/catalogue.js
 // D-01: single catalogue file  D-02: default export array
-// 24 verified solvable puzzles (solver-checked, broken entries removed)
+// 25 verified solvable puzzles (solver-checked, broken entries removed)
 
 export default [
   // ── 3×3 boards ──────────────────────────────────────────────────────────────
@@ -363,5 +363,28 @@ export default [
       white: [],
       black: [],
     },
+  },
+  {
+    // Puzzle 25 — Crown the Route
+    schemaVersion: 1,
+    id: 'c7d8e9f0',
+    title: 'Crown the Route',
+    descriptionHtml: '<p><strong>Theme:</strong> Promote the pawn first, then bring the new queen home.</p><ul><li>The goal square only accepts a queen.</li><li>No captures are allowed.</li></ul>',
+    goalType: 'reach-all-goal-squares',
+    targetColor: null,
+    grid: [
+      'NNNN',
+      'BBBB',
+      'RRRR',
+      'G--P',
+    ],
+    goalTargets: {
+      '0,3': 'Q',
+    },
+    capturableByColor: {
+      white: [],
+      black: [],
+    },
+    promote: true,
   },
 ]
