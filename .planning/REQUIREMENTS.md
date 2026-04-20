@@ -1,32 +1,42 @@
 # Requirements: Xess
 
-**Defined:** 2026-04-19
+**Defined:** 2026-04-20
 **Core Value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
 
 ## v1 Requirements
 
-### Puzzle Logic Integrity
+Requirements for milestone v1.3 Interface and Onboarding Clarity.
 
-- [x] **LOGIC-01**: Player legal moves are generated consistently across non-rectangular boards and impassable squares.
-- [x] **LOGIC-02**: Player invalid move attempts are rejected without mutating board, progress, or move history state.
-- [x] **LOGIC-03**: Every committed move produces a canonical tracking event that can be replayed deterministically.
+### Navigation and Shell
 
-### Move Tracking and Recovery
+- [ ] **NAV-01**: Player can navigate the app through a persistent header/footer shell with clear entry points for landing, tracks, and active play context.
+- [ ] **NAV-02**: Player on mobile can open and use a hamburger menu with tap-friendly controls that do not interfere with board interactions.
 
-- [x] **MOVE-01**: Active puzzle state records chronological move events for deterministic replay; visible move-list rendering is deferred in v1.2.
-- [x] **MOVE-02**: Player can see an accurate move counter that stays in sync with undo, redo, and reset actions.
-- [x] **MOVE-03**: Player can perform multi-step undo and redo during an active puzzle.
-- [x] **MOVE-04**: Player can reload and resume an in-progress puzzle with board state, move history, and move counter preserved.
+### Board Visual Affordances
+
+- [ ] **VIS-01**: Player sees the currently selected piece square highlighted with a translucent green-toned overlay that does not recolor the piece glyph.
+- [ ] **VIS-02**: Player sees legal destination squares indicated by translucent green-toned overlays on board cells (not frame-only outlines).
+- [ ] **VIS-03**: Player sees mode-aware opponent styling where move-to-goal puzzles render opposing pieces in red/dark-red treatment that remains readable on mobile and desktop.
+
+### Onboarding and Progression
+
+- [ ] **ONB-01**: New players land on a full landing page that clearly explains available next actions instead of entering directly into minimal gameplay UI.
+- [ ] **ONB-02**: Returning players see contextual actions (for example continue active puzzle, start tutorial, or browse tracks) derived from current local progress state.
+
+### Puzzle Modes and Tutorial
+
+- [ ] **MODE-03**: Player can start and complete a dedicated tutorial track that teaches Xess-specific puzzle concepts and board expectations.
+- [ ] **MODE-04**: Player can play capture puzzles where only white pieces are controllable and objective progress relies on capturing black pieces according to puzzle goals.
+- [ ] **MODE-05**: Player can play move-to-goal puzzles where captures are disallowed by rules and objectives are completed by reaching designated goal squares.
 
 ## v2 Requirements
 
-Deferred while v1.2 focuses on correctness and tracking.
+Deferred while v1.3 focuses on clarity and onboarding fundamentals.
 
 ### Modes and Content Expansion
 
 - **MODE-01**: User can start a random puzzle mode from the start screen.
 - **MODE-02**: User can run a guided progression mode with curated constraints.
-- **MODE-03**: User can access a tutorial track with onboarding-focused sequencing.
 - **CNT-V2-01**: User can play expanded track libraries beyond the launch placeholder set.
 - **CNT-V2-02**: Tracks can be tagged and filtered by theme/difficulty in the start flow.
 
@@ -34,27 +44,32 @@ Deferred while v1.2 focuses on correctness and tracking.
 
 | Feature | Reason |
 |---------|--------|
-| PGN or FEN export/import | Not required for puzzle gameplay trust and adds complexity outside milestone goals |
-| Engine analysis mode | Out of scope for this milestone; focus is deterministic play and tracking |
-| Cloud sync for move history | Violates local-only storage constraints |
+| User-generated level editor | Not required for this milestone; focus is polish of curated experience |
+| Multiplayer races/leaderboards | Out of scope for local-first single-player constraints |
+| Cloud profile sync | Violates local-only storage requirement |
 
 ## Traceability
 
+Which phases cover which requirements. Updated during roadmap creation.
+
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LOGIC-01 | Phase 11 | Complete |
-| LOGIC-02 | Phase 11 | Complete |
-| LOGIC-03 | Phase 12 | Complete |
-| MOVE-01 | Phase 12 | Complete |
-| MOVE-02 | Phase 12 | Complete |
-| MOVE-03 | Phase 12 | Complete |
-| MOVE-04 | Phase 12 | Complete |
+| NAV-01 | - | Pending |
+| NAV-02 | - | Pending |
+| VIS-01 | - | Pending |
+| VIS-02 | - | Pending |
+| VIS-03 | - | Pending |
+| ONB-01 | - | Pending |
+| ONB-02 | - | Pending |
+| MODE-03 | - | Pending |
+| MODE-04 | - | Pending |
+| MODE-05 | - | Pending |
 
 **Coverage:**
-- v1 requirements: 7 total
-- Mapped to phases: 7
-- Unmapped: 0 ✓
+- v1 requirements: 10 total
+- Mapped to phases: 0
+- Unmapped: 10 ⚠️
 
 ---
-*Requirements defined: 2026-04-19*
-*Last updated: 2026-04-19 after v1.2 scope-alignment cleanup*
+*Requirements defined: 2026-04-20*
+*Last updated: 2026-04-20 after v1.3 requirement scoping*

@@ -40,7 +40,7 @@ A chess puzzle game where the twist is the board, not the rules — players who 
 - [ ] Player sees a polished responsive app shell with clear desktop/mobile navigation patterns (`NAV-01`)
 - [ ] Board interactions use clear overlay affordances for selection and legal destinations (`VIS-01`)
 - [ ] Landing and resume flow presents contextual next actions for new and returning players (`ONB-01`)
-- [ ] Tutorial track explains core puzzle concepts and mode differences (`TUT-01`)
+- [ ] Tutorial track explains core puzzle concepts and mode differences (`MODE-03`)
 - [ ] Capture mode and move-to-goal mode are explicit, visually distinct, and rule-consistent (`MODE-04`, `MODE-05`)
 
 ### Out of Scope
