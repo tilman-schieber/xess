@@ -50,7 +50,7 @@ Success criteria:
 1. Board and surrounding UI adopt a deliberate liquid-glass visual direction (depth, translucency, polish) that feels modern and non-boring on desktop and mobile.
 2. Selected piece square uses a translucent overlay treatment consistent with the new visual language and does not recolor piece SVG assets.
 3. Legal destination squares use translucent overlays (not frame-only outlines) with clear readability on irregular boards.
-4. Move-to-goal opponent pieces render in red/dark-red treatment with acceptable contrast in the redesigned theme.
+4. Move-to-goal opponent pieces and ghost target pieces render in red/dark-red treatment with acceptable contrast in the redesigned theme.
 5. Regression checks confirm existing capture/no-capture gameplay behavior still works (no standalone mode-rules foundation expansion in this milestone).
 
 ### Phase 14: UX Navigation, Landing, and Tutorial Clarity
