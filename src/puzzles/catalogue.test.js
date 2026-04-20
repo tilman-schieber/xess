@@ -34,4 +34,17 @@ describe('catalogue', () => {
       expect(Object.hasOwn(puzzle, 'pawnDirections')).toBe(false)
     })
   })
+
+  it('supports no-capture, dual-control reach puzzle policy in active catalogue', () => {
+    const raw = catalogue.find(entry => entry.id === 'b4c5d6e7')
+    expect(raw).toBeDefined()
+
+    const parsed = parsePuzzle(raw)
+    expect(parsed.controllableColors).toEqual(['white', 'black'])
+    expect(parsed.capturableByColor).toEqual({
+      white: [],
+      black: [],
+    })
+    expect(parsed.goalTargets.get('5,2')).toEqual({ type: 'n', color: 'black' })
+  })
 })

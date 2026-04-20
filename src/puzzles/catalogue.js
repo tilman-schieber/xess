@@ -1,6 +1,6 @@
 // src/puzzles/catalogue.js
 // D-01: single catalogue file  D-02: default export array
-// 23 verified solvable puzzles (solver-checked, broken entries removed)
+// 24 verified solvable puzzles (solver-checked, broken entries removed)
 
 export default [
   // ── 3×3 boards ──────────────────────────────────────────────────────────────
@@ -341,5 +341,27 @@ export default [
       '-n-r-',
       'B-x-R',
     ],
+  },
+  {
+    // Puzzle 24 — Knight Relay
+    schemaVersion: 1,
+    id: 'b4c5d6e7',
+    title: 'Knight Relay',
+    descriptionHtml: '<p><strong>Theme:</strong> Coordinate both colors to route the black knight to its destination.</p><ul><li>No captures are allowed for either side.</li></ul>',
+    goalType: 'reach-all-goal-squares',
+    targetColor: null,
+    grid: [
+      'nBBBBR',
+      'NNNNRR',
+      'xxxxRG',
+    ],
+    goalTargets: {
+      '5,2': 'n',
+    },
+    controllableColors: ['white', 'black'],
+    capturableByColor: {
+      white: [],
+      black: [],
+    },
   },
 ]

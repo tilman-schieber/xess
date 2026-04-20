@@ -170,6 +170,24 @@ describe('parsePuzzle', () => {
     expect(puzzle.promote).toBe(false)
   })
 
+  it('supports dual-color control with no-capture policy', () => {
+    const raw = makeRaw(['nG'], {
+      goalType: 'reach-all-goal-squares',
+      targetColor: null,
+      goalTargets: { '1,0': 'n' },
+      controllableColors: ['white', 'black', 'white'],
+      capturableByColor: { white: [], black: [] },
+    })
+
+    const puzzle = parsePuzzle(raw)
+    expect(puzzle.controllableColors).toEqual(['white', 'black'])
+    expect(puzzle.capturableByColor).toEqual({
+      white: [],
+      black: [],
+    })
+    expect(puzzle.goalTargets.get('1,0')).toEqual({ type: 'n', color: 'black' })
+  })
+
   it('throws when goalTargets points to a non-goal square', () => {
     const raw = makeRaw(['r--'], {
       goalType: 'reach-all-goal-squares',
