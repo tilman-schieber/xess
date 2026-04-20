@@ -10,6 +10,7 @@ describe('renderStartScreen', () => {
       onContinue: () => {},
       onTutorial: () => {},
       onBrowseTracks: () => {},
+      onDismissTutorial: () => {},
     })
 
     const cards = Array.from(view.querySelectorAll('[data-start-card]')).map(card => card.getAttribute('data-start-card'))
@@ -25,6 +26,7 @@ describe('renderStartScreen', () => {
       onContinue: () => {},
       onTutorial: () => {},
       onBrowseTracks: () => {},
+      onDismissTutorial: () => {},
     })
 
     const chips = view.querySelectorAll('[data-progress-chip]')
@@ -42,6 +44,7 @@ describe('renderStartScreen', () => {
       onContinue,
       onTutorial,
       onBrowseTracks,
+      onDismissTutorial: () => {},
     })
 
     const continueAction = view.querySelector('[data-start-action="continue"]')
@@ -55,5 +58,34 @@ describe('renderStartScreen', () => {
     expect(onContinue).toHaveBeenCalledTimes(1)
     expect(onTutorial).toHaveBeenCalledTimes(1)
     expect(onBrowseTracks).toHaveBeenCalledTimes(1)
+  })
+
+  it('hides tutorial card when showTutorialCard is false', () => {
+    const view = renderStartScreen({
+      chips: [],
+      onContinue: () => {},
+      onTutorial: () => {},
+      onBrowseTracks: () => {},
+      showTutorialCard: false,
+    })
+
+    const cards = Array.from(view.querySelectorAll('[data-start-card]')).map(card => card.getAttribute('data-start-card'))
+    expect(cards).toEqual(['continue', 'browse'])
+    expect(view.querySelector('[data-start-action="tutorial"]')).toBeNull()
+  })
+
+  it('calls dismiss callback when tutorial dismiss action is triggered', () => {
+    const onDismissTutorial = vi.fn()
+
+    const view = renderStartScreen({
+      chips: [],
+      onContinue: () => {},
+      onTutorial: () => {},
+      onBrowseTracks: () => {},
+      onDismissTutorial,
+    })
+
+    view.querySelector('[data-start-dismiss="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    expect(onDismissTutorial).toHaveBeenCalledTimes(1)
   })
 })

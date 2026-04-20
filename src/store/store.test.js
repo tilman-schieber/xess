@@ -1,6 +1,13 @@
 // src/store/store.test.js
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { loadStore, saveProgress, saveActiveState, clearActiveState, flushSync } from './store.js'
+import {
+  loadStore,
+  saveProgress,
+  saveActiveState,
+  clearActiveState,
+  flushSync,
+  saveTutorialOnboarding,
+} from './store.js'
 
 // --- localStorage mock setup ---
 let _storage = {}
@@ -37,6 +44,8 @@ describe('loadStore', () => {
       solvedIds: [],
       solvedMoveCounts: {},
       activeState: null,
+      tutorialDismissed: false,
+      tutorialCompleted: false,
     })
   })
 
@@ -57,6 +66,8 @@ describe('loadStore', () => {
       solvedIds: [],
       solvedMoveCounts: {},
       activeState: null,
+      tutorialDismissed: false,
+      tutorialCompleted: false,
     })
   })
 
@@ -68,6 +79,8 @@ describe('loadStore', () => {
       solvedIds: [],
       solvedMoveCounts: {},
       activeState: null,
+      tutorialDismissed: false,
+      tutorialCompleted: false,
     })
   })
 
@@ -127,6 +140,36 @@ describe('loadStore', () => {
       solvedIds: ['xk3m9pq2'],
       solvedMoveCounts: {},
       activeState: null,
+      tutorialDismissed: false,
+      tutorialCompleted: false,
+    })
+  })
+
+  it('sanitizes tutorial onboarding flags to strict booleans', () => {
+    _storage['xess_v1'] = JSON.stringify({
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: null,
+      tutorialDismissed: 'yes',
+      tutorialCompleted: 1,
+    })
+
+    expect(loadStore()).toMatchObject({
+      tutorialDismissed: false,
+      tutorialCompleted: false,
+    })
+
+    _storage['xess_v1'] = JSON.stringify({
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: null,
+      tutorialDismissed: true,
+      tutorialCompleted: true,
+    })
+
+    expect(loadStore()).toMatchObject({
+      tutorialDismissed: true,
+      tutorialCompleted: true,
     })
   })
 })
@@ -165,6 +208,14 @@ describe('saveProgress', () => {
     const store = loadStore()
     expect(store.solvedIds).toEqual([VALID_ID_A])
     expect(store.solvedMoveCounts).toEqual({ [VALID_ID_B]: 3 })
+  })
+
+  it('persists tutorial onboarding patch values without resetting unspecified flags', () => {
+    saveTutorialOnboarding({ tutorialDismissed: true })
+    expect(loadStore()).toMatchObject({ tutorialDismissed: true, tutorialCompleted: false })
+
+    saveTutorialOnboarding({ tutorialCompleted: true })
+    expect(loadStore()).toMatchObject({ tutorialDismissed: true, tutorialCompleted: true })
   })
 })
 

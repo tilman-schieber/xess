@@ -21,7 +21,7 @@ import {
   resolveLandingContinueAction,
 } from './puzzles/nav.js'
 import catalogue from './puzzles/catalogue.js'
-import { loadStore } from './store/store.js'
+import { loadStore, saveTutorialOnboarding } from './store/store.js'
 import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
 import { initDragDrop } from './ui/dragDrop.js'
 import { initPwaPrompts } from './ui/pwaPrompts.js'
@@ -612,6 +612,11 @@ export function mountGameUi(root = document.querySelector('#app')) {
     rerender()
   }
 
+  function markTutorialCompleted() {
+    if (selectedTrackId !== 'tutorial') return
+    saveTutorialOnboarding({ tutorialCompleted: true })
+  }
+
   function buildTrackViewModels() {
     const solvedIds = controller
       .getPuzzleList()
@@ -682,6 +687,8 @@ export function mountGameUi(root = document.querySelector('#app')) {
     const activePuzzleId = typeof persisted?.activeState?.puzzleId === 'string'
       ? persisted.activeState.puzzleId
       : null
+    const tutorialDismissed = persisted?.tutorialDismissed === true
+    const tutorialCompleted = persisted?.tutorialCompleted === true
 
     const continueAction = resolveLandingContinueAction({
       lastTrackId: selectedTrackId,
@@ -697,6 +704,8 @@ export function mountGameUi(root = document.querySelector('#app')) {
       highlightedTrack ? `Track: ${highlightedTrack.title}` : 'Track: All tracks',
       `Solved ${solvedPuzzleCount}/${totalPuzzleCount}`,
     ]
+
+    const showTutorialCard = !(tutorialDismissed || tutorialCompleted)
 
     const startEl = renderStartScreen({
       chips,
@@ -715,9 +724,14 @@ export function mountGameUi(root = document.querySelector('#app')) {
         }
         goToTrackBrowser('tutorial')
       },
+      onDismissTutorial() {
+        saveTutorialOnboarding({ tutorialDismissed: true })
+        rerender()
+      },
       onBrowseTracks() {
         goToTrackBrowser(null)
       },
+      showTutorialCard,
     })
 
     renderShellView({
@@ -752,6 +766,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
     if (_dragCleanup) { _dragCleanup(); _dragCleanup = null }
 
     const boardEl = root.querySelector('[data-board]')
+
     if (boardEl) {
       _dragCleanup = initDragDrop(boardEl, {
         onDragStart(fromKey) {
@@ -767,7 +782,10 @@ export function mountGameUi(root = document.querySelector('#app')) {
           animatePieceMove(root, fromKey, toKey, () => {
             ui.tapCell(toKey)
             const moveResult = ui.getLastMoveResult()
-            if (moveResult === 'win') playSolve()
+            if (moveResult === 'win') {
+              markTutorialCompleted()
+              playSolve()
+            }
             else if (moveResult === 'move_made') playMove()
             rerender()
           })
@@ -864,7 +882,10 @@ export function mountGameUi(root = document.querySelector('#app')) {
     ui.tapCell(tapKey)
     const moveResult = ui.getLastMoveResult()
     if (moveResult === 'win' || moveResult === 'move_made') {
-      if (moveResult === 'win') playSolve()
+      if (moveResult === 'win') {
+        markTutorialCompleted()
+        playSolve()
+      }
       else playMove()
       animatePieceMove(root, prevSelected, tapKey, rerender)
     } else {

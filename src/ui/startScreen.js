@@ -42,7 +42,14 @@ function renderCard({ id, title, copy, actionLabel, onActivate }) {
   return card
 }
 
-export function renderStartScreen({ chips = [], onContinue, onTutorial, onBrowseTracks }) {
+export function renderStartScreen({
+  chips = [],
+  onContinue,
+  onTutorial,
+  onBrowseTracks,
+  onDismissTutorial,
+  showTutorialCard = true,
+}) {
   const screen = document.createElement('section')
   screen.className = 'start-screen'
   screen.setAttribute('data-start-screen', 'true')
@@ -81,13 +88,31 @@ export function renderStartScreen({ chips = [], onContinue, onTutorial, onBrowse
       actionLabel: 'Continue',
       onActivate: onContinue,
     }),
-    renderCard({
+  )
+
+  if (showTutorialCard) {
+    const tutorialCard = renderCard({
       id: 'tutorial',
       title: 'Tutorial',
       copy: 'Learn Xess movement and board geometry quickly.',
       actionLabel: 'Tutorial',
       onActivate: onTutorial,
-    }),
+    })
+
+    if (typeof onDismissTutorial === 'function') {
+      const dismissAction = document.createElement('button')
+      dismissAction.type = 'button'
+      dismissAction.className = 'start-card-dismiss'
+      dismissAction.setAttribute('data-start-dismiss', 'tutorial')
+      dismissAction.textContent = 'Dismiss'
+      bindActivate(dismissAction, onDismissTutorial)
+      tutorialCard.append(dismissAction)
+    }
+
+    cards.append(tutorialCard)
+  }
+
+  cards.append(
     renderCard({
       id: 'browse',
       title: 'Browse Tracks',

@@ -5,7 +5,13 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-let mockStore = { schemaVersion: 1, solvedIds: [], activeState: null }
+let mockStore = {
+  schemaVersion: 1,
+  solvedIds: [],
+  activeState: null,
+  tutorialDismissed: false,
+  tutorialCompleted: false,
+}
 
 vi.mock('./store/store.js', () => ({
   loadStore: vi.fn(() => mockStore),
@@ -13,6 +19,7 @@ vi.mock('./store/store.js', () => ({
   saveActiveState: vi.fn(),
   clearActiveState: vi.fn(),
   flushSync: vi.fn(),
+  saveTutorialOnboarding: vi.fn(),
 }))
 
 vi.mock('./sound.js', () => ({
@@ -33,6 +40,7 @@ vi.mock('./ui/pwaPrompts.js', () => ({
 
 import { createController } from './controller.js'
 import { mountGameUi } from './main.js'
+import { saveTutorialOnboarding } from './store/store.js'
 
 function getSourceFile(relativePath) {
   const filePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), relativePath)
@@ -44,7 +52,13 @@ function getSourceFile(relativePath) {
 
 describe('track launch selection via controller', () => {
   beforeEach(() => {
-    mockStore = { schemaVersion: 1, solvedIds: [], activeState: null }
+    mockStore = {
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: null,
+      tutorialDismissed: false,
+      tutorialCompleted: false,
+    }
   })
 
   it('returns active puzzle when active puzzle belongs to selected track', () => {
@@ -89,7 +103,14 @@ describe('track launch selection via controller', () => {
 
 describe('main track-first screen flow', () => {
   beforeEach(() => {
-    mockStore = { schemaVersion: 1, solvedIds: [], activeState: null }
+    mockStore = {
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: null,
+      tutorialDismissed: false,
+      tutorialCompleted: false,
+    }
+    vi.mocked(saveTutorialOnboarding).mockClear()
     document.body.innerHTML = '<div id="app"></div>'
   })
 
@@ -118,6 +139,8 @@ describe('main track-first screen flow', () => {
       schemaVersion: 1,
       solvedIds: ['xk3m9pq2', 'gt7wz4r1'],
       activeState: { puzzleId: 'stale-id', boardEntries: [], undoEntries: [] },
+      tutorialDismissed: false,
+      tutorialCompleted: false,
     }
 
     mountGameUi(document.querySelector('#app'))
@@ -141,6 +164,58 @@ describe('main track-first screen flow', () => {
     document.querySelector('[data-shell-nav-tracks]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('[data-selected-track="tutorial"]')).not.toBeNull()
+  })
+
+  it('shows tutorial card on first-time landing by default', () => {
+    mountGameUi(document.querySelector('#app'))
+    expect(document.querySelector('[data-start-action="tutorial"]')).not.toBeNull()
+  })
+
+  it('hides tutorial card when tutorial was explicitly dismissed', () => {
+    mockStore = {
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: null,
+      tutorialDismissed: true,
+      tutorialCompleted: false,
+    }
+
+    mountGameUi(document.querySelector('#app'))
+    expect(document.querySelector('[data-start-action="tutorial"]')).toBeNull()
+  })
+
+  it('hides tutorial card when tutorial is already completed', () => {
+    mockStore = {
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: null,
+      tutorialDismissed: false,
+      tutorialCompleted: true,
+    }
+
+    mountGameUi(document.querySelector('#app'))
+    expect(document.querySelector('[data-start-action="tutorial"]')).toBeNull()
+  })
+
+  it('keeps tutorial card visible when persisted tutorial flags are malformed', () => {
+    mockStore = {
+      schemaVersion: 1,
+      solvedIds: [],
+      activeState: null,
+      tutorialDismissed: 'yes',
+      tutorialCompleted: { done: true },
+    }
+
+    mountGameUi(document.querySelector('#app'))
+    expect(document.querySelector('[data-start-action="tutorial"]')).not.toBeNull()
+  })
+
+  it('dismiss action persists tutorial dismissal and hides card on rerender', () => {
+    mountGameUi(document.querySelector('#app'))
+
+    document.querySelector('[data-start-dismiss="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(saveTutorialOnboarding).toHaveBeenCalledWith({ tutorialDismissed: true })
   })
 
   it('tracks action from play menu returns to previous selected track context', () => {

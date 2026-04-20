@@ -15,7 +15,14 @@ let pendingWrite = null
  * Default store shape when localStorage is empty or invalid.
  */
 function _defaultStore() {
-  return { schemaVersion: CURRENT_SCHEMA_VERSION, solvedIds: [], solvedMoveCounts: {}, activeState: null }
+  return {
+    schemaVersion: CURRENT_SCHEMA_VERSION,
+    solvedIds: [],
+    solvedMoveCounts: {},
+    activeState: null,
+    tutorialDismissed: false,
+    tutorialCompleted: false,
+  }
 }
 
 const VALID_PUZZLE_IDS = new Set(catalogue.map(entry => entry.id))
@@ -75,6 +82,8 @@ function _sanitizeStore(parsed) {
     solvedIds,
     solvedMoveCounts,
     activeState: _sanitizeActiveState(parsed?.activeState),
+    tutorialDismissed: parsed?.tutorialDismissed === true,
+    tutorialCompleted: parsed?.tutorialCompleted === true,
   }
 }
 
@@ -127,6 +136,24 @@ export function saveProgress(solvedIds, solvedMoveCounts) {
     )
   }
   _write(patch)
+}
+
+/**
+ * Persist tutorial onboarding lifecycle state.
+ * Missing keys are left unchanged.
+ *
+ * @param {{ tutorialDismissed?: boolean, tutorialCompleted?: boolean }} patch
+ */
+export function saveTutorialOnboarding(patch = {}) {
+  const next = {}
+  if (typeof patch.tutorialDismissed === 'boolean') {
+    next.tutorialDismissed = patch.tutorialDismissed
+  }
+  if (typeof patch.tutorialCompleted === 'boolean') {
+    next.tutorialCompleted = patch.tutorialCompleted
+  }
+  if (Object.keys(next).length === 0) return
+  _write(next)
 }
 
 /**
