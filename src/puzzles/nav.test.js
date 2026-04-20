@@ -8,6 +8,7 @@ import {
   getTracks,
   getTrackPuzzleList,
   getTrackLaunchPuzzleId,
+  resolveLandingContinueAction,
 } from './nav.js'
 import catalogue from './catalogue.js'
 
@@ -242,5 +243,29 @@ describe('track navigation contracts', () => {
       expect(fetchSpy).not.toHaveBeenCalled()
       fetchSpy.mockRestore()
     }
+  })
+
+  it('resolveLandingContinueAction falls back from stale active puzzle to first unsolved in last track', () => {
+    const action = resolveLandingContinueAction({
+      lastTrackId: 'foundations',
+      solvedIds: ['xk3m9pq2', 'gt7wz4r1'],
+      activePuzzleId: 'stale-id',
+    })
+
+    expect(action).toEqual({
+      kind: 'play',
+      trackId: 'foundations',
+      puzzleId: 'g3h4i5j6',
+    })
+  })
+
+  it('resolveLandingContinueAction routes to track browser when no launchable puzzle exists', () => {
+    const action = resolveLandingContinueAction({
+      lastTrackId: 'unknown-track',
+      solvedIds: [],
+      activePuzzleId: 'stale-id',
+    }, [{ id: 'empty', title: 'Empty', puzzleIds: [] }])
+
+    expect(action).toEqual({ kind: 'tracks' })
   })
 })

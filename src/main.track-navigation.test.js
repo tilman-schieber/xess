@@ -113,6 +113,23 @@ describe('main track-first screen flow', () => {
     expect(document.querySelector('[data-board]')).not.toBeNull()
   })
 
+  it('resume action falls back safely when persisted active puzzle is stale', () => {
+    mockStore = {
+      schemaVersion: 1,
+      solvedIds: ['xk3m9pq2', 'gt7wz4r1'],
+      activeState: { puzzleId: 'stale-id', boardEntries: [], undoEntries: [] },
+    }
+
+    mountGameUi(document.querySelector('#app'))
+
+    const resume = document.querySelector('[data-resume-action]')
+    expect(resume).not.toBeNull()
+
+    resume?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(document.querySelector('[data-board]')).not.toBeNull()
+  })
+
   it('tracks action from play menu returns to previous selected track context', () => {
     mountGameUi(document.querySelector('#app'))
 
