@@ -57,6 +57,14 @@ export function renderTrackBrowser({
       progress.className = 'track-card-progress'
       progress.textContent = `Solved ${track.solvedCount ?? 0} / ${track.totalCount ?? track.puzzles?.length ?? 0}`
 
+      if (track?.modes?.tutorial?.enabled === true) {
+        const tutorialTag = document.createElement('span')
+        tutorialTag.className = 'track-card-tutorial'
+        tutorialTag.setAttribute('data-track-tutorial', 'true')
+        tutorialTag.textContent = 'Tutorial'
+        card.append(tutorialTag)
+      }
+
       const actions = document.createElement('div')
       actions.className = 'track-card-actions'
 

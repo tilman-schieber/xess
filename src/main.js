@@ -708,7 +708,12 @@ export function mountGameUi(root = document.querySelector('#app')) {
         goToTrackBrowser(null)
       },
       onTutorial() {
-        goToTrackBrowser('foundations')
+        const tutorialLaunchId = controller.getTrackLaunchPuzzleId('tutorial')
+        if (tutorialLaunchId) {
+          loadPuzzle(tutorialLaunchId, { trackId: 'tutorial' })
+          return
+        }
+        goToTrackBrowser('tutorial')
       },
       onBrowseTracks() {
         goToTrackBrowser(null)

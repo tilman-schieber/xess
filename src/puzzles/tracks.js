@@ -3,6 +3,19 @@
 
 export default [
   {
+    id: 'tutorial',
+    title: 'Tutorial',
+    subtitle: 'Guided first steps through Xess controls and goals',
+    modes: {
+      random: { enabled: false },
+      guided: { enabled: true },
+      tutorial: { enabled: true },
+    },
+    puzzleIds: [
+      'd1e2f3g4',
+    ],
+  },
+  {
     id: 'foundations',
     title: 'Foundations',
     subtitle: 'Learn board quirks and core movement ideas',
@@ -32,7 +45,6 @@ export default [
       tutorial: { enabled: false },
     },
     puzzleIds: [
-      'd1e2f3g4',
       'l9m0n1o2',
       't7u8v9w0',
       'x1y2z3a4',
