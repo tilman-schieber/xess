@@ -14,6 +14,7 @@ const tracks = [
       { id: 'p1', title: 'Puzzle 1', position: '1 / 2' },
       { id: 'p2', title: 'Puzzle 2', position: '2 / 2' },
     ],
+    modes: { tutorial: { enabled: false } },
   },
   {
     id: 'formations',
@@ -24,6 +25,7 @@ const tracks = [
     puzzles: [
       { id: 'p3', title: 'Puzzle 3', position: '1 / 1' },
     ],
+    modes: { tutorial: { enabled: true } },
   },
 ]
 
@@ -92,5 +94,19 @@ describe('renderTrackBrowser', () => {
     puzzle?.dispatchEvent(new Event('pointerdown'))
 
     expect(onSelectPuzzle).toHaveBeenCalledWith({ trackId: 'foundations', puzzleId: 'p2' })
+  })
+
+  it('marks tutorial-enabled tracks with tutorial copy in overview cards', () => {
+    const view = renderTrackBrowser({
+      tracks,
+      selectedTrackId: null,
+      onOpenTrack: () => {},
+      onResumeTrack: () => {},
+      onSelectPuzzle: () => {},
+      onBack: () => {},
+    })
+
+    const tutorialBadge = view.querySelector('[data-track-id="formations"] [data-track-tutorial]')
+    expect(tutorialBadge).not.toBeNull()
   })
 })

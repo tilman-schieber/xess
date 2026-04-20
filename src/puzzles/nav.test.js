@@ -268,4 +268,13 @@ describe('track navigation contracts', () => {
 
     expect(action).toEqual({ kind: 'tracks' })
   })
+
+  it('getTracks exposes a dedicated tutorial track with launchable puzzles', () => {
+    const tracks = getTracks()
+    const tutorial = tracks.find(track => track.id === 'tutorial')
+
+    expect(tutorial).toBeDefined()
+    expect(Array.isArray(tutorial?.puzzleIds)).toBe(true)
+    expect(tutorial?.puzzleIds.length).toBeGreaterThan(0)
+  })
 })

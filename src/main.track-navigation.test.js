@@ -130,6 +130,19 @@ describe('main track-first screen flow', () => {
     expect(document.querySelector('[data-board]')).not.toBeNull()
   })
 
+  it('tutorial action launches the dedicated tutorial route without dead ends', () => {
+    mountGameUi(document.querySelector('#app'))
+
+    document.querySelector('[data-start-action="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(document.querySelector('[data-board]')).not.toBeNull()
+
+    document.querySelector('[data-shell-menu-toggle]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-shell-nav-tracks]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(document.querySelector('[data-selected-track="tutorial"]')).not.toBeNull()
+  })
+
   it('tracks action from play menu returns to previous selected track context', () => {
     mountGameUi(document.querySelector('#app'))
 
