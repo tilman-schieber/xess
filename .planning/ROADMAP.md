@@ -33,7 +33,7 @@
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
 | 13 | UI Liquid-Glass Visual Redesign and Mode Affordances | 2/2 | Complete    | 2026-04-20 |
-| 14 | UX Navigation, Landing, and Tutorial Clarity | Ship a coherent shell + onboarding flow so first-time and returning players can reliably start, continue, and learn puzzle concepts | NAV-01, NAV-02, ONB-01, ONB-02, MODE-03 | 5 |
+| 14 | UX Navigation, Landing, and Tutorial Clarity | 3/3 | Complete   | 2026-04-20 |
 
 ### Phase 13: UI Liquid-Glass Visual Redesign and Mode Affordances
 
@@ -59,7 +59,11 @@ Goal: Make navigation and onboarding intuitive through a clearer app shell, cont
 
 Requirements: NAV-01, NAV-02, ONB-01, ONB-02, MODE-03
 
-Plans: TBD
+Plans: 3 plans
+
+- [x] 14-01-PLAN.md — Build persistent app shell and play-mode hamburger navigation safety
+- [x] 14-02-PLAN.md — Implement contextual landing dashboard cards with robust Continue fallback
+- [x] 14-03-PLAN.md — Deliver tutorial track discoverability plus dismiss/complete lifecycle persistence
 
 Success criteria:
 1. App renders a persistent shell with clear landing/tracks/play navigation affordances across responsive breakpoints.

@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Interface and Onboarding Clarity
-status: verifying
-stopped_at: Phase 14 context gathered
-last_updated: "2026-04-20T17:56:39.946Z"
+status: executing
+stopped_at: Completed 14-03-PLAN.md
+last_updated: "2026-04-20T19:12:02.852Z"
 last_activity: 2026-04-20
 progress:
   total_phases: 2
-  completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  completed_phases: 2
+  total_plans: 5
+  completed_plans: 5
   percent: 100
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-20)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** Phase 13 — ui-liquid-glass-visual-redesign-and-mode-affordances
+**Current focus:** Phase 14 — ux-navigation-landing-and-tutorial-clarity
 
 ## Current Position
 
-Phase: 14
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 14 (ux-navigation-landing-and-tutorial-clarity) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
 Last activity: 2026-04-20
 
 Progress: [░░░░░░░░░░] 0%
@@ -48,6 +48,7 @@ Progress: [░░░░░░░░░░] 0%
 
 | Phase 13 P01 | 8min | 2 tasks | 3 files |
 | Phase 13 P02 | 9min | 2 tasks | 3 files |
+| Phase 14 P03 | 18min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -122,6 +123,8 @@ Recent decisions affecting current work:
 - [Phase 13]: Expose board-level goal-type mode attributes/classes from renderToDom and scope opponent tinting to reach mode only.
 - [Phase 13]: Validate visual redesign through deterministic CSS/source/DOM contract assertions instead of brittle screenshot tests.
 - [Phase 13]: Anchor MODE-04 and MODE-05 checks at controller level, then mirror critical legality expectations in UI-controller tests.
+- [Phase 14]: Tutorial visibility now derives from persisted sanitized tutorialDismissed/tutorialCompleted flags.
+- [Phase 14]: Tutorial completion is persisted only from tutorial-track win events to avoid false positives.
 
 ### Pending Todos
 
@@ -155,6 +158,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-20T17:56:39.942Z
-Stopped at: Phase 14 context gathered
-Resume file: .planning/phases/14-ux-navigation-landing-and-tutorial-clarity/14-CONTEXT.md
+Last session: 2026-04-20T19:12:02.844Z
+Stopped at: Completed 14-03-PLAN.md
+Resume file: None

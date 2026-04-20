@@ -21,11 +21,11 @@ Requirements for milestone v1.3 Interface and Onboarding Clarity.
 ### Onboarding and Progression
 
 - [ ] **ONB-01**: New players land on a full landing page that clearly explains available next actions instead of entering directly into minimal gameplay UI.
-- [ ] **ONB-02**: Returning players see contextual actions (for example continue active puzzle, start tutorial, or browse tracks) derived from current local progress state.
+- [x] **ONB-02**: Returning players see contextual actions (for example continue active puzzle, start tutorial, or browse tracks) derived from current local progress state.
 
 ### Puzzle Modes and Tutorial
 
-- [ ] **MODE-03**: Player can start and complete a dedicated tutorial track that teaches Xess-specific puzzle concepts and board expectations.
+- [x] **MODE-03**: Player can start and complete a dedicated tutorial track that teaches Xess-specific puzzle concepts and board expectations.
 - [x] **MODE-04**: Player can play capture puzzles where only white pieces are controllable and objective progress relies on capturing black pieces according to puzzle goals.
 - [x] **MODE-05**: Player can play move-to-goal puzzles where captures are disallowed by rules and objectives are completed by reaching designated goal squares.
 
@@ -60,8 +60,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VIS-02 | Phase 13 | Complete |
 | VIS-03 | Phase 13 | Complete |
 | ONB-01 | Phase 14 | Pending |
-| ONB-02 | Phase 14 | Pending |
-| MODE-03 | Phase 14 | Pending |
+| ONB-02 | Phase 14 | Complete |
+| MODE-03 | Phase 14 | Complete |
 | MODE-04 | Phase 13 (regression checks) | Complete |
 | MODE-05 | Phase 13 (regression checks) | Complete |
 
