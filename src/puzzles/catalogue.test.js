@@ -53,12 +53,12 @@ describe('catalogue', () => {
     expect(raw).toBeDefined()
 
     const parsed = parsePuzzle(raw)
-    expect(parsed.controllableColors).toEqual(['white'])
+    expect(parsed.controllableColors).toEqual(['white', 'black'])
     expect(parsed.capturableByColor).toEqual({
       white: [],
       black: [],
     })
     expect(parsed.promote).toBe(true)
-    expect(parsed.goalTargets.get('0,3')).toEqual({ type: 'q', color: 'white' })
+    expect(parsed.goalTargets.get('0,3')).toEqual({ type: 'q', color: 'black' })
   })
 })

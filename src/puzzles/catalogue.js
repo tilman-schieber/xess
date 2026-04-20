@@ -376,11 +376,12 @@ export default [
       'NNNN',
       'BBBB',
       'RRRR',
-      'GxxP',
+      'Gxxp',
     ],
     goalTargets: {
-      '0,3': 'Q',
+      '0,3': 'q',
     },
+    controllableColors: ['white', 'black'],
     capturableByColor: {
       white: [],
       black: [],

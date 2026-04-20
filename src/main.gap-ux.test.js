@@ -308,7 +308,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       expect(existsSync(redPath), `red-${type}.svg missing`).toBe(true)
       const content = readFileSync(redPath, 'utf8')
       expect(content).toContain('<svg')
-      expect(content).toContain('#8b1a1a')
+      expect(content).toContain('#cc3333')
     }
   })
 })

@@ -22,7 +22,6 @@
 
 .cell {
   position: relative;
-  isolation: isolate;
   inline-size: 100%;
   block-size: 100%;
   min-inline-size: 44px;
