@@ -1,18 +1,18 @@
 .start-screen {
   inline-size: min(100vw, var(--app-max-width-mobile));
   max-width: var(--app-max-width-mobile);
-  min-height: 100vh;
+  min-height: calc(100vh - var(--touch-target-min));
   display: grid;
-  place-items: center;
-  padding: var(--space-lg) var(--space-md);
+  align-items: start;
+  padding: var(--space-sm) 0;
 }
 
 .start-screen-panel {
   inline-size: 100%;
   display: grid;
   gap: var(--space-md);
-  padding: var(--space-lg);
-  border-radius: 0.75rem;
+  padding: var(--space-md);
+  border-radius: 0.95rem;
   background: var(--glass-meta-bg);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
@@ -31,34 +31,71 @@
   margin: 0;
   font-size: var(--text-body);
   color: var(--text-secondary);
-  line-height: 1.4;
 }
 
-.start-screen-actions {
+.start-screen-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.start-screen-chip {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 1.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border-soft);
+  background: var(--glass-chip-bg);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+  color: var(--text-secondary);
+  font-size: var(--text-label);
+  padding: 0 var(--space-sm);
+}
+
+.start-screen-cards {
   display: grid;
   gap: var(--space-sm);
 }
 
+.start-card {
+  display: grid;
+  gap: var(--space-xs);
+  border-radius: 0.75rem;
+  border: 1px solid var(--glass-border-soft);
+  background: color-mix(in srgb, var(--glass-chip-bg) 72%, transparent);
+  padding: var(--space-sm);
+}
+
+.start-card-title {
+  margin: 0;
+  font-size: var(--text-heading);
+  color: var(--text-primary);
+}
+
+.start-card-copy {
+  margin: 0;
+  font-size: var(--text-label);
+  color: var(--text-secondary);
+}
+
+.start-card-action {
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
+  justify-self: start;
+  border-radius: 0.65rem;
+  border: 1px solid var(--glass-border-soft);
+  border-top-color: var(--glass-border-strong);
+  background: var(--glass-control-bg);
+  color: var(--text-primary);
+  font-size: var(--text-label);
+  font-weight: 600;
+  padding: 0 var(--space-md);
+  cursor: pointer;
+}
+
+/* Legacy launch selector contracts kept for UXP-01 coverage */
 .start-screen-primary,
 .start-screen-secondary {
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
-  border-radius: 0.5rem;
-  font-size: var(--text-body);
-  font-weight: 600;
-  padding: var(--space-sm) var(--space-md);
-  cursor: pointer;
-}
-
-.start-screen-primary {
-  background: var(--accent);
-  color: var(--surface-bg);
-  border-color: transparent;
-}
-
-.start-screen-secondary {
-  background: var(--glass-chip-bg);
-  border: 1px solid var(--glass-border-soft);
-  box-shadow: inset 0 1px 0 var(--glass-highlight);
-  color: var(--text-primary);
 }

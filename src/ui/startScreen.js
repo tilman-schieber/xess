@@ -1,7 +1,48 @@
 // src/ui/startScreen.js
 // Pure start screen renderer.
 
-export function renderStartScreen({ canResume, onStart, onResume }) {
+function bindActivate(element, callback) {
+  if (!element || typeof callback !== 'function') return
+
+  element.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    event.preventDefault()
+    callback()
+  })
+
+  element.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      callback()
+    }
+  })
+}
+
+function renderCard({ id, title, copy, actionLabel, onActivate }) {
+  const card = document.createElement('article')
+  card.className = 'start-card'
+  card.setAttribute('data-start-card', id)
+
+  const heading = document.createElement('h2')
+  heading.className = 'start-card-title'
+  heading.textContent = title
+
+  const body = document.createElement('p')
+  body.className = 'start-card-copy'
+  body.textContent = copy
+
+  const action = document.createElement('button')
+  action.type = 'button'
+  action.className = 'start-card-action'
+  action.setAttribute('data-start-action', id)
+  action.textContent = actionLabel
+  bindActivate(action, onActivate)
+
+  card.append(heading, body, action)
+  return card
+}
+
+export function renderStartScreen({ chips = [], onContinue, onTutorial, onBrowseTracks }) {
   const screen = document.createElement('section')
   screen.className = 'start-screen'
   screen.setAttribute('data-start-screen', 'true')
@@ -15,30 +56,48 @@ export function renderStartScreen({ canResume, onStart, onResume }) {
 
   const copy = document.createElement('p')
   copy.className = 'start-screen-copy'
-  copy.textContent = 'Choose a track and solve geometry-twisted chess puzzles.'
+  copy.textContent = 'Pick your next move with contextual actions.'
 
-  const actions = document.createElement('div')
-  actions.className = 'start-screen-actions'
+  const chipsRow = document.createElement('div')
+  chipsRow.className = 'start-screen-chips'
+  chipsRow.setAttribute('data-start-chips', 'true')
+  chips.forEach((chipText, index) => {
+    if (typeof chipText !== 'string' || chipText.length === 0) return
+    const chip = document.createElement('span')
+    chip.className = 'start-screen-chip'
+    chip.setAttribute('data-progress-chip', String(index))
+    chip.textContent = chipText
+    chipsRow.append(chip)
+  })
 
-  const startButton = document.createElement('button')
-  startButton.type = 'button'
-  startButton.className = 'start-screen-primary'
-  startButton.setAttribute('data-start-action', 'true')
-  startButton.textContent = 'Start'
-  startButton.addEventListener('pointerdown', () => onStart())
-  actions.append(startButton)
+  const cards = document.createElement('div')
+  cards.className = 'start-screen-cards'
 
-  if (canResume) {
-    const resumeButton = document.createElement('button')
-    resumeButton.type = 'button'
-    resumeButton.className = 'start-screen-secondary'
-    resumeButton.setAttribute('data-resume-action', 'true')
-    resumeButton.textContent = 'Resume'
-    resumeButton.addEventListener('pointerdown', () => onResume())
-    actions.append(resumeButton)
-  }
+  cards.append(
+    renderCard({
+      id: 'continue',
+      title: 'Continue',
+      copy: 'Jump back into your best next puzzle.',
+      actionLabel: 'Continue',
+      onActivate: onContinue,
+    }),
+    renderCard({
+      id: 'tutorial',
+      title: 'Tutorial',
+      copy: 'Learn Xess movement and board geometry quickly.',
+      actionLabel: 'Tutorial',
+      onActivate: onTutorial,
+    }),
+    renderCard({
+      id: 'browse',
+      title: 'Browse Tracks',
+      copy: 'Explore tracks and pick a specific puzzle.',
+      actionLabel: 'Browse Tracks',
+      onActivate: onBrowseTracks,
+    }),
+  )
 
-  panel.append(heading, copy, actions)
+  panel.append(heading, copy, chipsRow, cards)
   screen.append(panel)
 
   return screen

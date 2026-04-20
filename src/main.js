@@ -676,6 +676,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   }
 
   function renderStartScreenView() {
+    const trackModels = buildTrackViewModels()
     const persisted = loadStore()
     const solvedIds = Array.isArray(persisted?.solvedIds) ? persisted.solvedIds : []
     const activePuzzleId = typeof persisted?.activeState?.puzzleId === 'string'
@@ -688,16 +689,28 @@ export function mountGameUi(root = document.querySelector('#app')) {
       activePuzzleId,
     })
 
+    const highlightedTrack = trackModels.find(track => track.id === continueAction.trackId) ?? null
+    const totalPuzzleCount = trackModels.reduce((sum, track) => sum + track.totalCount, 0)
+    const solvedPuzzleCount = trackModels.reduce((sum, track) => sum + track.solvedCount, 0)
+
+    const chips = [
+      highlightedTrack ? `Track: ${highlightedTrack.title}` : 'Track: All tracks',
+      `Solved ${solvedPuzzleCount}/${totalPuzzleCount}`,
+    ]
+
     const startEl = renderStartScreen({
-      canResume: true,
-      onStart() {
-        goToTrackBrowser(null)
-      },
-      onResume() {
+      chips,
+      onContinue() {
         if (continueAction.kind === 'play') {
           loadPuzzle(continueAction.puzzleId, { trackId: continueAction.trackId })
           return
         }
+        goToTrackBrowser(null)
+      },
+      onTutorial() {
+        goToTrackBrowser('foundations')
+      },
+      onBrowseTracks() {
         goToTrackBrowser(null)
       },
     })

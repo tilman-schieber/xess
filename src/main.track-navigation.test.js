@@ -105,7 +105,7 @@ describe('main track-first screen flow', () => {
   it('start opens tracks and selecting puzzle enters play', () => {
     mountGameUi(document.querySelector('#app'))
 
-    document.querySelector('[data-start-action]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-open-track="foundations"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-puzzle-id="xk3m9pq2"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
@@ -122,7 +122,7 @@ describe('main track-first screen flow', () => {
 
     mountGameUi(document.querySelector('#app'))
 
-    const resume = document.querySelector('[data-resume-action]')
+    const resume = document.querySelector('[data-start-action="continue"]')
     expect(resume).not.toBeNull()
 
     resume?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
@@ -133,7 +133,7 @@ describe('main track-first screen flow', () => {
   it('tracks action from play menu returns to previous selected track context', () => {
     mountGameUi(document.querySelector('#app'))
 
-    document.querySelector('[data-start-action]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-open-track="foundations"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-puzzle-id="xk3m9pq2"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-shell-menu-toggle]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
@@ -146,7 +146,7 @@ describe('main track-first screen flow', () => {
   it('menu taps do not trigger board move side effects', () => {
     mountGameUi(document.querySelector('#app'))
 
-    document.querySelector('[data-start-action]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-open-track="foundations"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-puzzle-id="xk3m9pq2"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
