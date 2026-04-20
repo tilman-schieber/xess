@@ -96,6 +96,8 @@ describe('main track-first screen flow', () => {
   it('renders start screen first before any play board', () => {
     mountGameUi(document.querySelector('#app'))
 
+    expect(document.querySelector('[data-app-shell]')).not.toBeNull()
+    expect(document.querySelector('[data-shell-topbar]')).not.toBeNull()
     expect(document.querySelector('[data-start-screen]')).not.toBeNull()
     expect(document.querySelector('[data-board]')).toBeNull()
   })
@@ -111,16 +113,33 @@ describe('main track-first screen flow', () => {
     expect(document.querySelector('[data-board]')).not.toBeNull()
   })
 
-  it('tracks back action from play returns to previous selected track context', () => {
+  it('tracks action from play menu returns to previous selected track context', () => {
     mountGameUi(document.querySelector('#app'))
 
     document.querySelector('[data-start-action]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-open-track="foundations"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-puzzle-id="xk3m9pq2"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-back-to-tracks]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-shell-menu-toggle]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-shell-nav-tracks]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('[data-track-browser]')).not.toBeNull()
     expect(document.querySelector('[data-selected-track="foundations"]')).not.toBeNull()
+  })
+
+  it('menu taps do not trigger board move side effects', () => {
+    mountGameUi(document.querySelector('#app'))
+
+    document.querySelector('[data-start-action]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-open-track="foundations"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-puzzle-id="xk3m9pq2"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    const beforeCounter = document.querySelector('[data-move-counter]')?.textContent
+
+    document.querySelector('[data-shell-menu-toggle]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    const afterCounter = document.querySelector('[data-move-counter]')?.textContent
+    expect(document.querySelector('[data-board]')).not.toBeNull()
+    expect(afterCounter).toBe(beforeCounter)
   })
 
   it('app style contract imports start/track styles and shared shell width hooks', () => {

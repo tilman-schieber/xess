@@ -2,6 +2,7 @@ import { createController } from './controller.js'
 import { createBoardRenderModel } from './ui/boardRenderer.js'
 import { renderStartScreen } from './ui/startScreen.js'
 import { renderTrackBrowser } from './ui/trackBrowser.js'
+import { renderAppShell } from './ui/appShell.js'
 import './styles/app.css'
 import './styles/puzzle-list.css'
 import {
@@ -350,7 +351,7 @@ export function renderToDom(root, model) {
   meta.className = 'puzzle-meta'
   meta.setAttribute('data-puzzle-meta', 'true')
 
-  // Meta top row: title + list button
+  // Meta top row: title + sound toggle
   const metaTop = document.createElement('div')
   metaTop.className = 'puzzle-meta-top'
 
@@ -359,14 +360,7 @@ export function renderToDom(root, model) {
   title.setAttribute('data-puzzle-title', 'true')
   title.textContent = model.puzzleTitle
 
-  const listBtn = document.createElement('button')
-  listBtn.type = 'button'
-  listBtn.className = 'nav-btn'
-  listBtn.setAttribute('data-back-to-tracks', 'true')
-  listBtn.setAttribute('aria-label', 'Back to tracks')
-  listBtn.textContent = 'Tracks'
-
-  metaTop.append(title, listBtn, renderSoundToggle())
+  metaTop.append(title, renderSoundToggle())
 
   const objective = document.createElement('p')
   objective.className = 'puzzle-objective'
@@ -577,6 +571,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   let currentPuzzleId = null
   let selectedTrackId = null
   let ui = null
+  let playMenuOpen = false
   let _dragCleanup = null    // cleanup fn returned by initDragDrop
   let _isDragging = false    // true once drag threshold exceeded this pointer sequence
   let _suppressTapPointerId = null
@@ -601,6 +596,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   function loadPuzzle(puzzleId, options = {}) {
     ui = createGameUiController({ controller, puzzleId })
     currentPuzzleId = puzzleId
+    playMenuOpen = false
     if (options.trackId) {
       selectedTrackId = options.trackId
     }
@@ -628,7 +624,33 @@ export function mountGameUi(root = document.querySelector('#app')) {
   function goToTrackBrowser(trackId = null) {
     selectedTrackId = trackId
     screenMode = 'tracks'
+    playMenuOpen = false
     rerender()
+  }
+
+  function renderShellView({ mode, title, content }) {
+    const shell = renderAppShell({
+      mode,
+      title,
+      content,
+      menuOpen: mode === 'play' ? playMenuOpen : false,
+      onOpenMenu() {
+        playMenuOpen = !playMenuOpen
+        rerender()
+      },
+      onNavigateHome() {
+        selectedTrackId = null
+        screenMode = 'start'
+        playMenuOpen = false
+        rerender()
+      },
+      onNavigateTracks() {
+        goToTrackBrowser(selectedTrackId)
+      },
+    })
+
+    root.innerHTML = ''
+    root.append(shell)
   }
 
   function rerender() {
@@ -656,8 +678,11 @@ export function mountGameUi(root = document.querySelector('#app')) {
       },
     })
 
-    root.innerHTML = ''
-    root.append(startEl)
+    renderShellView({
+      mode: 'start',
+      title: 'Xess',
+      content: startEl,
+    })
   }
 
   function renderGameScreen() {
@@ -673,7 +698,13 @@ export function mountGameUi(root = document.querySelector('#app')) {
       prevId: getPrevId(currentPuzzleId),
       nextId: getNextId(currentPuzzleId),
     }
-    renderToDom(root, extModel)
+    const playContent = document.createElement('div')
+    renderToDom(playContent, extModel)
+    renderShellView({
+      mode: 'play',
+      title: extModel.puzzleTitle,
+      content: playContent.firstElementChild,
+    })
 
     // Tear down previous drag listener if board was re-rendered
     if (_dragCleanup) { _dragCleanup(); _dragCleanup = null }
@@ -730,9 +761,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
       ui.redo()
       rerender()
     })
-    bindPrimaryAction(root.querySelector('[data-back-to-tracks]'), () => {
-      goToTrackBrowser(selectedTrackId)
-    })
     bindPrimaryAction(root.querySelector('[data-win-next-puzzle]'), () => {
       if (extModel.nextId) loadPuzzle(extModel.nextId)
     })
@@ -761,8 +789,11 @@ export function mountGameUi(root = document.querySelector('#app')) {
       },
     })
 
-    root.innerHTML = ''
-    root.append(trackEl)
+    renderShellView({
+      mode: 'tracks',
+      title: selectedTrackId ? 'Track details' : 'Tracks',
+      content: trackEl,
+    })
   }
 
   rerender()
@@ -777,6 +808,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
 
   root.addEventListener('pointerup', (event) => {
     if (screenMode !== 'play') return
+    if (event.target.closest?.('[data-shell-topbar], [data-shell-menu], [data-shell-menu-toggle]')) return
     if (_suppressTapPointerId === event.pointerId) {
       _suppressTapPointerId = null
       return

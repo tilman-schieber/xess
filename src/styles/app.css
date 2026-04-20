@@ -97,6 +97,68 @@ body {
   padding: 1rem;
 }
 
+.app-shell {
+  inline-size: min(100vw, var(--app-max-width-mobile));
+  max-width: var(--app-max-width-mobile);
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.app-shell-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 0.95rem;
+  border: 1px solid var(--glass-border-soft);
+  border-top-color: var(--glass-border-strong);
+  background: var(--glass-meta-bg);
+  box-shadow: var(--glass-shadow-soft);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+.app-shell-title {
+  margin: 0;
+  font-size: var(--text-heading);
+  color: var(--text-primary);
+}
+
+.app-shell-nav,
+.app-shell-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.app-shell-menu {
+  justify-content: flex-end;
+}
+
+.app-shell-nav-action,
+.app-shell-menu-toggle,
+.app-shell-menu-action {
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
+  border-radius: 0.65rem;
+  border: 1px solid var(--glass-border-soft);
+  border-top-color: var(--glass-border-strong);
+  background: var(--glass-control-bg);
+  color: var(--text-primary);
+  font-size: var(--text-label);
+  font-weight: 600;
+  padding: var(--space-xs) var(--space-md);
+  cursor: pointer;
+}
+
+.app-shell-content {
+  inline-size: 100%;
+  display: grid;
+  justify-items: center;
+}
+
 .xess-ui {
   inline-size: min(100vw, 375px);
   max-width: 375px;
