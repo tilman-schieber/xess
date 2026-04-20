@@ -22,7 +22,6 @@
 
 .cell {
   position: relative;
-  overflow: hidden;
   isolation: isolate;
   inline-size: 100%;
   block-size: 100%;
@@ -124,7 +123,7 @@
 }
 
 .board[data-goal-type='reach-all-goal-squares'] .piece[data-piece-key^='black-']:not(.piece--ghost) {
-  filter: hue-rotate(-26deg) saturate(180%) brightness(0.82) contrast(1.16);
+  filter: sepia(1) saturate(4) hue-rotate(320deg) brightness(0.75);
 }
 
 .board[data-goal-type='capture-all-targets'] .piece[data-piece-key^='black-']:not(.piece--ghost) {
