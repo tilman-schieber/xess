@@ -54,16 +54,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NAV-01 | Phase 15 | Pending |
-| NAV-02 | Phase 15 | Pending |
-| VIS-01 | Phase 14 | Pending |
-| VIS-02 | Phase 14 | Pending |
-| VIS-03 | Phase 14 | Pending |
-| ONB-01 | Phase 15 | Pending |
-| ONB-02 | Phase 15 | Pending |
-| MODE-03 | Phase 16 | Pending |
-| MODE-04 | Phase 13 | Pending |
-| MODE-05 | Phase 13 | Pending |
+| NAV-01 | Phase 14 | Pending |
+| NAV-02 | Phase 14 | Pending |
+| VIS-01 | Phase 13 | Pending |
+| VIS-02 | Phase 13 | Pending |
+| VIS-03 | Phase 13 | Pending |
+| ONB-01 | Phase 14 | Pending |
+| ONB-02 | Phase 14 | Pending |
+| MODE-03 | Phase 14 | Pending |
+| MODE-04 | Phase 13 (regression checks) | Pending |
+| MODE-05 | Phase 13 (regression checks) | Pending |
 
 **Coverage:**
 - v1 requirements: 10 total
@@ -72,4 +72,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-04-20*
-*Last updated: 2026-04-20 after v1.3 roadmap mapping*
+*Last updated: 2026-04-20 after v1.3 UI/UX phase consolidation*

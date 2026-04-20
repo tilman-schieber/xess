@@ -4,7 +4,7 @@
 
 - ✅ **v1.1 UX Launch Polish** — Phases 7-10 (shipped 2026-04-19, archive: `.planning/milestones/v1.1-ROADMAP.md`)
 - ✅ **v1.2 Puzzle Logic Improvement** — Phases 11-12 (shipped 2026-04-19, archive: `.planning/milestones/v1.2-ROADMAP.md`)
-- ◆ **v1.3 Interface and Onboarding Clarity** — Phases 13-16 (active)
+- ◆ **v1.3 Interface and Onboarding Clarity** — Phases 13-14 (active)
 
 ## Phases
 
@@ -28,70 +28,39 @@
 
 ## Current Milestone: v1.3 Interface and Onboarding Clarity
 
-**Goal:** Make gameplay interactions and progression immediately understandable by polishing board visuals, navigation shell, onboarding flow, and explicit puzzle-mode teaching.
+**Goal:** Make gameplay interactions and progression immediately understandable with a polished UI redesign and a clearer UX flow for onboarding and tutorial learning.
 
 | # | Phase | Goal | Requirements | Success Criteria |
 |---|-------|------|--------------|------------------|
-| 13 | Mode Rules and Metadata Foundation | Establish explicit capture vs goal-mode contracts in puzzle metadata/controller so behavior is deterministic before UI polish | MODE-04, MODE-05 | 5 |
-| 14 | Board Visual Affordances and Mode Styling | Deliver chess-familiar selected/legal overlays and mode-specific opponent styling on all supported board geometries | VIS-01, VIS-02, VIS-03 | 5 |
-| 15 | App Shell and Contextual Landing Flow | Replace minimal entry with responsive shell, mobile hamburger menu, and context-aware first/return actions | NAV-01, NAV-02, ONB-01, ONB-02 | 5 |
-| 16 | Tutorial Track and Concept Teaching | Create/ship tutorial content that explains Xess puzzle concepts and dual-mode expectations in-play | MODE-03 | 4 |
+| 13 | UI Liquid-Glass Visual Redesign and Mode Affordances | Deliver a modern liquid-glass board/chrome style while implementing selected/legal overlays, mode-aware opponent styling, and minimal mode-regression validation | VIS-01, VIS-02, VIS-03, MODE-04, MODE-05 | 5 |
+| 14 | UX Navigation, Landing, and Tutorial Clarity | Ship a coherent shell + onboarding flow so first-time and returning players can reliably start, continue, and learn puzzle concepts | NAV-01, NAV-02, ONB-01, ONB-02, MODE-03 | 5 |
 
-### Phase 13: Mode Rules and Metadata Foundation
+### Phase 13: UI Liquid-Glass Visual Redesign and Mode Affordances
 
-Goal: Establish explicit puzzle mode contracts and controller rule enforcement for capture and no-capture goal puzzles.
+Goal: Create a polished, modern liquid-glass presentation while delivering clear board affordances and mode styling without re-opening standalone mode-foundation scope.
 
-Requirements: MODE-04, MODE-05
+Requirements: VIS-01, VIS-02, VIS-03, MODE-04, MODE-05
 
 Plans: TBD
 
 Success criteria:
-1. Puzzle schema/catalogue supports explicit mode metadata for capture and move-to-goal puzzles.
-2. Controller enforces move-to-goal no-capture rule so capture attempts are rejected without mutation.
-3. Capture mode preserves current white-control/black-capture semantics and regression coverage.
-4. Existing v1.2 move tracking/undo/redo behavior remains intact after mode-rule integration.
-5. Mode-related tests fail if puzzle metadata is malformed or mode enforcement drifts.
+1. Board and surrounding UI adopt a deliberate liquid-glass visual direction (depth, translucency, polish) that feels modern and non-boring on desktop and mobile.
+2. Selected piece square uses a translucent overlay treatment consistent with the new visual language and does not recolor piece SVG assets.
+3. Legal destination squares use translucent overlays (not frame-only outlines) with clear readability on irregular boards.
+4. Move-to-goal opponent pieces render in red/dark-red treatment with acceptable contrast in the redesigned theme.
+5. Regression checks confirm existing capture/no-capture gameplay behavior still works (no standalone mode-rules foundation expansion in this milestone).
 
-### Phase 14: Board Visual Affordances and Mode Styling
+### Phase 14: UX Navigation, Landing, and Tutorial Clarity
 
-Goal: Implement polished board cues for selection/legal moves and mode-distinct opponent styling.
+Goal: Make navigation and onboarding intuitive through a clearer app shell, contextual landing behavior, and tutorial teaching flow.
 
-Requirements: VIS-01, VIS-02, VIS-03
-
-Plans: TBD
-
-Success criteria:
-1. Selected piece square uses a translucent green-toned overlay without recoloring the piece SVG.
-2. Legal destination squares use translucent overlays (not frame-only outlines) with clear readability on irregular boards.
-3. Move-to-goal opponent pieces render in red/dark-red treatment while maintaining acceptable contrast.
-4. Overlay presentation differentiates quiet vs capture destinations clearly enough for touch input.
-5. UI regression tests validate class/token behavior for selected, legal, and mode-specific states.
-
-### Phase 15: App Shell and Contextual Landing Flow
-
-Goal: Ship a full landing/shell experience with responsive navigation and context-aware next actions.
-
-Requirements: NAV-01, NAV-02, ONB-01, ONB-02
+Requirements: NAV-01, NAV-02, ONB-01, ONB-02, MODE-03
 
 Plans: TBD
 
 Success criteria:
-1. App renders persistent header/footer shell with clear navigation affordances in landing/tracks/play contexts.
-2. Mobile hamburger menu opens/closes predictably and does not interfere with board interaction handling.
-3. First-time users see clear start guidance and tutorial-first pathway.
-4. Returning users with valid progress see contextual continue/start options derived from sanitized local state.
-5. Landing CTA fallbacks remain safe when active puzzle or tutorial references are stale/missing.
-
-### Phase 16: Tutorial Track and Concept Teaching
-
-Goal: Deliver a tutorial track that teaches puzzle concepts and mode-specific rules in practical sequence.
-
-Requirements: MODE-03
-
-Plans: TBD
-
-Success criteria:
-1. Tutorial track exists in metadata and is discoverable from contextual landing actions and track browser.
-2. Tutorial sequence explicitly explains capture puzzles versus move-to-goal puzzles with matching gameplay behavior.
-3. Tutorial copy uses concise language tied to observable board cues (selection overlays, legal destination overlays, red opponents in goal mode).
-4. Completing tutorial leaves player at a clear next step (continue puzzle flow or browse tracks) without dead-end navigation.
+1. App renders a persistent shell with clear landing/tracks/play navigation affordances across responsive breakpoints.
+2. Mobile hamburger menu interaction is predictable, tap-friendly, and does not conflict with gameplay board interactions.
+3. First-time users see a clear guided start path while returning users see contextual continue/tutorial/browse actions from sanitized local progress.
+4. Tutorial track is discoverable and teaches capture vs move-to-goal concepts with language tied to in-game cues.
+5. Landing/tutorial transitions fail safely when stored references are stale, always leaving users with valid next actions.

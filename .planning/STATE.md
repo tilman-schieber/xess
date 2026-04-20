@@ -3,11 +3,11 @@ gsd_state_version: 1.0
 milestone: v1.3
 milestone_name: Interface and Onboarding Clarity
 status: planning
-stopped_at: Milestone roadmap approved; ready for phase discussion
-last_updated: "2026-04-20T14:05:00.000Z"
+stopped_at: Milestone v1.3 condensed to two phases (UI/UX); ready for phase discussion
+last_updated: "2026-04-20T15:20:00.000Z"
 last_activity: 2026-04-20
 progress:
-  total_phases: 4
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-20)
 
 **Core value:** A chess puzzle game where the twist is the board, not the rules — players who know chess can immediately play, but the strange board geometries create fresh, surprising challenges.
-**Current focus:** Phase 13 planning - mode rules and metadata foundation
+**Current focus:** Phase 13 planning - UI liquid-glass visual redesign and mode affordances
 
 ## Current Position
 
-Phase: 13 (Mode Rules and Metadata Foundation) - not started
+Phase: 13 (UI Liquid-Glass Visual Redesign and Mode Affordances) - not started
 Plan: -
-Status: Roadmap approved; ready to discuss/plan Phase 13
-Last activity: 2026-04-20 - Milestone v1.3 roadmap approved
+Status: Milestone condensed to two-phase UI/UX structure; ready to discuss/plan Phase 13
+Last activity: 2026-04-20 - v1.3 roadmap adjusted to UI/UX-only phase structure
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -121,6 +121,7 @@ Recent decisions affecting current work:
 - [Phase 12]: Controller persists solved move counts on win while preserving solvedIds unlock semantics.
 - [Phase 12]: UI tracking model reads moveCount/canUndo/canRedo/moveEvents from controller snapshot and never keeps independent counters.
 - [Phase 12]: Move-history list rendering remains deferred; UI state publishes historyListRendered=false with moveEvents for future phase consumption.
+- [Roadmap v1.3 adjustment]: Milestone condensed to exactly two phases (UI then UX); standalone mode-rules foundation phase removed in favor of targeted regression checks in UI phase.
 
 ### Pending Todos
 
@@ -143,6 +144,7 @@ None yet.
 | 260420-qkn | add no-capture dual-control puzzle that routes a black knight to a goal square and keep track/catalogue contracts valid | 2026-04-20 | pending | [260420-qkn-add-no-capture-dual-control-knight-goal-puzzle](./quick/260420-qkn-add-no-capture-dual-control-knight-goal-puzzle/) |
 | 260420-fof | add promotion-required queen-goal puzzle to active catalogue, track metadata, and parser/engine test contracts | 2026-04-20 | pending | [260420-fof-add-promotion-required-reach-puzzle-with](./quick/260420-fof-add-promotion-required-reach-puzzle-with/) |
 | 260420-rst | restart/reset reloads current catalogue puzzle definition instead of stale active-state snapshot | 2026-04-20 | pending | [260420-rst-restart-reloads-catalogue-state](./quick/260420-rst-restart-reloads-catalogue-state/) |
+| 260420-vux | condense v1.3 roadmap to exactly two phases (UI/UX), strengthen visual direction, and remap requirements traceability | 2026-04-20 | pending | [260420-vux-condense-v13-to-ui-ux-phases](./quick/260420-vux-condense-v13-to-ui-ux-phases/) |
 
 ## Deferred Items
 
@@ -152,6 +154,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-20T12:21:16Z
-Stopped at: Completed quick task 260420-rst
+Last session: 2026-04-20T15:20:00Z
+Stopped at: Completed quick task 260420-vux
 Resume file: None
