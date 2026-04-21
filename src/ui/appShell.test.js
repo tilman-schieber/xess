@@ -84,4 +84,27 @@ describe('renderAppShell', () => {
     tracks?.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }))
     expect(onNavigateTracks).toHaveBeenCalledTimes(1)
   })
+
+  it('keeps footer interactions outside navigation callback paths', () => {
+    const onOpenMenu = vi.fn()
+    const onNavigateHome = vi.fn()
+    const onNavigateTracks = vi.fn()
+
+    const view = renderAppShell({
+      mode: 'play',
+      title: 'Play',
+      content: buildContent(),
+      menuOpen: true,
+      onOpenMenu,
+      onNavigateHome,
+      onNavigateTracks,
+    })
+
+    const footer = view.querySelector('[data-shell-footer]')
+    footer?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(onOpenMenu).toHaveBeenCalledTimes(0)
+    expect(onNavigateHome).toHaveBeenCalledTimes(0)
+    expect(onNavigateTracks).toHaveBeenCalledTimes(0)
+  })
 })
