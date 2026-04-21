@@ -4,8 +4,8 @@
 // then runs BFS to find the shortest derivation (proof of solvability).
 //
 // Grid color convention (loader.js D-03):
-//   lowercase char → white piece (player-controlled)
-//   uppercase char → black piece (target / opponent)
+//   lowercase char -> black piece
+//   uppercase char -> white piece
 //
 // Run all puzzles:  node src/puzzles/solver.js
 // Import:          import { solve } from './solver.js'
@@ -14,42 +14,18 @@ import { fileURLToPath } from 'url'
 import catalogue from './catalogue.js'
 import { parsePuzzle, posKey } from './loader.js'
 import { getLegalMoves } from '../engine/moves.js'
+import { applyMove } from '../engine/apply.js'
+import { checkWin } from '../engine/win.js'
 
 const DEFAULT_MAX_DEPTH = 10
 
-// ── Board operations (lightweight — avoids structuredClone overhead) ──────────
-
-/**
- * Apply one move. Returns a new Map with only the two affected cells replaced.
- * All other cells are shared references (safe because cells are never mutated).
- */
-function applyMoveLocal(board, from, to) {
-  const next = new Map(board)
-  const fromCell = board.get(from)
-  const toCell   = board.get(to)
-  next.set(to,   { ...toCell,   piece: fromCell.piece })
-  next.set(from, { ...fromCell, piece: null })
-  return next
+function isControllable(puzzle, color) {
+  return Array.isArray(puzzle.controllableColors) && puzzle.controllableColors.includes(color)
 }
 
-/**
- * wino — the win relation.
- * Holds when the board satisfies the puzzle's goal condition.
- */
-function wino(board, puzzle) {
-  if (puzzle.goalType === 'capture-all-targets') {
-    for (const cell of board.values()) {
-      if (cell.piece && cell.piece.color === puzzle.targetColor) return false
-    }
-    return true
-  }
-  if (puzzle.goalType === 'reach-all-goal-squares') {
-    for (const cell of board.values()) {
-      if (cell.isGoal && !cell.piece) return false
-    }
-    return true
-  }
-  return false
+function canCapture(puzzle, moverColor, targetColor) {
+  const allowed = puzzle.capturableByColor?.[moverColor]
+  return Array.isArray(allowed) && allowed.includes(targetColor)
 }
 
 /**
@@ -82,10 +58,9 @@ function stateKey(board) {
  */
 export function solve(rawPuzzle, maxDepth = DEFAULT_MAX_DEPTH) {
   const puzzle = parsePuzzle(rawPuzzle)
-  const meta   = { goalType: puzzle.goalType, targetColor: puzzle.targetColor }
 
   // Depth-0 check: already won (degenerate puzzle)
-  if (wino(puzzle.board, meta)) {
+  if (checkWin(puzzle.board, puzzle)) {
     return { solvable: true, minMoves: 0, statesExplored: 1 }
   }
 
@@ -100,14 +75,18 @@ export function solve(rawPuzzle, maxDepth = DEFAULT_MAX_DEPTH) {
 
     // moveo — the move relation: enumerate all successor states
     for (const [fromKey, cell] of board) {
-      if (!cell.piece || cell.piece.color !== 'white') continue   // only white moves
+      if (!cell.piece || !isControllable(puzzle, cell.piece.color)) continue
+      const moverColor = cell.piece.color
 
       for (const [tc, tr] of getLegalMoves(board, fromKey)) {
         const toKey = posKey(tc, tr)
-        const next  = applyMoveLocal(board, fromKey, toKey)
+        const destination = board.get(toKey)
+        if (destination?.piece && !canCapture(puzzle, moverColor, destination.piece.color)) continue
+
+        const next = applyMove(board, fromKey, toKey, puzzle).board
         statesExplored++
 
-        if (wino(next, meta)) {
+        if (checkWin(next, puzzle)) {
           return { solvable: true, minMoves: depth + 1, statesExplored }
         }
 

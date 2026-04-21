@@ -13,6 +13,7 @@ export default [
     },
     puzzleIds: [
       'd1e2f3g4',
+      'z1i2g3z4',
     ],
   },
   {
@@ -41,6 +42,7 @@ export default [
     puzzleIds: [
       'm4n5o6p7',
       'q2r3s4t5',
+      'u1v2w3x4',
     ],
   },
   {

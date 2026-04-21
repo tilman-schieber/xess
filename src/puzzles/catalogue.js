@@ -16,6 +16,21 @@ export default [
     ],
   },
   {
+    // Tutorial puzzle — Zig-zag
+    schemaVersion: 1,
+    id: 'z1i2g3z4',
+    title: 'Zig-zag',
+    descriptionHtml: '<p><strong>Tutorial:</strong> Use your white pieces to create a path for the red bishop.</p><ul><li>The red pieces have to reach their goal squares.</li><li>No pieces can be captured.</li><li>Normal chess movement still applies.</li></ul>',
+    goalType: 'reach-all-goal-squares',
+    grid: [
+      'b-----',
+      'PPPPPG',
+    ],
+    goalTargets: {
+      '5,1': 'b',
+    },
+  },
+  {
     // Legacy contract puzzle — Corner Trap
     schemaVersion: 1,
     id: 'xk3m9pq2',
@@ -141,6 +156,24 @@ export default [
     ],
     goalTargets: {
       '2,0': 'n',
+    },
+  },
+  {
+    // Puzzle — Pawn Ascent
+    schemaVersion: 1,
+    id: 'u1v2w3x4',
+    title: 'Pawn Ascent',
+    descriptionHtml: '<p><strong>Theme:</strong> Thread the red pawn up the file to the goal.</p><ul><li>The red pieces have to reach their goal squares.</li><li>No pieces can be captured.</li><li>Normal chess movement still applies.</li></ul>',
+    goalType: 'reach-all-goal-squares',
+    grid: [
+      'xxGxx',
+      'xxBxx',
+      '-BRB-',
+      'xxNxx',
+      'xxpxx',
+    ],
+    goalTargets: {
+      '2,0': 'p',
     },
   },
 ]
