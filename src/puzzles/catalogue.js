@@ -100,7 +100,7 @@ export default [
     goalType: 'reach-all-goal-squares',
     grid: [
       'xRNG',
-      'bN-x',
+      'bNRx',
       'xPxx',
     ],
     goalTargets: {

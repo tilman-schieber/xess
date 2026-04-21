@@ -2,6 +2,8 @@
 // localStorage persistence layer for Xess puzzle game.
 
 import catalogue from '../puzzles/catalogue.js'
+import tracks from '../puzzles/tracks.js'
+import { validateTrackCatalogueIntegrity } from '../puzzles/contentIntegrity.js'
 
 const STORAGE_KEY = 'xess_v1'
 const CURRENT_SCHEMA_VERSION = 1
@@ -25,7 +27,12 @@ function _defaultStore() {
   }
 }
 
-const VALID_PUZZLE_IDS = new Set(catalogue.map(entry => entry.id))
+const VALID_CATALOGUE_IDS = new Set(catalogue.map(entry => entry.id))
+const VALID_PUZZLE_IDS = (() => {
+  const { tracks: safeTracks } = validateTrackCatalogueIntegrity({ tracks, catalogue })
+  const trackedIds = new Set(safeTracks.flatMap(track => track.puzzleIds))
+  return trackedIds.size > 0 ? trackedIds : VALID_CATALOGUE_IDS
+})()
 
 /**
  * Load and parse the store from localStorage.
@@ -94,9 +101,23 @@ export function loadStore() {
     const parsed = JSON.parse(raw)
     if (parsed.schemaVersion !== CURRENT_SCHEMA_VERSION) {
       // T-02-02: schema version mismatch — wipe stale data
-      return _defaultStore()
+      const fallback = _defaultStore()
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(fallback))
+      } catch {
+        // no-op: read path should stay safe even when persistence fails
+      }
+      return fallback
     }
-    return _sanitizeStore(parsed)
+    const sanitized = _sanitizeStore(parsed)
+    if (raw !== JSON.stringify(sanitized)) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitized))
+      } catch {
+        // no-op: read path should stay safe even when persistence fails
+      }
+    }
+    return sanitized
   } catch {
     // T-02-01: malformed JSON — return safe default
     return _defaultStore()

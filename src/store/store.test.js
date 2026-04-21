@@ -31,8 +31,8 @@ function makeBoard(entries) {
   return new Map(entries)
 }
 
-const VALID_ID_A = 'xk3m9pq2'
-const VALID_ID_B = 'gt7wz4r1'
+const VALID_ID_A = 'b4c5d6e7'
+const VALID_ID_B = 'c7d8e9f0'
 
 // ─── Group: loadStore ────────────────────────────────────────────────────────
 
@@ -87,14 +87,14 @@ describe('loadStore', () => {
   it('retains valid solved IDs and removes stale solved IDs', () => {
     const data = {
       schemaVersion: 1,
-      solvedIds: ['xk3m9pq2', 'stale-id', 'gt7wz4r1', 'stale-id'],
+      solvedIds: [VALID_ID_A, 'stale-id', VALID_ID_B, 'stale-id'],
       activeState: null,
     }
 
     _storage['xess_v1'] = JSON.stringify(data)
     const store = loadStore()
 
-    expect(store.solvedIds).toEqual(['xk3m9pq2', 'gt7wz4r1'])
+    expect(store.solvedIds).toEqual([VALID_ID_A, VALID_ID_B])
   })
 
   it('drops stale activeState puzzleId and keeps valid activeState', () => {
@@ -114,19 +114,19 @@ describe('loadStore', () => {
       schemaVersion: 1,
       solvedIds: [],
       activeState: {
-        puzzleId: 'xk3m9pq2',
+        puzzleId: VALID_ID_A,
         boardEntries: [['0,0', { piece: null, isGoal: false }]],
         undoEntries: [],
       },
     }
     _storage['xess_v1'] = JSON.stringify(valid)
-    expect(loadStore().activeState?.puzzleId).toBe('xk3m9pq2')
+    expect(loadStore().activeState?.puzzleId).toBe(VALID_ID_A)
   })
 
   it('sanitizes mixed malformed payloads to playable default shape without throwing', () => {
     _storage['xess_v1'] = JSON.stringify({
       schemaVersion: 1,
-      solvedIds: [null, {}, 42, 'xk3m9pq2', 'stale-id'],
+      solvedIds: [null, {}, 42, VALID_ID_A, 'stale-id'],
       activeState: {
         puzzleId: null,
         boardEntries: 'nope',
@@ -137,7 +137,7 @@ describe('loadStore', () => {
     expect(() => loadStore()).not.toThrow()
     expect(loadStore()).toEqual({
       schemaVersion: 1,
-      solvedIds: ['xk3m9pq2'],
+      solvedIds: [VALID_ID_A],
       solvedMoveCounts: {},
       activeState: null,
       tutorialDismissed: false,
