@@ -771,10 +771,18 @@ export function mountGameUi(root = document.querySelector('#app')) {
       _dragCleanup = initDragDrop(boardEl, {
         onDragStart(fromKey) {
           _isDragging = true
-          ui.tapCell(fromKey)   // selects the piece, shows legal move highlights
+          ui.tapCell(fromKey)   // selects the piece, computes legal move highlights
           // Do NOT rerender here — rebuilding the DOM would destroy the board element
           // and kill the in-flight drag state (ghost + pointer capture).
-          // Selection highlight is intentionally deferred to onDrop/onCancel.
+          // Instead, patch only the interaction CSS classes on existing cell elements.
+          const snapshot = ui.getState()
+          boardEl.querySelectorAll('[data-cell-key]').forEach(cellEl => {
+            const key = cellEl.dataset.cellKey
+            const classes = getCellInteractionClasses(snapshot, key)
+            cellEl.classList.toggle('is-selected', classes.includes('is-selected'))
+            cellEl.classList.toggle('is-legal', classes.includes('is-legal'))
+            cellEl.classList.toggle('is-illegal-feedback', classes.includes('is-illegal-feedback'))
+          })
         },
         onDrop(fromKey, toKey, pointerId) {
           _isDragging = false
