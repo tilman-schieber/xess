@@ -158,16 +158,31 @@ describe('parsePuzzle', () => {
     expect(puzzle.goalTargets.get('2,0')).toEqual({ type: 'r', color: 'black' })
   })
 
-  it('defaults control/capture policy and promote flag when omitted', () => {
+  it('defaults capture-goal policy to white-only control and white-on-black captures', () => {
     const raw = makeRaw(['P'])
     const puzzle = parsePuzzle(raw)
 
     expect(puzzle.controllableColors).toEqual(['white'])
     expect(puzzle.capturableByColor).toEqual({
       white: ['black'],
-      black: ['white'],
+      black: [],
     })
     expect(puzzle.promote).toBe(false)
+  })
+
+  it('defaults reach-goal policy to dual-color control with no captures', () => {
+    const raw = makeRaw(['nG'], {
+      goalType: 'reach-all-goal-squares',
+      targetColor: null,
+      goalTargets: { '1,0': 'n' },
+    })
+
+    const puzzle = parsePuzzle(raw)
+    expect(puzzle.controllableColors).toEqual(['white', 'black'])
+    expect(puzzle.capturableByColor).toEqual({
+      white: [],
+      black: [],
+    })
   })
 
   it('supports dual-color control with no-capture policy', () => {

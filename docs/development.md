@@ -48,6 +48,13 @@ To add a puzzle:
 3. Assign it to a track in `src/puzzles/tracks.js` (or create a new track)
 4. Run `npm test` — `src/puzzles/catalogue.test.js` validates the catalogue structure
 
+Policy defaults are goal-type-driven and usually should not be repeated in puzzle data:
+
+- `capture-all-targets`: white-controlled, white captures black.
+- `reach-all-goal-squares`: both colors controllable, no captures.
+
+Only add `controllableColors` / `capturableByColor` when intentionally overriding those defaults.
+
 ## PWA and Service Worker
 
 The service worker is only active in the production build (`npm run build` + `npm run preview`). It is disabled in dev mode (`devOptions.enabled: false` in `vite.config.js`).

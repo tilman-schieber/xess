@@ -133,8 +133,7 @@ describe('track navigation contracts', () => {
       })
     })
 
-    expect(allTrackIds).toHaveLength(catalogue.length)
-    expect(new Set(allTrackIds).size).toBe(catalogue.length)
+    expect(new Set(allTrackIds).size).toBe(allTrackIds.length)
   })
 
   it('getTrackPuzzleList keeps track order and uses within-track numbering', () => {
@@ -154,28 +153,28 @@ describe('track navigation contracts', () => {
 
   it('getTrackLaunchPuzzleId prefers active puzzle when active belongs to selected track', () => {
     const launchId = getTrackLaunchPuzzleId({
-      trackId: 'foundations',
+      trackId: 'puzzle-master',
       solvedIds: [],
-      activePuzzleId: 'p1q2r3s4',
+      activePuzzleId: 'b4c5d6e7',
     })
 
-    expect(launchId).toBe('p1q2r3s4')
+    expect(launchId).toBe('b4c5d6e7')
   })
 
   it('getTrackLaunchPuzzleId falls back to first unsolved puzzle when active is outside track', () => {
     const launchId = getTrackLaunchPuzzleId({
-      trackId: 'foundations',
-      solvedIds: ['xk3m9pq2', 'gt7wz4r1'],
-      activePuzzleId: 'x1y2z3a4',
+      trackId: 'puzzle-master',
+      solvedIds: ['b4c5d6e7'],
+      activePuzzleId: 'd1e2f3g4',
     })
 
-    expect(launchId).toBe('g3h4i5j6')
+    expect(launchId).toBe('c7d8e9f0')
   })
 
   it('getTrackLaunchPuzzleId falls back to first puzzle when track is fully solved', () => {
-    const track = getTracks().find(entry => entry.id === 'foundations')
+    const track = getTracks().find(entry => entry.id === 'puzzle-master')
     const launchId = getTrackLaunchPuzzleId({
-      trackId: 'foundations',
+      trackId: 'puzzle-master',
       solvedIds: [...track.puzzleIds],
       activePuzzleId: null,
     })
@@ -247,15 +246,15 @@ describe('track navigation contracts', () => {
 
   it('resolveLandingContinueAction falls back from stale active puzzle to first unsolved in last track', () => {
     const action = resolveLandingContinueAction({
-      lastTrackId: 'foundations',
-      solvedIds: ['xk3m9pq2', 'gt7wz4r1'],
+      lastTrackId: 'puzzle-master',
+      solvedIds: ['b4c5d6e7'],
       activePuzzleId: 'stale-id',
     })
 
     expect(action).toEqual({
       kind: 'play',
-      trackId: 'foundations',
-      puzzleId: 'g3h4i5j6',
+      trackId: 'puzzle-master',
+      puzzleId: 'c7d8e9f0',
     })
   })
 

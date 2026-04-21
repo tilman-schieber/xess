@@ -24,12 +24,16 @@ Practical catalogue contract (enforced by `src/puzzles/catalogue.test.js`):
 - `targetColor` (`'white' | 'black' | null`): defaults to `null` when missing.
 - `goalTargets` (object): defaults to empty `Map` at runtime when missing.
 - `controllableColors` (`string[]`):
-  - defaults to `['white']`.
+  - defaults by `goalType`:
+    - `capture-all-targets` -> `['white']`
+    - `reach-all-goal-squares` -> `['white', 'black']`
   - only `'white'` and `'black'` are kept.
   - duplicates are removed.
-  - if provided but no valid colors remain, fallback is still `['white']`.
+  - if provided but no valid colors remain, fallback uses the same goal-type default above.
 - `capturableByColor` (object with `white` and/or `black` arrays):
-  - defaults to `{ white: ['black'], black: ['white'] }`.
+  - defaults by `goalType`:
+    - `capture-all-targets` -> `{ white: ['black'], black: [] }`
+    - `reach-all-goal-squares` -> `{ white: [], black: [] }`
   - each side only keeps `'white'`/`'black'`, with duplicates removed.
   - missing side falls back to default for that side.
 - `promote` (boolean): defaults to `false`; only literal `true` enables promotion.
@@ -57,12 +61,15 @@ Unknown characters are ignored by the loader (no board cell created), so treat t
 
 - Win when no pieces of `targetColor` remain on the board.
 - In current catalogue, this uses `targetColor: 'black'`.
+- Default policy: white pieces are controllable; white may capture black; black captures are disabled unless explicitly configured.
 
 ### `reach-all-goal-squares`
 
 - Requires at least one `G` square in `grid`.
 - Without `goalTargets`: every `G` square must be occupied by any piece.
 - With `goalTargets`: each mapped goal coordinate must be occupied by the exact piece type+color.
+- Default policy: both colors are controllable; captures are disabled for both colors.
+- UI convention: black pieces render in red tint in reach mode.
 
 `goalTargets` format:
 
@@ -82,8 +89,8 @@ Real examples from `src/puzzles/catalogue.js`:
 
 ## Policy Fields
 
-- `controllableColors`: which piece colors the player may move.
-- `capturableByColor`: capture policy by mover color.
+- `controllableColors`: optional override for which piece colors the player may move.
+- `capturableByColor`: optional override for capture policy by mover color.
   - Example: `capturableByColor.white = ['black']` means white movers can capture black only.
 - `promote`: when `true`, pawn auto-promotes to queen on reaching row `0`.
 
@@ -110,7 +117,6 @@ Real examples from `src/puzzles/catalogue.js`:
   schemaVersion: 1,
   id: 'example-reach',
   goalType: 'reach-all-goal-squares',
-  targetColor: null,
   grid: [
     'R-G',
   ],

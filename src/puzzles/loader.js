@@ -19,6 +19,8 @@ export const parseKey = (key) => key.split(',').map(Number)
 export function parsePuzzle(raw) {
   if (raw.schemaVersion !== 1) throw new Error(`Unknown schema version: ${raw.schemaVersion}`)
 
+  const isReachGoal = raw.goalType === 'reach-all-goal-squares'
+
   const board = new Map()   // D-10: Map<"col,row", Cell>
   const rows = raw.grid
 
@@ -76,14 +78,14 @@ export function parsePuzzle(raw) {
     targetColor: raw.targetColor ?? null,
     controllableColors: Array.isArray(raw.controllableColors) && raw.controllableColors.length > 0
       ? [...new Set(raw.controllableColors.filter(color => color === 'white' || color === 'black'))]
-      : ['white'],
+      : (isReachGoal ? ['white', 'black'] : ['white']),
     capturableByColor: {
       white: Array.isArray(raw.capturableByColor?.white)
         ? [...new Set(raw.capturableByColor.white.filter(color => color === 'white' || color === 'black'))]
-        : ['black'],
+        : (isReachGoal ? [] : ['black']),
       black: Array.isArray(raw.capturableByColor?.black)
         ? [...new Set(raw.capturableByColor.black.filter(color => color === 'white' || color === 'black'))]
-        : ['white'],
+        : [],
     },
     promote: raw.promote === true,
     board,

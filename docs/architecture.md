@@ -114,6 +114,8 @@ catalogue.js (static data)
 
 **Controller is pure (no localStorage).** `store.js` owns all persistence. The controller calls `loadStore()` once at puzzle load and calls `saveProgress()` / `saveActiveState()` explicitly after state changes. This makes the controller straightforwardly testable.
 
+**Default move/capture policy is goal-type-based.** Capture puzzles default to white-only control with white-on-black captures; reach puzzles default to dual-color control with captures disabled for both sides. Puzzle entries only include policy fields when overriding these defaults.
+
 **Pawn direction is per-piece.** Pawn forward direction is encoded in the puzzle definition, not inferred from piece color or board orientation. This allows puzzle authors to place pawns pointing in any direction on a non-rectangular board.
 
 **Visual affordances use CSS overlays, not piece recoloring.** Selected pieces and legal-move targets are shown via `::before`/`::after` pseudo-elements on cells, not by recoloring the piece SVG. This keeps piece glyphs readable against the overlay tint.

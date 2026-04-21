@@ -35,9 +35,11 @@ describe('catalogue', () => {
     })
   })
 
-  it('supports no-capture, dual-control reach puzzle policy in active catalogue', () => {
+  it('applies default no-capture dual-control policy for reach puzzles without explicit policy fields', () => {
     const raw = catalogue.find(entry => entry.id === 'b4c5d6e7')
     expect(raw).toBeDefined()
+    expect(Object.hasOwn(raw, 'controllableColors')).toBe(false)
+    expect(Object.hasOwn(raw, 'capturableByColor')).toBe(false)
 
     const parsed = parsePuzzle(raw)
     expect(parsed.controllableColors).toEqual(['white', 'black'])
@@ -51,6 +53,8 @@ describe('catalogue', () => {
   it('supports promotion-required queen goal puzzle policy in active catalogue', () => {
     const raw = catalogue.find(entry => entry.id === 'c7d8e9f0')
     expect(raw).toBeDefined()
+    expect(Object.hasOwn(raw, 'controllableColors')).toBe(false)
+    expect(Object.hasOwn(raw, 'capturableByColor')).toBe(false)
 
     const parsed = parsePuzzle(raw)
     expect(parsed.controllableColors).toEqual(['white', 'black'])

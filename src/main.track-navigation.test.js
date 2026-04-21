@@ -54,39 +54,39 @@ describe('track launch selection via controller', () => {
     mockStore = {
       schemaVersion: 1,
       solvedIds: [],
-      activeState: { puzzleId: 'p1q2r3s4', boardEntries: [], undoEntries: [] },
+      activeState: { puzzleId: 'b4c5d6e7', boardEntries: [], undoEntries: [] },
     }
 
     const controller = createController()
-    const launchId = controller.getTrackLaunchPuzzleId('foundations')
+    const launchId = controller.getTrackLaunchPuzzleId('puzzle-master')
 
-    expect(launchId).toBe('p1q2r3s4')
+    expect(launchId).toBe('b4c5d6e7')
   })
 
   it('falls back to first unsolved puzzle when active puzzle is outside selected track', () => {
     mockStore = {
       schemaVersion: 1,
-      solvedIds: ['xk3m9pq2', 'gt7wz4r1'],
-      activeState: { puzzleId: 'x1y2z3a4', boardEntries: [], undoEntries: [] },
+      solvedIds: ['b4c5d6e7'],
+      activeState: { puzzleId: 'd1e2f3g4', boardEntries: [], undoEntries: [] },
     }
 
     const controller = createController()
-    const launchId = controller.getTrackLaunchPuzzleId('foundations')
+    const launchId = controller.getTrackLaunchPuzzleId('puzzle-master')
 
-    expect(launchId).toBe('g3h4i5j6')
+    expect(launchId).toBe('c7d8e9f0')
   })
 
   it('falls back to first puzzle for fully solved track', () => {
     mockStore = {
       schemaVersion: 1,
-      solvedIds: ['xk3m9pq2', 'gt7wz4r1', 'g3h4i5j6', 'p1q2r3s4', 't5u6v7w8', 'x9y0z1a2', 'n5o6p7q8', 'v3w4x5y6'],
+      solvedIds: ['b4c5d6e7', 'c7d8e9f0'],
       activeState: null,
     }
 
     const controller = createController()
-    const launchId = controller.getTrackLaunchPuzzleId('foundations')
+    const launchId = controller.getTrackLaunchPuzzleId('puzzle-master')
 
-    expect(launchId).toBe('xk3m9pq2')
+    expect(launchId).toBe('b4c5d6e7')
   })
 })
 
@@ -116,8 +116,8 @@ describe('main track-first screen flow', () => {
     mountGameUi(document.querySelector('#app'))
 
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-open-track="foundations"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-puzzle-id="xk3m9pq2"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-open-track="puzzle-master"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-puzzle-id="b4c5d6e7"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('[data-track-browser]')).toBeNull()
     expect(document.querySelector('[data-board]')).not.toBeNull()
@@ -211,21 +211,21 @@ describe('main track-first screen flow', () => {
     mountGameUi(document.querySelector('#app'))
 
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-open-track="foundations"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-puzzle-id="xk3m9pq2"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-open-track="puzzle-master"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-puzzle-id="b4c5d6e7"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-shell-menu-toggle]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-shell-nav-tracks]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('[data-track-browser]')).not.toBeNull()
-    expect(document.querySelector('[data-selected-track="foundations"]')).not.toBeNull()
+    expect(document.querySelector('[data-selected-track="puzzle-master"]')).not.toBeNull()
   })
 
   it('shell and menu taps do not trigger board move side effects', () => {
     mountGameUi(document.querySelector('#app'))
 
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-open-track="foundations"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-puzzle-id="xk3m9pq2"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-open-track="puzzle-master"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-puzzle-id="b4c5d6e7"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     const beforeCounter = document.querySelector('[data-move-counter]')?.textContent
 
