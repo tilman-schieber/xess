@@ -47,7 +47,7 @@ export function renderAppShell({
     menuToggle.setAttribute('aria-label', 'Open navigation menu')
     menuToggle.setAttribute('aria-expanded', menuOpen ? 'true' : 'false')
     menuToggle.setAttribute('aria-controls', 'app-shell-menu')
-    menuToggle.textContent = '☰'
+    menuToggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" class="icon"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>'
     bindActivate(menuToggle, onOpenMenu)
     topbar.append(menuToggle)
 

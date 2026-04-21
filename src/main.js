@@ -32,6 +32,29 @@ if (typeof window !== 'undefined') {
 }
 initSound()
 
+// Material Design icon SVG paths (viewBox 0 0 24 24)
+const ICONS = {
+  chevronLeft:  'M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z',
+  chevronRight: 'M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z',
+  restart:      'M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z',
+  undo:         'M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z',
+  redo:         'M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z',
+  menu:         'M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z',
+  volumeUp:     'M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z',
+  volumeOff:    'M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z',
+}
+
+function svgIcon(path) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+  svg.setAttribute('viewBox', '0 0 24 24')
+  svg.setAttribute('aria-hidden', 'true')
+  svg.setAttribute('class', 'icon')
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+  p.setAttribute('d', path)
+  svg.appendChild(p)
+  return svg
+}
+
 let _domParser = null
 function getDomParser() {
   if (!_domParser) _domParser = new DOMParser()
@@ -276,11 +299,12 @@ function renderSoundToggle() {
   btn.setAttribute('type', 'button')
   btn.setAttribute('aria-label', isSoundEnabled() ? 'Mute sounds' : 'Unmute sounds')
   btn.setAttribute('title', isSoundEnabled() ? 'Sound on' : 'Sound off')
-  btn.textContent = isSoundEnabled() ? '🔊' : '🔇'
+  btn.appendChild(svgIcon(isSoundEnabled() ? ICONS.volumeUp : ICONS.volumeOff))
 
   const handleToggle = () => {
     const enabled = toggleSound()
-    btn.textContent = enabled ? '🔊' : '🔇'
+    btn.innerHTML = ''
+    btn.appendChild(svgIcon(enabled ? ICONS.volumeUp : ICONS.volumeOff))
     btn.setAttribute('aria-label', enabled ? 'Mute sounds' : 'Unmute sounds')
     btn.setAttribute('title', enabled ? 'Sound on' : 'Sound off')
   }
@@ -418,7 +442,7 @@ export function renderToDom(root, model) {
   prevBtn.setAttribute('data-prev-puzzle', 'true')
   prevBtn.setAttribute('aria-label', 'Previous puzzle')
   prevBtn.disabled = !model.prevId
-  prevBtn.textContent = '←'
+  prevBtn.appendChild(svgIcon(ICONS.chevronLeft))
 
   const nextNavBtn = document.createElement('button')
   nextNavBtn.type = 'button'
@@ -426,14 +450,14 @@ export function renderToDom(root, model) {
   nextNavBtn.setAttribute('data-next-puzzle', 'true')
   nextNavBtn.setAttribute('aria-label', 'Next puzzle')
   nextNavBtn.disabled = !model.nextId
-  nextNavBtn.textContent = '→'
+  nextNavBtn.appendChild(svgIcon(ICONS.chevronRight))
 
   const restartBtn = document.createElement('button')
   restartBtn.type = 'button'
   restartBtn.className = 'nav-btn'
   restartBtn.setAttribute('data-restart-puzzle', 'true')
   restartBtn.setAttribute('aria-label', 'Restart puzzle')
-  restartBtn.textContent = '↺'
+  restartBtn.appendChild(svgIcon(ICONS.restart))
 
   nav.append(prevBtn, restartBtn, nextNavBtn)
 
@@ -452,7 +476,7 @@ export function renderToDom(root, model) {
   undoBtn.setAttribute('data-undo-move', 'true')
   undoBtn.setAttribute('aria-label', 'Undo move')
   undoBtn.disabled = !model.canUndo
-  undoBtn.textContent = '↶'
+  undoBtn.appendChild(svgIcon(ICONS.undo))
 
   const redoBtn = document.createElement('button')
   redoBtn.type = 'button'
@@ -460,7 +484,7 @@ export function renderToDom(root, model) {
   redoBtn.setAttribute('data-redo-move', 'true')
   redoBtn.setAttribute('aria-label', 'Redo move')
   redoBtn.disabled = !model.canRedo
-  redoBtn.textContent = '↷'
+  redoBtn.appendChild(svgIcon(ICONS.redo))
 
   trackingControls.append(counter, undoBtn, redoBtn)
   nav.append(trackingControls)
