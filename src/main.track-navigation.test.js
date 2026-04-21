@@ -248,13 +248,15 @@ describe('main track-first screen flow', () => {
     expect(afterCounter).toBe(beforeCounter)
   })
 
-  it('app style contract imports start/track styles and shared shell width hooks', () => {
+  it('app style contract imports start/track styles and shell width hooks', () => {
     const appCss = getSourceFile('./styles/app.css')
 
     expect(appCss.exists).toBe(true)
     expect(appCss.content).toMatch(/@import\s+['"]\.\/start-screen\.css['"];/)
     expect(appCss.content).toMatch(/@import\s+['"]\.\/track-browser\.css['"];/)
-    expect(appCss.content).toMatch(/\.xess-ui,\s*\n\.start-screen,\s*\n\.track-browser/s)
+    expect(appCss.content).toMatch(/\.xess-ui\s*\{/)
+    expect(appCss.content).toMatch(/\.app-shell\[data-shell-mode='start'\]/)
+    expect(appCss.content).toMatch(/\.app-shell\[data-shell-mode='tracks'\]/)
     expect(appCss.content).toMatch(/--app-max-width-mobile/)
   })
 })

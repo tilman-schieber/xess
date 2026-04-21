@@ -1,10 +1,20 @@
 .start-screen {
-  inline-size: min(100vw, var(--app-max-width-mobile));
-  max-width: var(--app-max-width-mobile);
+  inline-size: min(100%, var(--app-max-width-desktop));
+  max-width: var(--app-max-width-desktop);
   min-height: calc(100vh - var(--touch-target-min));
   display: grid;
   align-items: start;
+  gap: var(--space-sm);
   padding: var(--space-sm) 0;
+}
+
+.start-screen-intro {
+  margin: 0;
+  padding-inline: var(--space-xs);
+  font-size: var(--text-label);
+  color: var(--text-secondary);
+  line-height: 1.45;
+  max-inline-size: 74ch;
 }
 
 .start-screen-panel {
@@ -55,6 +65,7 @@
 .start-screen-cards {
   display: grid;
   gap: var(--space-sm);
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
 }
 
 .start-card {
@@ -64,6 +75,20 @@
   border: 1px solid var(--glass-border-soft);
   background: color-mix(in srgb, var(--glass-chip-bg) 72%, transparent);
   padding: var(--space-sm);
+}
+
+.start-card--interactive {
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.start-card--interactive:hover,
+.start-card--interactive:focus-visible {
+  border-color: var(--accent);
+}
+
+.start-card--interactive:active {
+  transform: translateY(1px);
 }
 
 .start-card-title {
@@ -78,7 +103,6 @@
   color: var(--text-secondary);
 }
 
-.start-card-action,
 .start-card-dismiss {
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
@@ -95,10 +119,16 @@
   transition: color 0.15s, border-color 0.15s;
 }
 
-.start-card-action:hover,
 .start-card-dismiss:hover {
   color: var(--text-primary);
   border-color: var(--accent);
+}
+
+@media (min-width: 48rem) {
+  .start-screen-panel {
+    padding: var(--space-lg);
+    gap: var(--space-lg);
+  }
 }
 
 /* Legacy launch selector contracts kept for UXP-01 coverage */

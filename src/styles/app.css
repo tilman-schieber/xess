@@ -104,6 +104,16 @@ body {
   gap: var(--space-sm);
 }
 
+.app-shell[data-shell-mode='start'] {
+  inline-size: min(100vw, var(--app-max-width-desktop));
+  max-width: var(--app-max-width-desktop);
+}
+
+.app-shell[data-shell-mode='tracks'] {
+  inline-size: min(100vw, var(--app-max-width-desktop));
+  max-width: var(--app-max-width-desktop);
+}
+
 .app-shell-topbar {
   display: flex;
   align-items: center;
@@ -162,9 +172,7 @@ body {
   padding-block: var(--space-xs);
 }
 
-.xess-ui,
-.start-screen,
-.track-browser {
+.xess-ui {
   inline-size: min(100vw, var(--app-max-width-mobile));
   max-width: var(--app-max-width-mobile);
 }
@@ -480,4 +488,3 @@ svg.icon {
   color: var(--text-primary);
   border-color: var(--accent);
 }
-

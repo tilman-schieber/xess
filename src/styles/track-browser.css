@@ -1,6 +1,6 @@
 .track-browser {
-  inline-size: min(100vw, var(--app-max-width-mobile));
-  max-width: var(--app-max-width-mobile);
+  inline-size: min(100%, var(--app-max-width-desktop));
+  max-width: var(--app-max-width-desktop);
   min-height: 100vh;
   display: grid;
   align-content: start;
