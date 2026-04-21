@@ -23,26 +23,6 @@ describe('renderAppShell', () => {
     expect(tracksView.querySelector('[data-shell-topbar]')).not.toBeNull()
     expect(playView.querySelector('[data-shell-topbar]')).not.toBeNull()
 
-    expect(startView.querySelector('[data-shell-footer]')).not.toBeNull()
-    expect(tracksView.querySelector('[data-shell-footer]')).not.toBeNull()
-    expect(playView.querySelector('[data-shell-footer]')).not.toBeNull()
-  })
-
-  it('renders static footer copy for all shell modes', () => {
-    const startView = renderAppShell({ mode: 'start', title: 'Start', content: buildContent() })
-    const tracksView = renderAppShell({ mode: 'tracks', title: 'Tracks', content: buildContent() })
-    const playView = renderAppShell({ mode: 'play', title: 'Play', content: buildContent() })
-
-    const startFooter = startView.querySelector('[data-shell-footer]')
-    const tracksFooter = tracksView.querySelector('[data-shell-footer]')
-    const playFooter = playView.querySelector('[data-shell-footer]')
-
-    expect(startFooter?.textContent).toContain('Xess')
-    expect(startFooter?.textContent).toContain('Local-first puzzle progress')
-    expect(tracksFooter?.textContent).toContain('Xess')
-    expect(tracksFooter?.textContent).toContain('Local-first puzzle progress')
-    expect(playFooter?.textContent).toContain('Xess')
-    expect(playFooter?.textContent).toContain('Local-first puzzle progress')
   })
 
   it('renders menu toggle only in play mode with aria-expanded', () => {
@@ -85,26 +65,4 @@ describe('renderAppShell', () => {
     expect(onNavigateTracks).toHaveBeenCalledTimes(1)
   })
 
-  it('keeps footer interactions outside navigation callback paths', () => {
-    const onOpenMenu = vi.fn()
-    const onNavigateHome = vi.fn()
-    const onNavigateTracks = vi.fn()
-
-    const view = renderAppShell({
-      mode: 'play',
-      title: 'Play',
-      content: buildContent(),
-      menuOpen: true,
-      onOpenMenu,
-      onNavigateHome,
-      onNavigateTracks,
-    })
-
-    const footer = view.querySelector('[data-shell-footer]')
-    footer?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-
-    expect(onOpenMenu).toHaveBeenCalledTimes(0)
-    expect(onNavigateHome).toHaveBeenCalledTimes(0)
-    expect(onNavigateTracks).toHaveBeenCalledTimes(0)
-  })
 })

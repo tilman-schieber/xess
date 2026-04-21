@@ -231,7 +231,7 @@ describe('main track-first screen flow', () => {
     expect(document.querySelector('[data-selected-track="foundations"]')).not.toBeNull()
   })
 
-  it('shell, menu, and footer taps do not trigger board move side effects', () => {
+  it('shell and menu taps do not trigger board move side effects', () => {
     mountGameUi(document.querySelector('#app'))
 
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
@@ -241,7 +241,6 @@ describe('main track-first screen flow', () => {
     const beforeCounter = document.querySelector('[data-move-counter]')?.textContent
 
     document.querySelector('[data-shell-topbar]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-shell-footer]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-shell-menu-toggle]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     const afterCounter = document.querySelector('[data-move-counter]')?.textContent

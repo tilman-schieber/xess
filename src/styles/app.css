@@ -159,34 +159,6 @@ body {
   justify-items: center;
 }
 
-.app-shell-footer {
-  inline-size: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  border-radius: 0.95rem;
-  border: 1px solid var(--glass-border-soft);
-  border-top-color: var(--glass-border-strong);
-  background: color-mix(in srgb, var(--glass-bg-1) 70%, rgba(10, 16, 32, 0.9));
-  color: var(--text-secondary);
-  box-shadow: var(--glass-shadow-soft);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-}
-
-.app-shell-footer-brand {
-  font-size: var(--text-label);
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.app-shell-footer-copy {
-  font-size: var(--text-label);
-  color: var(--text-secondary);
-  text-align: right;
-}
 
 .xess-ui {
   inline-size: min(100vw, 375px);
