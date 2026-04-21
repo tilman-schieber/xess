@@ -108,4 +108,20 @@ export default [
       '3,0': 'b',
     },
   },
+  {
+    // Puzzle — Capture the Queen
+    schemaVersion: 1,
+    id: 'k8l9m0n1',
+    title: 'Capture the Queen',
+    descriptionHtml: '<p><strong>Theme:</strong> Use your white pieces to capture the black queen.</p><ul><li>Normal chess movement rules apply.</li><li>Only knights can jump!</li></ul>',
+    goalType: 'capture-all-targets',
+    targetColor: 'black',
+    grid: [
+      'xqx',
+      'xxx',
+      'BN-',
+      'RRR',
+      'PPP',
+    ],
+  },
 ]

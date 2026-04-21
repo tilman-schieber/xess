@@ -42,4 +42,17 @@ export default [
       'm4n5o6p7',
     ],
   },
+  {
+    id: 'capture-to-win',
+    title: 'Capture to Win',
+    subtitle: 'White pieces must capture the black targets',
+    modes: {
+      random: { enabled: false },
+      guided: { enabled: true },
+      tutorial: { enabled: false },
+    },
+    puzzleIds: [
+      'k8l9m0n1',
+    ],
+  },
 ]
