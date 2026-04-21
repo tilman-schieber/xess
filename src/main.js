@@ -132,7 +132,7 @@ export function getPuzzleObjectiveText(puzzle) {
   }
 
   if (puzzle.goalType === 'reach-all-goal-squares') {
-    return 'Move all white pieces onto goal squares.'
+    return 'The red pieces have to reach their goal squares.'
   }
 
   return 'Solve the puzzle objective.'

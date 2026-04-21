@@ -24,7 +24,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     const model = ui.getRenderModel()
 
     expect(model.puzzleTitle).toBe('Find the Square')
-    expect(model.objectiveText).toBe('Move all white pieces onto goal squares.')
+    expect(model.objectiveText).toBe('The red pieces have to reach their goal squares.')
 
     const captureUi = createGameUiController({ puzzleId: 'xk3m9pq2' })
     const captureModel = captureUi.getRenderModel()
@@ -157,7 +157,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     const model = {
       puzzle: { goalType: 'reach-all-goal-squares', targetColor: 'black', descriptionHtml: '' },
       puzzleTitle: 'Solved Puzzle',
-      objectiveText: 'Move all white pieces onto goal squares.',
+      objectiveText: 'The red pieces have to reach their goal squares.',
       boardClasses: ['is-won'],
       animationMs: 180,
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],

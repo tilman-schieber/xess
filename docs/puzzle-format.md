@@ -69,7 +69,7 @@ Unknown characters are ignored by the loader (no board cell created), so treat t
 - Without `goalTargets`: every `G` square must be occupied by any piece.
 - With `goalTargets`: each mapped goal coordinate must be occupied by the exact piece type+color.
 - Default policy: both colors are controllable; captures are disabled for both colors.
-- UI convention: black pieces render in red tint in reach mode.
+- UI convention: the special goal pieces are shown in red tint in reach mode.
 
 `goalTargets` format:
 
