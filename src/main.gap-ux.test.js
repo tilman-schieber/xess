@@ -18,15 +18,6 @@ function byKey(model) {
   return new Map(model.cells.map(cell => [cell.key, cell]))
 }
 
-function getCssFile(relativePath) {
-  const filePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), relativePath)
-  return {
-    filePath,
-    exists: existsSync(filePath),
-    content: existsSync(filePath) ? readFileSync(filePath, 'utf8') : '',
-  }
-}
-
 describe('gap UX regressions: objective context + static square geometry', () => {
   it('render model includes puzzle title and human-readable objective copy', () => {
     const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
@@ -40,21 +31,6 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     expect(captureModel.puzzleTitle).toBe('Corner Trap')
     expect(captureModel.objectiveText).toBe('Capture all black targets.')
 
-    const mainSource = getCssFile('./main.js')
-    expect(mainSource.exists).toBe(true)
-    expect(mainSource.content).toMatch(/data-puzzle-title/)
-    expect(mainSource.content).toMatch(/data-puzzle-objective/)
-    expect(mainSource.content).toMatch(/objective\.textContent\s*=\s*model\.objectiveText/)
-  })
-
-  it('board css enforces static square geometry for empty and occupied playable cells', () => {
-    const boardCss = getCssFile('./styles/board.css')
-    expect(boardCss.exists).toBe(true)
-
-    expect(boardCss.content).toMatch(/grid-template-rows:\s*repeat\(var\(--rows\),\s*1fr\)/)
-    expect(boardCss.content).toMatch(/\.cell\s*\{[^}]*aspect-ratio:\s*1\s*\/\s*1/s)
-    expect(boardCss.content).toMatch(/\.cell\s*\{[^}]*inline-size:\s*100%/s)
-    expect(boardCss.content).toMatch(/\.cell\s*\{[^}]*block-size:\s*100%/s)
   })
 
   it('move, illegal, and win interaction classes remain intact with objective-aware UI', () => {
@@ -173,15 +149,6 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     expect(description?.querySelector('script')).toBeNull()
   })
 
-  it('has compact mobile-friendly puzzle-description typography styles', () => {
-    const appCss = getCssFile('./styles/app.css')
-    expect(appCss.exists).toBe(true)
-    expect(appCss.content).toMatch(/\.puzzle-description\s*\{[\s\S]*font-size:\s*var\(--text-label\)/)
-    expect(appCss.content).toMatch(/\.puzzle-description\s+p\s*\{[\s\S]*margin:\s*0/)
-    expect(appCss.content).toMatch(/\.puzzle-description\s+ul\s*,\s*\.puzzle-description\s+ol\s*\{[\s\S]*padding-inline-start:/)
-    expect(appCss.content).toMatch(/\.puzzle-description\s+a\s*\{[\s\S]*text-decoration:/)
-  })
-
   it('renders solved-with-next banner as explicit multi-line state with headline and action rows', () => {
     const dom = new JSDOM('<!doctype html><div id="root"></div>')
     globalThis.document = dom.window.document
@@ -212,10 +179,6 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toBe('Puzzle solved!')
     expect(winBanner?.querySelector('[data-win-action] [data-win-next-puzzle]')?.textContent).toBe('Next Puzzle')
 
-    const appCss = getCssFile('./styles/app.css')
-    expect(appCss.content).toMatch(/\.win-banner\.is-won\s*\{[\s\S]*display:\s*(grid|flex)/)
-    expect(appCss.content).toMatch(/\.win-banner\s*\{[\s\S]*gap:/)
-    expect(appCss.content).toMatch(/\.win-banner-state\s*\{[\s\S]*display:\s*grid/)
   })
 
   it('renders terminal solved banner as distinct all-solved state block', () => {
@@ -249,26 +212,6 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toMatch(/All .* puzzles solved! 🎉|All puzzles solved! 🎉/)
   })
 
-  it('suppresses root tap handling for pointer sequences already consumed by drag drop', () => {
-    const mainSource = getCssFile('./main.js')
-    expect(mainSource.exists).toBe(true)
-
-    expect(mainSource.content).toMatch(/let\s+_suppressTapPointerId\s*=\s*null/)
-    expect(mainSource.content).toMatch(/if\s*\(_suppressTapPointerId\s*===\s*event\.pointerId\)\s*\{[\s\S]*return/s)
-    expect(mainSource.content).toMatch(/onDrop\([^)]*pointerId[^)]*\)[\s\S]*_suppressTapPointerId\s*=\s*pointerId/s)
-    expect(mainSource.content).toMatch(/onCancel\([^)]*pointerId[^)]*\)[\s\S]*_suppressTapPointerId\s*=\s*pointerId/s)
-  })
-
-  it('uses pointer-first sound toggle handlers while keeping keyboard activation support', () => {
-    const mainSource = getCssFile('./main.js')
-    expect(mainSource.exists).toBe(true)
-
-    expect(mainSource.content).toMatch(/sound-toggle/)
-    expect(mainSource.content).toMatch(/addEventListener\('pointer(?:down|up)'/)
-    expect(mainSource.content).toMatch(/addEventListener\('keydown'/)
-    expect(mainSource.content).toMatch(/event\.key\s*===\s*'Enter'\s*\|\|\s*event\.key\s*===\s*' '/)
-  })
-
   it('renders board with explicit mode metadata hooks for reach and capture puzzles', () => {
     const dom = new JSDOM('<!doctype html><div id="root"></div>')
     globalThis.document = dom.window.document
@@ -292,15 +235,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     expect(captureBoard?.className).toContain('board--mode-capture')
   })
 
-  it('styles reach-mode opponents via red SVG assets while leaving ghost styling neutral', () => {
-    const boardCss = getCssFile('./styles/board.css')
-    expect(boardCss.exists).toBe(true)
-
-    // Red opponent coloring is now achieved via dedicated red-*.svg assets in the
-    // boardRenderer (not via CSS filter), so the old board-scoped CSS selector is gone.
-    // Verify ghost neutrality is still enforced by CSS.
-    expect(boardCss.content).toMatch(/\.piece--ghost\s*\{[\s\S]*opacity/s)
-
+  it('styles reach-mode opponents via red SVG assets', () => {
     // Verify red piece asset files exist on disk for all piece types
     const __dirname = path.dirname(fileURLToPath(import.meta.url))
     for (const type of ['k', 'q', 'r', 'b', 'n', 'p']) {

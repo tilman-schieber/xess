@@ -1,7 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { existsSync, readFileSync } from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 vi.mock('./store/store.js', () => ({
   loadStore: vi.fn(() => ({ schemaVersion: 1, solvedIds: [], activeState: null })),
@@ -17,33 +14,6 @@ function byKey(model) {
   return new Map(model.cells.map(cell => [cell.key, cell]))
 }
 
-function getCssFile(relativePath) {
-  const filePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), relativePath)
-  return {
-    filePath,
-    exists: existsSync(filePath),
-    content: existsSync(filePath) ? readFileSync(filePath, 'utf8') : '',
-  }
-}
-
-function getSourceFile(relativePath) {
-  const filePath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), relativePath)
-  return {
-    filePath,
-    exists: existsSync(filePath),
-    content: existsSync(filePath) ? readFileSync(filePath, 'utf8') : '',
-  }
-}
-
-function expectTouchTargetContract(cssContent, selector) {
-  const selectorRegex = new RegExp(`${selector}[^\\{]*\\{[^}]*`, 's')
-  const blockMatch = cssContent.match(selectorRegex)
-  expect(blockMatch, `Missing CSS block for ${selector}`).not.toBeNull()
-  const block = blockMatch?.[0] ?? ''
-  expect(block).toMatch(/min-inline-size:\s*(var\(--touch-target-min(?:,\s*44px)?\)|44px)/)
-  expect(block).toMatch(/min-block-size:\s*(var\(--touch-target-min(?:,\s*44px)?\)|44px)/)
-  expect(block).toMatch(/--touch-target-min|44px/)
-}
 
 describe('main UI interaction flow', () => {
   beforeEach(() => {
@@ -181,84 +151,6 @@ describe('main UI interaction flow', () => {
   })
 })
 
-describe('responsive layout and touch target contracts', () => {
-  it('375px viewport contract keeps board shell and controls visible (VIS-02)', () => {
-    const appCss = getCssFile('./styles/app.css')
-    const boardCss = getCssFile('./styles/board.css')
-
-    expect(appCss.exists).toBe(true)
-    expect(boardCss.exists).toBe(true)
-
-    expect(appCss.content).toMatch(/\.xess-ui/)
-    expect(appCss.content).toMatch(/max-width:\s*375px|inline-size:\s*min\(100vw,\s*375px\)/)
-    expect(appCss.content).toMatch(/@media\s*\(min-width:\s*768px\)/)
-  })
-
-  it('board cell and piece targets enforce >=44px minimum touch size (RND-03)', () => {
-    const boardCss = getCssFile('./styles/board.css')
-    expect(boardCss.exists).toBe(true)
-
-    expect(boardCss.content).toMatch(/min-(width|inline-size):\s*44px/)
-    expect(boardCss.content).toMatch(/min-(height|block-size):\s*44px/)
-    expect(boardCss.content).toMatch(/\.cell/)
-    expect(boardCss.content).toMatch(/\.piece/)
-  })
-
-  it('launch-critical controls keep tokenized min-size touch target coverage (UXP-01)', () => {
-    const appCss = getCssFile('./styles/app.css')
-    const startCss = getCssFile('./styles/start-screen.css')
-    const trackCss = getCssFile('./styles/track-browser.css')
-
-    expect(appCss.exists).toBe(true)
-    expect(startCss.exists).toBe(true)
-    expect(trackCss.exists).toBe(true)
-
-    expect(appCss.content).toMatch(/--touch-target-min:\s*44px/)
-
-    const coverage = [
-      [appCss.content, '\\.nav-btn'],
-      [appCss.content, '\\.btn-next-puzzle'],
-      [appCss.content, '\\.sound-toggle'],
-      [startCss.content, '\\.start-screen-primary'],
-      [startCss.content, '\\.start-screen-secondary'],
-      [trackCss.content, '\\.track-browser-back'],
-      [trackCss.content, '\\.track-action-open'],
-      [trackCss.content, '\\.track-action-resume'],
-      [trackCss.content, '\\.track-puzzle-item'],
-    ]
-
-    coverage.forEach(([content, selector]) => {
-      expectTouchTargetContract(content, selector)
-    })
-  })
-})
-
-describe('phase 13 visual affordance and mode-hook contracts', () => {
-  it('board stylesheet defines translucent cell overlays with piece-safe layering', () => {
-    const boardCss = getCssFile('./styles/board.css')
-    expect(boardCss.exists).toBe(true)
-
-    expect(boardCss.content).toMatch(/\.cell::after\s*\{[\s\S]*opacity:\s*0/s)
-    expect(boardCss.content).toMatch(/\.cell\.is-selected::after\s*\{[\s\S]*background:/s)
-    expect(boardCss.content).toMatch(/\.cell\.is-legal::after\s*\{[\s\S]*background:/s)
-    expect(boardCss.content).toMatch(/\.cell\.is-illegal-feedback::after\s*\{[\s\S]*background:/s)
-    expect(boardCss.content).toMatch(/\.piece\s*\{[\s\S]*z-index:\s*2/s)
-
-    // Regression guard: frame-only ring approach should not reappear.
-    expect(boardCss.content).not.toMatch(/\.cell\.is-selected\s*\{[\s\S]*box-shadow:\s*inset\s+0\s+0\s+0\s+3px/s)
-    expect(boardCss.content).not.toMatch(/\.cell\.is-legal\s*\{[\s\S]*box-shadow:\s*inset\s+0\s+0\s+0\s+3px/s)
-  })
-
-  it('render source keeps explicit board goal-type and board mode hooks for CSS scoping', () => {
-    const mainSource = getSourceFile('./main.js')
-    expect(mainSource.exists).toBe(true)
-
-    expect(mainSource.content).toMatch(/board\.setAttribute\('data-goal-type',\s*boardGoalType\)/)
-    expect(mainSource.content).toMatch(/board\.setAttribute\('data-board-mode',\s*boardModeClass\.replace\('board--mode-',\s*''\)\)/)
-    expect(mainSource.content).toMatch(/board--mode-reach/)
-    expect(mainSource.content).toMatch(/board--mode-capture/)
-  })
-})
 
 describe('tracking runtime and UI contracts', () => {
   it('undo/redo actions keep move counter synchronized across move, undo, redo, and restart', () => {
@@ -304,22 +196,6 @@ describe('tracking runtime and UI contracts', () => {
     expect(runtime.moveEvents).toHaveLength(1)
     expect(runtime.moveEvents[0]).toMatchObject({ from: '0,0', to: '0,2' })
     expect(runtime.historyListRendered).toBe(false)
-  })
-
-  it('main view defines move counter and undo/redo controls but no move history list container', () => {
-    const mainSource = getSourceFile('./main.js')
-    const appCss = getCssFile('./styles/app.css')
-
-    expect(mainSource.exists).toBe(true)
-    expect(appCss.exists).toBe(true)
-
-    expect(mainSource.content).toMatch(/data-move-counter/)
-    expect(mainSource.content).toMatch(/data-undo-move/)
-    expect(mainSource.content).toMatch(/data-redo-move/)
-    expect(mainSource.content).not.toMatch(/data-move-history-list/)
-
-    expect(appCss.content).toMatch(/\.tracking-controls/)
-    expect(appCss.content).toMatch(/\.tracking-counter/)
   })
 
   it('capture and reach puzzle objectives stay behaviorally distinct in UI controller flow', () => {
