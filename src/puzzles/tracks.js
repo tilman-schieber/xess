@@ -40,6 +40,7 @@ export default [
     },
     puzzleIds: [
       'm4n5o6p7',
+      'q2r3s4t5',
     ],
   },
   {

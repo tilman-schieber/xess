@@ -124,4 +124,23 @@ export default [
       'PPP',
     ],
   },
+  {
+    // Puzzle — Knight Train
+    schemaVersion: 1,
+    id: 'q2r3s4t5',
+    title: 'Knight Train',
+    descriptionHtml: '<p><strong>Theme:</strong> Route the red knight through the corridor to the goal.</p><ul><li>The red pieces have to reach their goal squares.</li><li>No pieces can be captured.</li><li>Normal chess movement still applies.</li></ul>',
+    goalType: 'reach-all-goal-squares',
+    grid: [
+      'RRG',
+      'BRR',
+      'BNx',
+      'BNx',
+      'BNx',
+      'nNx',
+    ],
+    goalTargets: {
+      '2,0': 'n',
+    },
+  },
 ]
