@@ -502,6 +502,10 @@ body {
     padding-inline: var(--space-sm);
   }
 
+  #app[data-screen-mode='play'] .board {
+    max-inline-size: none;
+  }
+
   #app[data-screen-mode='play'] .puzzle-meta {
     position: relative;
     padding: var(--space-xs) var(--space-sm);

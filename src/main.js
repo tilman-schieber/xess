@@ -746,6 +746,8 @@ export function mountGameUi(root = document.querySelector('#app')) {
     if (!compact) {
       board.style.inlineSize = ''
       board.style.blockSize = ''
+      board.style.maxInlineSize = ''
+      board.style.maxBlockSize = ''
       return
     }
 
@@ -777,6 +779,8 @@ export function mountGameUi(root = document.querySelector('#app')) {
     const boardHeight = (cell * rows) + (gap * (rows - 1)) + paddingY
     board.style.inlineSize = `${boardWidth}px`
     board.style.blockSize = `${boardHeight}px`
+    board.style.maxInlineSize = `${boardWidth}px`
+    board.style.maxBlockSize = `${boardHeight}px`
   }
 
   function rerender() {
