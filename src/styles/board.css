@@ -36,15 +36,15 @@
 }
 
 .cell--playable {
-  background: rgba(42, 42, 42, 0.4);
-  border: 1px solid rgba(59, 74, 71, 0.12);
-  color: var(--text-primary);
+  background: linear-gradient(180deg, var(--cell-playable-start) 0%, var(--cell-playable-end) 100%);
+  color: var(--surface-bg);
 }
 
 .cell--goal {
-  background: rgba(0, 218, 198, 0.07);
-  border: 1px solid rgba(72, 247, 226, 0.18);
-  box-shadow: inset 0 0 12px rgba(72, 247, 226, 0.06);
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--accent-goal) 85%, white),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  background: linear-gradient(180deg, var(--cell-goal-start) 0%, var(--cell-goal-end) 100%);
 }
 
 .cell--void {
@@ -65,22 +65,38 @@
 
 .cell.is-selected::after {
   opacity: 1;
-  background: rgba(72, 247, 226, 0.15);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--selected-ring) 48%, white) 0%,
+    color-mix(in srgb, var(--selected-ring) 72%, transparent) 100%
+  );
   box-shadow:
-    inset 0 0 0 2px rgba(72, 247, 226, 0.7),
-    0 0 16px rgba(72, 247, 226, 0.25);
+    inset 0 0 0 1px color-mix(in srgb, var(--selected-ring) 62%, white),
+    inset 0 0 0 2px color-mix(in srgb, var(--selected-ring) 32%, transparent);
 }
 
 .cell.is-legal::after {
   opacity: 1;
-  background: rgba(0, 218, 198, 0.1);
-  box-shadow: inset 0 0 0 1px rgba(0, 218, 198, 0.45);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--accent) 38%, white) 0%,
+    color-mix(in srgb, var(--accent) 64%, transparent) 100%
+  );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 66%, white),
+    inset 0 0 0 2px color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
 .cell.is-illegal-feedback::after {
   opacity: 1;
-  background: rgba(255, 180, 171, 0.12);
-  box-shadow: inset 0 0 0 2px rgba(255, 180, 171, 0.55);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--destructive) 42%, white) 0%,
+    color-mix(in srgb, var(--destructive) 66%, transparent) 100%
+  );
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--destructive) 70%, white),
+    inset 0 0 0 2px color-mix(in srgb, var(--destructive) 30%, transparent);
 }
 
 .piece {
@@ -110,11 +126,10 @@
 }
 
 .board.is-won {
-  border-color: rgba(72, 247, 226, 0.4);
+  border-color: var(--accent);
   box-shadow:
-    0 14px 32px rgba(0, 0, 0, 0.5),
-    0 0 0 2px rgba(72, 247, 226, 0.35),
-    0 0 40px rgba(72, 247, 226, 0.12);
+    0 14px 32px rgba(0, 0, 0, 0.32),
+    0 0 0 2px rgba(79, 207, 153, 0.42);
 }
 
 @media (min-width: 768px) {

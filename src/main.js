@@ -406,6 +406,7 @@ export function renderToDom(root, model) {
     meta.append(description)
   }
   meta.append(goalBadge, posSpan)
+  app.append(meta)
 
   // Nav controls
   const nav = document.createElement('div')
@@ -462,6 +463,8 @@ export function renderToDom(root, model) {
   redoBtn.textContent = '↷'
 
   trackingControls.append(counter, undoBtn, redoBtn)
+  nav.append(trackingControls)
+  app.append(nav)
 
   // Win banner
   const isWon = model.boardClasses.includes('is-won')
@@ -512,7 +515,7 @@ export function renderToDom(root, model) {
     }
   }
 
-  // winBanner assembled into layout below
+  app.append(winBanner)
 
   const boardGoalType = typeof model?.puzzle?.goalType === 'string' ? model.puzzle.goalType : 'unknown'
   const boardModeClass = boardGoalType === 'capture-all-targets'
@@ -560,24 +563,7 @@ export function renderToDom(root, model) {
     board.append(cellEl)
   })
 
-  // ── 3-column desktop layout ────────────────────────────────
-  const layout = document.createElement('div')
-  layout.className = 'play-layout'
-
-  const sidebarLeft = document.createElement('div')
-  sidebarLeft.className = 'play-sidebar-left'
-  sidebarLeft.append(meta, trackingControls)
-
-  const boardArea = document.createElement('div')
-  boardArea.className = 'board-area'
-  boardArea.append(board)
-
-  const sidebarRight = document.createElement('div')
-  sidebarRight.className = 'play-sidebar-right'
-  sidebarRight.append(nav, winBanner)
-
-  layout.append(sidebarLeft, boardArea, sidebarRight)
-  app.append(layout)
+  app.append(board)
   root.append(app)
 }
 
