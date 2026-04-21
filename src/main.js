@@ -417,7 +417,7 @@ export function renderToDom(root, model) {
   prevBtn.className = 'nav-btn'
   prevBtn.setAttribute('data-prev-puzzle', 'true')
   prevBtn.setAttribute('aria-label', 'Previous puzzle')
-  if (!model.prevId) prevBtn.setAttribute('aria-disabled', 'true')
+  prevBtn.disabled = !model.prevId
   prevBtn.textContent = '←'
 
   const nextNavBtn = document.createElement('button')
@@ -425,7 +425,7 @@ export function renderToDom(root, model) {
   nextNavBtn.className = 'nav-btn'
   nextNavBtn.setAttribute('data-next-puzzle', 'true')
   nextNavBtn.setAttribute('aria-label', 'Next puzzle')
-  if (!model.nextId) nextNavBtn.setAttribute('aria-disabled', 'true')
+  nextNavBtn.disabled = !model.nextId
   nextNavBtn.textContent = '→'
 
   const restartBtn = document.createElement('button')
@@ -451,7 +451,7 @@ export function renderToDom(root, model) {
   undoBtn.className = 'nav-btn tracking-btn'
   undoBtn.setAttribute('data-undo-move', 'true')
   undoBtn.setAttribute('aria-label', 'Undo move')
-  if (!model.canUndo) undoBtn.setAttribute('aria-disabled', 'true')
+  undoBtn.disabled = !model.canUndo
   undoBtn.textContent = '↶'
 
   const redoBtn = document.createElement('button')
@@ -459,7 +459,7 @@ export function renderToDom(root, model) {
   redoBtn.className = 'nav-btn tracking-btn'
   redoBtn.setAttribute('data-redo-move', 'true')
   redoBtn.setAttribute('aria-label', 'Redo move')
-  if (!model.canRedo) redoBtn.setAttribute('aria-disabled', 'true')
+  redoBtn.disabled = !model.canRedo
   redoBtn.textContent = '↷'
 
   trackingControls.append(counter, undoBtn, redoBtn)

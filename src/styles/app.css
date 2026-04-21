@@ -388,11 +388,11 @@ body {
   cursor: pointer;
 }
 
-.nav-btn:not([aria-disabled='true']):active {
+.nav-btn:not(:disabled):active {
   transform: translateY(1px);
 }
 
-.nav-btn[aria-disabled="true"] {
+.nav-btn:disabled {
   opacity: 0.35;
   pointer-events: none;
 }
