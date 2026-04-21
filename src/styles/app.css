@@ -98,19 +98,24 @@ body {
 }
 
 .app-shell {
-  inline-size: min(100vw, var(--app-max-width-mobile));
+  inline-size: min(100%, var(--app-max-width-mobile));
   max-width: var(--app-max-width-mobile);
   display: grid;
   gap: var(--space-sm);
 }
 
 .app-shell[data-shell-mode='start'] {
-  inline-size: min(100vw, var(--app-max-width-desktop));
+  inline-size: min(100%, var(--app-max-width-desktop));
   max-width: var(--app-max-width-desktop);
 }
 
 .app-shell[data-shell-mode='tracks'] {
-  inline-size: min(100vw, var(--app-max-width-desktop));
+  inline-size: min(100%, var(--app-max-width-desktop));
+  max-width: var(--app-max-width-desktop);
+}
+
+.app-shell[data-shell-mode='play'] {
+  inline-size: min(100%, var(--app-max-width-desktop));
   max-width: var(--app-max-width-desktop);
 }
 
@@ -118,6 +123,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  flex-wrap: wrap;
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
   border-radius: 0.95rem;
@@ -132,6 +138,7 @@ body {
 .app-shell-title {
   margin: 0;
   margin-inline-end: auto;
+  min-inline-size: 0;
   font-size: var(--text-heading);
   color: var(--text-primary);
 }
@@ -164,17 +171,12 @@ body {
 
 
 .xess-ui {
-  inline-size: min(100vw, 375px);
-  max-width: 375px;
+  inline-size: min(100%, var(--app-max-width-desktop));
+  max-width: var(--app-max-width-desktop);
   display: grid;
   justify-items: center;
   gap: var(--app-gap);
   padding-block: var(--space-xs);
-}
-
-.xess-ui {
-  inline-size: min(100vw, var(--app-max-width-mobile));
-  max-width: var(--app-max-width-mobile);
 }
 
 .puzzle-meta {
@@ -212,6 +214,28 @@ body {
   font-size: var(--text-label);
   line-height: 1.45;
   color: var(--text-secondary);
+}
+
+.puzzle-info-toggle {
+  display: none;
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.65rem;
+  border: 1px solid var(--glass-border-soft);
+  border-top-color: var(--glass-border-strong);
+  background: var(--glass-control-bg);
+  color: var(--text-primary);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+}
+
+.puzzle-description-region {
+  width: 100%;
 }
 
 .puzzle-description p {
@@ -277,6 +301,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.puzzle-meta-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
 .goal-badge {
@@ -436,6 +467,74 @@ body {
 
   .win-banner {
     font-size: var(--text-display);
+  }
+}
+
+@media (max-width: 40rem) {
+  #app[data-screen-mode='play'] {
+    padding: 0;
+  }
+
+  #app[data-screen-mode='play'] .app-shell {
+    min-height: 100dvh;
+    grid-template-rows: auto 1fr;
+  }
+
+  #app[data-screen-mode='play'] .app-shell-content {
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  #app[data-screen-mode='play'] .app-shell-topbar {
+    border-radius: 0;
+    border-inline: 0;
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  #app[data-screen-mode='play'] .app-shell-nav-action {
+    padding-inline: var(--space-sm);
+  }
+
+  #app[data-screen-mode='play'] .xess-ui {
+    inline-size: 100%;
+    min-height: 100%;
+    align-content: start;
+    padding-inline: var(--space-sm);
+  }
+
+  #app[data-screen-mode='play'] .puzzle-meta {
+    position: relative;
+    padding: var(--space-xs) var(--space-sm);
+    gap: var(--space-xs);
+  }
+
+  #app[data-screen-mode='play'] .puzzle-objective,
+  #app[data-screen-mode='play'] .goal-badge,
+  #app[data-screen-mode='play'] .puzzle-position {
+    display: none;
+  }
+
+  .puzzle-info-toggle {
+    display: inline-grid;
+    place-items: center;
+  }
+
+  .puzzle-description-region {
+    display: none;
+    position: absolute;
+    inset-inline: 0;
+    top: calc(100% + var(--space-xs));
+    z-index: 20;
+    border-radius: 0.75rem;
+    border: 1px solid var(--glass-border-soft);
+    border-top-color: var(--glass-border-strong);
+    background: var(--glass-meta-bg);
+    box-shadow: var(--glass-shadow-soft);
+    padding: var(--space-sm);
+  }
+
+  .puzzle-meta.is-info-expanded .puzzle-description-region {
+    display: block;
   }
 }
 

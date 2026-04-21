@@ -399,7 +399,10 @@ export function renderToDom(root, model) {
   title.setAttribute('data-puzzle-title', 'true')
   title.textContent = model.puzzleTitle
 
-  metaTop.append(title, renderSoundToggle())
+  const metaControls = document.createElement('div')
+  metaControls.className = 'puzzle-meta-controls'
+
+  metaTop.append(title, metaControls)
 
   const objective = document.createElement('p')
   objective.className = 'puzzle-objective'
@@ -407,13 +410,32 @@ export function renderToDom(root, model) {
   objective.textContent = model.objectiveText
 
   const descriptionHtml = getPuzzleDescriptionHtml(model.puzzle)
-  let description = null
+  let descriptionRegion = null
   if (descriptionHtml.length > 0) {
-    description = document.createElement('div')
+    const infoToggle = document.createElement('button')
+    infoToggle.type = 'button'
+    infoToggle.className = 'puzzle-info-toggle'
+    infoToggle.setAttribute('data-puzzle-info-toggle', 'true')
+    infoToggle.setAttribute('aria-label', 'Show details')
+    infoToggle.setAttribute('aria-expanded', 'false')
+    infoToggle.setAttribute('aria-controls', 'puzzle-description-region')
+    infoToggle.textContent = 'i'
+
+    descriptionRegion = document.createElement('div')
+    descriptionRegion.className = 'puzzle-description-region'
+    descriptionRegion.id = 'puzzle-description-region'
+    descriptionRegion.setAttribute('data-puzzle-info-region', 'true')
+
+    const description = document.createElement('div')
     description.className = 'puzzle-description'
     description.setAttribute('data-puzzle-description', 'true')
     description.innerHTML = descriptionHtml
+
+    descriptionRegion.append(description)
+    metaControls.append(infoToggle)
   }
+
+  metaControls.append(renderSoundToggle())
 
   // Goal badge
   const badge = getGoalBadgeData(model.puzzle)
@@ -433,8 +455,8 @@ export function renderToDom(root, model) {
   posSpan.textContent = position ?? ''
 
   meta.append(metaTop, objective)
-  if (description) {
-    meta.append(description)
+  if (descriptionRegion) {
+    meta.append(descriptionRegion)
   }
   meta.append(goalBadge, posSpan)
   app.append(meta)
@@ -618,6 +640,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   let _dragCleanup = null    // cleanup fn returned by initDragDrop
   let _isDragging = false    // true once drag threshold exceeded this pointer sequence
   let _suppressTapPointerId = null
+  let _isPuzzleInfoExpanded = false
 
   function bindPrimaryAction(element, onActivate) {
     if (!element) return
@@ -692,7 +715,68 @@ export function mountGameUi(root = document.querySelector('#app')) {
     })
 
     root.innerHTML = ''
+    root.setAttribute('data-screen-mode', mode ?? 'unknown')
     root.append(shell)
+  }
+
+  function syncPuzzleInfoPanel() {
+    const meta = root.querySelector('[data-puzzle-meta]')
+    const toggle = root.querySelector('[data-puzzle-info-toggle]')
+    if (!meta || !toggle) return
+
+    const compact = typeof window?.matchMedia === 'function'
+      ? window.matchMedia('(max-width: 40rem)').matches
+      : false
+    const shouldExpand = compact ? _isPuzzleInfoExpanded : true
+    meta.classList.toggle('is-info-expanded', shouldExpand)
+    toggle.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false')
+    toggle.setAttribute('aria-label', shouldExpand ? 'Hide details' : 'Show details')
+    toggle.title = shouldExpand ? 'Hide details' : 'Show details'
+  }
+
+  function fitBoardToViewport() {
+    const board = root.querySelector('[data-board]')
+    const uiRoot = root.querySelector('.xess-ui')
+    if (!board || !uiRoot) return
+
+    const compact = typeof window?.matchMedia === 'function'
+      ? window.matchMedia('(max-width: 40rem)').matches
+      : false
+
+    if (!compact) {
+      board.style.inlineSize = ''
+      board.style.blockSize = ''
+      return
+    }
+
+    const cols = Number.parseInt(board.style.getPropertyValue('--cols'), 10)
+    const rows = Number.parseInt(board.style.getPropertyValue('--rows'), 10)
+    if (!Number.isFinite(cols) || !Number.isFinite(rows) || cols <= 0 || rows <= 0) return
+
+    const boardStyles = window.getComputedStyle(board)
+    const uiStyles = window.getComputedStyle(uiRoot)
+    const gap = Number.parseFloat(boardStyles.gap) || 0
+    const paddingX = (Number.parseFloat(boardStyles.paddingLeft) || 0) + (Number.parseFloat(boardStyles.paddingRight) || 0)
+    const paddingY = (Number.parseFloat(boardStyles.paddingTop) || 0) + (Number.parseFloat(boardStyles.paddingBottom) || 0)
+    const rowGap = Number.parseFloat(uiStyles.rowGap || uiStyles.gap) || 0
+
+    const siblings = Array.from(uiRoot.children).filter(el => el !== board && el.getBoundingClientRect().height > 0)
+    const siblingHeights = siblings.reduce((sum, el) => sum + el.getBoundingClientRect().height, 0)
+    const occupied = siblingHeights + (rowGap * siblings.length)
+
+    const availableWidth = uiRoot.clientWidth
+    const availableHeight = Math.max(0, uiRoot.clientHeight - occupied)
+    if (availableWidth <= 0 || availableHeight <= 0) return
+
+    const maxCellByWidth = (availableWidth - paddingX - (gap * (cols - 1))) / cols
+    const maxCellByHeight = (availableHeight - paddingY - (gap * (rows - 1))) / rows
+    const cell = Math.floor(Math.min(maxCellByWidth, maxCellByHeight))
+    if (!Number.isFinite(cell) || cell <= 0) return
+
+    const boardWidth = (cell * cols) + (gap * (cols - 1)) + paddingX
+    const boardHeight = (cell * rows) + (gap * (rows - 1)) + paddingY
+    board.style.inlineSize = `${boardWidth}px`
+    board.style.blockSize = `${boardHeight}px`
   }
 
   function rerender() {
@@ -791,8 +875,20 @@ export function mountGameUi(root = document.querySelector('#app')) {
       content: playContent.firstElementChild,
     })
 
+    syncPuzzleInfoPanel()
+    fitBoardToViewport()
+
     // Tear down previous drag listener if board was re-rendered
     if (_dragCleanup) { _dragCleanup(); _dragCleanup = null }
+
+    const infoToggle = root.querySelector('[data-puzzle-info-toggle]')
+    if (infoToggle) {
+      bindPrimaryAction(infoToggle, () => {
+        _isPuzzleInfoExpanded = !_isPuzzleInfoExpanded
+        syncPuzzleInfoPanel()
+        fitBoardToViewport()
+      })
+    }
 
     const boardEl = root.querySelector('[data-board]')
 
@@ -894,6 +990,14 @@ export function mountGameUi(root = document.querySelector('#app')) {
   }
 
   rerender()
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', () => {
+      if (screenMode !== 'play') return
+      syncPuzzleInfoPanel()
+      fitBoardToViewport()
+    })
+  }
 
   root.addEventListener('pointerdown', (event) => {
     if (screenMode !== 'play') return
