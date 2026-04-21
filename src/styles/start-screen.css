@@ -78,7 +78,8 @@
   color: var(--text-secondary);
 }
 
-.start-card-action {
+.start-card-action,
+.start-card-dismiss {
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
   justify-self: start;
@@ -91,6 +92,13 @@
   font-weight: 600;
   padding: 0 var(--space-md);
   cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.start-card-action:hover,
+.start-card-dismiss:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
 }
 
 /* Legacy launch selector contracts kept for UXP-01 coverage */

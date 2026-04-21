@@ -22,22 +22,19 @@ describe('renderAppShell', () => {
     expect(startView.querySelector('[data-shell-topbar]')).not.toBeNull()
     expect(tracksView.querySelector('[data-shell-topbar]')).not.toBeNull()
     expect(playView.querySelector('[data-shell-topbar]')).not.toBeNull()
-
   })
 
-  it('renders menu toggle only in play mode with aria-expanded', () => {
+  it('renders Home and Tracks nav buttons in topbar for all modes', () => {
     const startView = renderAppShell({ mode: 'start', title: 'Start', content: buildContent() })
-    const playView = renderAppShell({ mode: 'play', title: 'Play', content: buildContent(), menuOpen: true })
+    const playView = renderAppShell({ mode: 'play', title: 'Play', content: buildContent() })
 
-    expect(startView.querySelector('[data-shell-menu-toggle]')).toBeNull()
-
-    const toggle = playView.querySelector('[data-shell-menu-toggle]')
-    expect(toggle).not.toBeNull()
-    expect(toggle?.getAttribute('aria-expanded')).toBe('true')
+    expect(startView.querySelector('[data-shell-nav-home]')).not.toBeNull()
+    expect(startView.querySelector('[data-shell-nav-tracks]')).not.toBeNull()
+    expect(playView.querySelector('[data-shell-nav-home]')).not.toBeNull()
+    expect(playView.querySelector('[data-shell-nav-tracks]')).not.toBeNull()
   })
 
-  it('invokes menu callbacks exactly once for pointer and keyboard activation', () => {
-    const onOpenMenu = vi.fn()
+  it('invokes nav callbacks exactly once for pointer and keyboard activation', () => {
     const onNavigateHome = vi.fn()
     const onNavigateTracks = vi.fn()
 
@@ -45,18 +42,12 @@ describe('renderAppShell', () => {
       mode: 'play',
       title: 'Play',
       content: buildContent(),
-      menuOpen: true,
-      onOpenMenu,
       onNavigateHome,
       onNavigateTracks,
     })
 
-    const toggle = view.querySelector('[data-shell-menu-toggle]')
     const home = view.querySelector('[data-shell-nav-home]')
     const tracks = view.querySelector('[data-shell-nav-tracks]')
-
-    toggle?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    expect(onOpenMenu).toHaveBeenCalledTimes(1)
 
     home?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
     expect(onNavigateHome).toHaveBeenCalledTimes(1)
@@ -64,5 +55,4 @@ describe('renderAppShell', () => {
     tracks?.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }))
     expect(onNavigateTracks).toHaveBeenCalledTimes(1)
   })
-
 })

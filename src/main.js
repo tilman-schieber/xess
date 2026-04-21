@@ -44,6 +44,13 @@ const ICONS = {
   volumeOff:    'M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z',
 }
 
+function btnLabel(text) {
+  const span = document.createElement('span')
+  span.setAttribute('class', 'nav-btn-label')
+  span.textContent = text
+  return span
+}
+
 function svgIcon(path) {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   svg.setAttribute('viewBox', '0 0 24 24')
@@ -178,7 +185,7 @@ export function createGameUiController({
       ...model,
       moveEvents: tracking.moveEvents,
       moveCount: tracking.moveCount,
-      moveCounterText: `Moves: ${tracking.moveCount}`,
+      moveCounterText: `${tracking.moveCount}`,
       canUndo: tracking.canUndo,
       canRedo: tracking.canRedo,
       historyListRendered: false,
@@ -443,6 +450,7 @@ export function renderToDom(root, model) {
   prevBtn.setAttribute('aria-label', 'Previous puzzle')
   prevBtn.disabled = !model.prevId
   prevBtn.appendChild(svgIcon(ICONS.chevronLeft))
+  prevBtn.appendChild(btnLabel('Prev'))
 
   const nextNavBtn = document.createElement('button')
   nextNavBtn.type = 'button'
@@ -451,6 +459,7 @@ export function renderToDom(root, model) {
   nextNavBtn.setAttribute('aria-label', 'Next puzzle')
   nextNavBtn.disabled = !model.nextId
   nextNavBtn.appendChild(svgIcon(ICONS.chevronRight))
+  nextNavBtn.appendChild(btnLabel('Next'))
 
   const restartBtn = document.createElement('button')
   restartBtn.type = 'button'
@@ -458,6 +467,7 @@ export function renderToDom(root, model) {
   restartBtn.setAttribute('data-restart-puzzle', 'true')
   restartBtn.setAttribute('aria-label', 'Restart puzzle')
   restartBtn.appendChild(svgIcon(ICONS.restart))
+  restartBtn.appendChild(btnLabel('Reset'))
 
   nav.append(prevBtn, restartBtn, nextNavBtn)
 
@@ -468,7 +478,7 @@ export function renderToDom(root, model) {
   const counter = document.createElement('span')
   counter.className = 'tracking-counter'
   counter.setAttribute('data-move-counter', 'true')
-  counter.textContent = model.moveCounterText ?? `Moves: ${model.moveCount ?? 0}`
+  counter.textContent = model.moveCounterText ?? `${model.moveCount ?? 0}`
 
   const undoBtn = document.createElement('button')
   undoBtn.type = 'button'
@@ -477,6 +487,7 @@ export function renderToDom(root, model) {
   undoBtn.setAttribute('aria-label', 'Undo move')
   undoBtn.disabled = !model.canUndo
   undoBtn.appendChild(svgIcon(ICONS.undo))
+  undoBtn.appendChild(btnLabel('Undo'))
 
   const redoBtn = document.createElement('button')
   redoBtn.type = 'button'
@@ -485,6 +496,7 @@ export function renderToDom(root, model) {
   redoBtn.setAttribute('aria-label', 'Redo move')
   redoBtn.disabled = !model.canRedo
   redoBtn.appendChild(svgIcon(ICONS.redo))
+  redoBtn.appendChild(btnLabel('Redo'))
 
   trackingControls.append(counter, undoBtn, redoBtn)
   nav.append(trackingControls)
@@ -603,7 +615,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
   let currentPuzzleId = null
   let selectedTrackId = null
   let ui = null
-  let playMenuOpen = false
   let _dragCleanup = null    // cleanup fn returned by initDragDrop
   let _isDragging = false    // true once drag threshold exceeded this pointer sequence
   let _suppressTapPointerId = null
@@ -628,7 +639,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   function loadPuzzle(puzzleId, options = {}) {
     ui = createGameUiController({ controller, puzzleId })
     currentPuzzleId = puzzleId
-    playMenuOpen = false
+
     if (options.trackId) {
       selectedTrackId = options.trackId
     }
@@ -661,7 +672,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   function goToTrackBrowser(trackId = null) {
     selectedTrackId = trackId
     screenMode = 'tracks'
-    playMenuOpen = false
+
     rerender()
   }
 
@@ -670,15 +681,9 @@ export function mountGameUi(root = document.querySelector('#app')) {
       mode,
       title,
       content,
-      menuOpen: mode === 'play' ? playMenuOpen : false,
-      onOpenMenu() {
-        playMenuOpen = !playMenuOpen
-        rerender()
-      },
       onNavigateHome() {
         selectedTrackId = null
         screenMode = 'start'
-        playMenuOpen = false
         rerender()
       },
       onNavigateTracks() {
@@ -900,7 +905,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
 
   root.addEventListener('pointerup', (event) => {
     if (screenMode !== 'play') return
-    if (event.target.closest?.('[data-shell-topbar], [data-shell-menu], [data-shell-menu-toggle]')) return
+    if (event.target.closest?.('[data-shell-topbar]')) return
     if (_suppressTapPointerId === event.pointerId) {
       _suppressTapPointerId = null
       return

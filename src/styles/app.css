@@ -107,7 +107,7 @@ body {
 .app-shell-topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
   border-radius: 0.95rem;
@@ -121,25 +121,12 @@ body {
 
 .app-shell-title {
   margin: 0;
+  margin-inline-end: auto;
   font-size: var(--text-heading);
   color: var(--text-primary);
 }
 
-.app-shell-nav,
-.app-shell-menu {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  align-items: center;
-}
-
-.app-shell-menu {
-  justify-content: flex-end;
-}
-
-.app-shell-nav-action,
-.app-shell-menu-toggle,
-.app-shell-menu-action {
+.app-shell-nav-action {
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
   border-radius: 0.65rem;
@@ -151,6 +138,12 @@ body {
   font-weight: 600;
   padding: var(--space-xs) var(--space-md);
   cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.app-shell-nav-action:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
 }
 
 .app-shell-content {
@@ -307,15 +300,7 @@ body {
   flex-wrap: wrap;
   gap: var(--space-sm);
   justify-content: center;
-  padding: var(--space-sm) var(--space-sm);
   width: 100%;
-  border-radius: 0.95rem;
-  border: 1px solid var(--glass-border-soft);
-  border-top-color: var(--glass-border-strong);
-  background: var(--glass-meta-bg);
-  box-shadow: var(--glass-shadow-soft);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
 }
 
 .tracking-controls {
@@ -327,16 +312,37 @@ body {
 }
 
 .tracking-counter {
-  font-size: var(--text-label);
-  font-weight: 600;
-  color: var(--text-secondary);
-  min-inline-size: 7ch;
-  text-align: center;
-  padding: 0.4rem 0.6rem;
-  border-radius: 999px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: 0.65rem;
   border: 1px solid var(--glass-border-soft);
-  background: var(--glass-chip-bg);
-  box-shadow: inset 0 1px 0 var(--glass-highlight);
+  border-top-color: var(--glass-border-strong);
+  background: var(--glass-control-bg);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 10px 22px rgba(5, 12, 28, 0.42);
+  -webkit-backdrop-filter: saturate(125%) blur(10px);
+  backdrop-filter: saturate(125%) blur(10px);
+  color: var(--text-primary);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.tracking-counter::after {
+  content: 'Moves';
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  line-height: 1;
 }
 
 .tracking-btn {
@@ -347,8 +353,11 @@ body {
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.2rem;
+  padding: var(--space-xs) var(--space-sm);
   background: var(--glass-control-bg);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
@@ -359,9 +368,10 @@ body {
   -webkit-backdrop-filter: saturate(125%) blur(10px);
   backdrop-filter: saturate(125%) blur(10px);
   color: var(--text-primary);
-  font-size: var(--text-heading);
   cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
 }
+
 
 .nav-btn:not(:disabled):active {
   transform: translateY(1px);
@@ -370,6 +380,14 @@ body {
 .nav-btn:disabled {
   opacity: 0.35;
   pointer-events: none;
+}
+
+.nav-btn-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 .btn-next-puzzle {
@@ -455,7 +473,11 @@ svg.icon {
   transition: color 0.15s, border-color 0.15s;
 }
 
+/* Universal interactive button hover — accent border highlight */
+.app-shell-nav-action:hover,
+.nav-btn:not(:disabled):hover,
 .sound-toggle:hover {
-  color: var(--text-primary, #f5f7ff);
-  border-color: var(--accent, #61d9a7);
+  color: var(--text-primary);
+  border-color: var(--accent);
 }
+
