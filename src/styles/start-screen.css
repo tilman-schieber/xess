@@ -4,21 +4,23 @@
   min-height: calc(100vh - var(--touch-target-min));
   display: grid;
   align-items: start;
+  justify-items: center;
   gap: var(--space-sm);
   padding: var(--space-sm) 0;
 }
 
 .start-screen-intro {
+  inline-size: min(100%, 56rem);
   margin: 0;
   padding-inline: var(--space-xs);
   font-size: var(--text-label);
   color: var(--text-secondary);
   line-height: 1.45;
-  max-inline-size: 74ch;
+  max-inline-size: 72ch;
 }
 
 .start-screen-panel {
-  inline-size: 100%;
+  inline-size: min(100%, 56rem);
   display: grid;
   gap: var(--space-md);
   padding: var(--space-md);
