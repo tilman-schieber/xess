@@ -173,7 +173,22 @@ export default [
       'xxpxx',
     ],
     goalTargets: {
-      '2,0': 'p',
+      '2,0': 'q',
     },
+    promote: true,
+  },
+  {
+    // Puzzle — Square Dance
+    schemaVersion: 1,
+    id: 'draft-puzzle',
+    title: 'Square Dance',
+    goalType: 'capture-all-targets',
+    targetColor: 'black',
+    grid: [
+      'RppP',
+      '-xx-',
+      '-xx-',
+      'PppP',
+    ],
   },
 ]

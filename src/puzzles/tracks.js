@@ -56,6 +56,7 @@ export default [
     },
     puzzleIds: [
       'k8l9m0n1',
+      'draft-puzzle',
     ],
   },
 ]

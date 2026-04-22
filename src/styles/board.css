@@ -18,6 +18,25 @@
   -webkit-backdrop-filter: var(--glass-blur, none);
   backdrop-filter: var(--glass-blur, none);
   touch-action: none; /* prevent browser scroll/zoom from hijacking pointer events during drag */
+  position: relative;
+}
+
+.board[data-promotion-enabled='true']::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0.4rem;
+  top: -0.35rem;
+  block-size: 0.3rem;
+  border-radius: 999px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--destructive) 55%, transparent) 0%,
+    color-mix(in srgb, var(--destructive) 78%, white) 50%,
+    color-mix(in srgb, var(--destructive) 55%, transparent) 100%
+  );
+  box-shadow: 0 0 10px color-mix(in srgb, var(--destructive) 48%, transparent);
+  opacity: 0.9;
 }
 
 .cell {

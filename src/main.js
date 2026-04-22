@@ -6,6 +6,7 @@ import { renderAppShell } from './ui/appShell.js'
 import {
   applyMovesToBoard,
   applyToolToCell,
+  creatorStateFromRawPuzzle,
   createEmptyCreatorCells,
   renderPuzzleCreator,
   resizeCreatorCells,
@@ -180,6 +181,11 @@ function createInitialCreatorState() {
     promote: false,
     width,
     height,
+    selectedPresetId: catalogue[0]?.id ?? '',
+    presetOptions: catalogue.map(entry => ({
+      id: entry.id,
+      label: `${entry.title || entry.id} (${entry.id})`,
+    })),
     cells: createEmptyCreatorCells(width, height),
     goalTargets: {},
     editMode: 'place',
@@ -190,6 +196,23 @@ function createInitialCreatorState() {
     replayBoards: [],
     replayIndex: 0,
   }
+}
+
+function generateUuid() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+
+  const bytes = Array.from({ length: 16 }, () => Math.floor(Math.random() * 256))
+  bytes[6] = (bytes[6] & 0x0f) | 0x40
+  bytes[8] = (bytes[8] & 0x3f) | 0x80
+  const hex = bytes.map(b => b.toString(16).padStart(2, '0')).join('')
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
+}
+
+function isCreatorRoute() {
+  if (typeof window === 'undefined') return false
+  return window.location.hash === '#creator' || window.location.pathname.endsWith('/creator.html')
 }
 
 /**
@@ -628,6 +651,7 @@ export function renderToDom(root, model) {
   board.setAttribute('data-board', 'true')
   board.setAttribute('data-goal-type', boardGoalType)
   board.setAttribute('data-board-mode', boardModeClass.replace('board--mode-', ''))
+  board.setAttribute('data-promotion-enabled', model?.puzzle?.promote === true ? 'true' : 'false')
   board.style.setProperty('--cols', String(model.width))
   board.style.setProperty('--rows', String(model.height))
   board.style.setProperty('--piece-move-ms', `${model.animationMs}ms`)
@@ -674,7 +698,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   const controller = createController()
 
   // Navigation state
-  let screenMode = (typeof window !== 'undefined' && window.location.hash === '#creator') ? 'creator' : 'start'
+  let screenMode = isCreatorRoute() ? 'creator' : 'start'
   let currentPuzzleId = null
   let selectedTrackId = null
   let ui = null
@@ -746,7 +770,12 @@ export function mountGameUi(root = document.querySelector('#app')) {
       mode,
       title,
       content,
+      showTracks: mode !== 'creator',
       onNavigateHome() {
+        if (typeof window !== 'undefined' && window.location.pathname.endsWith('/creator.html')) {
+          window.location.href = '/'
+          return
+        }
         selectedTrackId = null
         screenMode = 'start'
         rerender()
@@ -929,6 +958,11 @@ export function mountGameUi(root = document.querySelector('#app')) {
         })(),
       },
       onChangeField(field, value) {
+        if (field === 'selectedPresetId') {
+          updateCreator({ selectedPresetId: value })
+          return
+        }
+
         const patch = { [field]: value }
         if (field === 'goalType' && value === 'capture-all-targets') {
           patch.goalTargets = {}
@@ -943,6 +977,30 @@ export function mountGameUi(root = document.querySelector('#app')) {
         }
         updateCreator({
           ...patch,
+          replayBoards: [],
+          replayIndex: 0,
+        })
+      },
+      onGenerateId() {
+        updateCreator({ id: generateUuid() })
+      },
+      onLoadPreset() {
+        const raw = catalogue.find(entry => entry.id === creatorState.selectedPresetId)
+        if (!raw) {
+          updateCreator({ message: 'Preset not found.' })
+          return
+        }
+
+        const loaded = creatorStateFromRawPuzzle(raw)
+        updateCreator({
+          ...loaded,
+          selectedPresetId: raw.id,
+          presetOptions: creatorState.presetOptions,
+          editMode: 'place',
+          placementMode: loaded.goalType === 'capture-all-targets' ? 'black-piece' : 'red-piece',
+          pieceType: 'r',
+          exportJson: '',
+          message: `Loaded preset: ${loaded.title || loaded.id}`,
           replayBoards: [],
           replayIndex: 0,
         })
@@ -1221,7 +1279,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
     })
 
     window.addEventListener('hashchange', () => {
-      if (window.location.hash === '#creator') {
+      if (isCreatorRoute()) {
         screenMode = 'creator'
         rerender()
         return

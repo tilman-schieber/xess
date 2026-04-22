@@ -55,4 +55,16 @@ describe('renderAppShell', () => {
     tracks?.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }))
     expect(onNavigateTracks).toHaveBeenCalledTimes(1)
   })
+
+  it('can hide Tracks button for creator shell', () => {
+    const view = renderAppShell({
+      mode: 'creator',
+      title: 'Creator',
+      content: buildContent(),
+      showTracks: false,
+    })
+
+    expect(view.querySelector('[data-shell-nav-home]')).not.toBeNull()
+    expect(view.querySelector('[data-shell-nav-tracks]')).toBeNull()
+  })
 })

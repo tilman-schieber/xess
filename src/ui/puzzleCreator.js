@@ -82,6 +82,8 @@ function renderToolButton({ value, label, active, onSelect }) {
 export function renderPuzzleCreator({
   model,
   onChangeField,
+  onGenerateId,
+  onLoadPreset,
   onResize,
   onSelectEditMode,
   onSelectPlacementMode,
@@ -110,22 +112,56 @@ export function renderPuzzleCreator({
   const form = document.createElement('div')
   form.className = 'creator-form'
 
-  const fields = [
-    { key: 'id', label: 'ID', type: 'text', value: model.id },
-    { key: 'title', label: 'Title', type: 'text', value: model.title },
-  ]
+  const idWrap = document.createElement('label')
+  idWrap.className = 'creator-field'
+  idWrap.textContent = 'ID'
+  const idRow = document.createElement('div')
+  idRow.className = 'creator-inline-field'
+  const idInput = document.createElement('input')
+  idInput.type = 'text'
+  idInput.value = model.id
+  idInput.addEventListener('input', () => onChangeField('id', idInput.value))
+  const uuidButton = document.createElement('button')
+  uuidButton.type = 'button'
+  uuidButton.className = 'creator-action creator-action--compact'
+  uuidButton.textContent = 'Generate UUID'
+  bindActivate(uuidButton, onGenerateId)
+  idRow.append(idInput, uuidButton)
+  idWrap.append(idRow)
+  form.append(idWrap)
 
-  fields.forEach((field) => {
-    const wrap = document.createElement('label')
-    wrap.className = 'creator-field'
-    wrap.textContent = field.label
-    const input = document.createElement('input')
-    input.type = field.type
-    input.value = field.value
-    input.addEventListener('input', () => onChangeField(field.key, input.value))
-    wrap.append(input)
-    form.append(wrap)
+  const titleWrap = document.createElement('label')
+  titleWrap.className = 'creator-field'
+  titleWrap.textContent = 'Title'
+  const titleInput = document.createElement('input')
+  titleInput.type = 'text'
+  titleInput.value = model.title
+  titleInput.addEventListener('input', () => onChangeField('title', titleInput.value))
+  titleWrap.append(titleInput)
+  form.append(titleWrap)
+
+  const presetWrap = document.createElement('label')
+  presetWrap.className = 'creator-field'
+  presetWrap.textContent = 'Load existing puzzle'
+  const presetRow = document.createElement('div')
+  presetRow.className = 'creator-inline-field'
+  const presetSelect = document.createElement('select')
+  presetSelect.value = model.selectedPresetId
+  model.presetOptions.forEach(option => {
+    const opt = document.createElement('option')
+    opt.value = option.id
+    opt.textContent = option.label
+    presetSelect.append(opt)
   })
+  presetSelect.addEventListener('change', () => onChangeField('selectedPresetId', presetSelect.value))
+  const loadButton = document.createElement('button')
+  loadButton.type = 'button'
+  loadButton.className = 'creator-action creator-action--compact'
+  loadButton.textContent = 'Load'
+  bindActivate(loadButton, onLoadPreset)
+  presetRow.append(presetSelect, loadButton)
+  presetWrap.append(presetRow)
+  form.append(presetWrap)
 
   const goalWrap = document.createElement('label')
   goalWrap.className = 'creator-field'
@@ -328,6 +364,7 @@ export function renderPuzzleCreator({
 
   const board = document.createElement('div')
   board.className = 'board creator-board'
+  board.setAttribute('data-promotion-enabled', model.promote === true ? 'true' : 'false')
   board.style.setProperty('--cols', String(model.width))
   board.style.setProperty('--rows', String(model.height))
 
@@ -528,6 +565,47 @@ export function toBoardMapFromCells(cells) {
     board.set(key, { piece, isGoal: cell.isGoal === true })
   }
   return board
+}
+
+export function creatorStateFromRawPuzzle(raw) {
+  const rows = Array.isArray(raw?.grid) ? raw.grid.filter(row => typeof row === 'string') : []
+  const width = Math.max(2, Math.min(12, rows.length > 0 ? Math.max(...rows.map(row => row.length)) : 6))
+  const height = Math.max(2, Math.min(12, rows.length > 0 ? rows.length : 6))
+  const cells = createEmptyCreatorCells(width, height)
+
+  for (let row = 0; row < height; row += 1) {
+    const line = rows[row] ?? ''
+    for (let col = 0; col < width; col += 1) {
+      const key = posKey(col, row)
+      const char = line[col] ?? 'x'
+      const cell = cells.get(key)
+      if (!cell) continue
+      if (char === 'x') {
+        cells.set(key, { isVoid: true, isGoal: false, pieceChar: null })
+      } else if (char === '-') {
+        cells.set(key, { isVoid: false, isGoal: false, pieceChar: null })
+      } else if (char === 'G') {
+        cells.set(key, { isVoid: false, isGoal: true, pieceChar: null })
+      } else if (PIECE_CHARS.includes(char)) {
+        cells.set(key, { isVoid: false, isGoal: false, pieceChar: char })
+      } else {
+        cells.set(key, { isVoid: true, isGoal: false, pieceChar: null })
+      }
+    }
+  }
+
+  return {
+    id: typeof raw?.id === 'string' && raw.id.length > 0 ? raw.id : 'draft-puzzle',
+    title: typeof raw?.title === 'string' ? raw.title : 'Draft Puzzle',
+    descriptionHtml: typeof raw?.descriptionHtml === 'string' ? raw.descriptionHtml : '',
+    goalType: raw?.goalType === 'capture-all-targets' ? 'capture-all-targets' : 'reach-all-goal-squares',
+    targetColor: raw?.targetColor === 'white' ? 'white' : 'black',
+    promote: raw?.promote === true,
+    width,
+    height,
+    cells,
+    goalTargets: raw?.goalTargets && typeof raw.goalTargets === 'object' ? { ...raw.goalTargets } : {},
+  }
 }
 
 export function applyMovesToBoard({ board, puzzle, moves }) {

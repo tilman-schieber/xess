@@ -21,6 +21,7 @@ export function renderAppShell({
   content,
   onNavigateHome,
   onNavigateTracks,
+  showTracks = true,
 }) {
   const shell = document.createElement('section')
   shell.className = 'app-shell'
@@ -42,14 +43,17 @@ export function renderAppShell({
   homeButton.textContent = 'Home'
   bindActivate(homeButton, onNavigateHome)
 
-  const tracksButton = document.createElement('button')
-  tracksButton.type = 'button'
-  tracksButton.className = 'app-shell-nav-action'
-  tracksButton.setAttribute('data-shell-nav-tracks', 'true')
-  tracksButton.textContent = 'Tracks'
-  bindActivate(tracksButton, onNavigateTracks)
+  topbar.append(heading, homeButton)
 
-  topbar.append(heading, homeButton, tracksButton)
+  if (showTracks) {
+    const tracksButton = document.createElement('button')
+    tracksButton.type = 'button'
+    tracksButton.className = 'app-shell-nav-action'
+    tracksButton.setAttribute('data-shell-nav-tracks', 'true')
+    tracksButton.textContent = 'Tracks'
+    bindActivate(tracksButton, onNavigateTracks)
+    topbar.append(tracksButton)
+  }
   shell.append(topbar)
 
   const body = document.createElement('div')

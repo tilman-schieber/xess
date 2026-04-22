@@ -70,6 +70,12 @@
   padding: var(--space-xs);
 }
 
+.creator-inline-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-xs);
+}
+
 .creator-description-input {
   min-block-size: 5rem;
   resize: vertical;
@@ -116,6 +122,11 @@
   padding: 0 var(--space-sm);
   font-size: var(--text-label);
   cursor: pointer;
+}
+
+.creator-action--compact {
+  min-inline-size: auto;
+  padding-inline: var(--space-sm);
 }
 
 .creator-tool.is-active {
