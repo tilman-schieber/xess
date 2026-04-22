@@ -3,8 +3,18 @@ import { createBoardRenderModel } from './ui/boardRenderer.js'
 import { renderStartScreen } from './ui/startScreen.js'
 import { renderTrackBrowser } from './ui/trackBrowser.js'
 import { renderAppShell } from './ui/appShell.js'
+import {
+  applyMovesToBoard,
+  applyToolToCell,
+  createEmptyCreatorCells,
+  renderPuzzleCreator,
+  resizeCreatorCells,
+  toBoardMapFromCells,
+  toRawPuzzle,
+} from './ui/puzzleCreator.js'
 import './styles/app.css'
 import './styles/puzzle-list.css'
+import './styles/puzzle-creator.css'
 import {
   MOVE_TRANSITION_MS,
   createInteractionFeedback,
@@ -21,6 +31,8 @@ import {
   resolveLandingContinueAction,
 } from './puzzles/nav.js'
 import catalogue from './puzzles/catalogue.js'
+import { parsePuzzle } from './puzzles/loader.js'
+import { solveWithPath } from './puzzles/solver.js'
 import { loadStore, saveTutorialOnboarding } from './store/store.js'
 import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
 import { initDragDrop } from './ui/dragDrop.js'
@@ -149,6 +161,35 @@ export function getPuzzleDescriptionHtml(puzzle) {
   const authoredHtml = typeof puzzle?.descriptionHtml === 'string' ? puzzle.descriptionHtml : ''
   const sanitized = sanitizePuzzleDescription(authoredHtml)
   return sanitized.trim()
+}
+
+function clampBoardSize(value) {
+  if (!Number.isFinite(value)) return 6
+  return Math.max(2, Math.min(12, value))
+}
+
+function createInitialCreatorState() {
+  const width = 6
+  const height = 6
+  return {
+    id: 'draft-puzzle',
+    title: 'Draft Puzzle',
+    descriptionHtml: '',
+    goalType: 'reach-all-goal-squares',
+    targetColor: 'black',
+    promote: false,
+    width,
+    height,
+    cells: createEmptyCreatorCells(width, height),
+    goalTargets: {},
+    editMode: 'place',
+    placementMode: 'red-piece',
+    pieceType: 'r',
+    exportJson: '',
+    message: 'Tip: set board size, paint cells, then export JSON.',
+    replayBoards: [],
+    replayIndex: 0,
+  }
 }
 
 /**
@@ -633,10 +674,11 @@ export function mountGameUi(root = document.querySelector('#app')) {
   const controller = createController()
 
   // Navigation state
-  let screenMode = 'start'
+  let screenMode = (typeof window !== 'undefined' && window.location.hash === '#creator') ? 'creator' : 'start'
   let currentPuzzleId = null
   let selectedTrackId = null
   let ui = null
+  let creatorState = createInitialCreatorState()
   let _dragCleanup = null    // cleanup fn returned by initDragDrop
   let _isDragging = false    // true once drag threshold exceeded this pointer sequence
   let _suppressTapPointerId = null
@@ -789,12 +831,188 @@ export function mountGameUi(root = document.querySelector('#app')) {
       return
     }
 
+    if (screenMode === 'creator') {
+      renderCreatorScreen()
+      return
+    }
+
     if (screenMode === 'tracks') {
       renderTrackBrowserScreen()
       return
     }
 
     renderStartScreenView()
+  }
+
+  function updateCreator(patch) {
+    creatorState = { ...creatorState, ...patch }
+    rerender()
+  }
+
+  function buildCreatorRawPuzzle() {
+    return toRawPuzzle(creatorState)
+  }
+
+  function exportCreatorPuzzle() {
+    try {
+      const raw = buildCreatorRawPuzzle()
+      parsePuzzle(raw)
+      updateCreator({
+        exportJson: `${JSON.stringify(raw, null, 2)}\n`,
+        message: 'Export successful. JSON is valid against loader rules.',
+      })
+    } catch (error) {
+      updateCreator({
+        message: `Export failed: ${error?.message ?? 'invalid puzzle data'}`,
+      })
+    }
+  }
+
+  function solveCreatorPuzzle() {
+    try {
+      const raw = buildCreatorRawPuzzle()
+      parsePuzzle(raw)
+      const solved = solveWithPath(raw, 60)
+      if (!solved.solvable) {
+        updateCreator({
+          replayBoards: [],
+          replayIndex: 0,
+          message: `No solution found within 60 moves (explored ${solved.statesExplored} states).`,
+        })
+        return
+      }
+
+      const parsed = parsePuzzle(raw)
+      const snapshots = applyMovesToBoard({
+        board: parsed.board,
+        puzzle: parsed,
+        moves: solved.moves,
+      })
+      updateCreator({
+        replayBoards: snapshots,
+        replayIndex: 0,
+        message: `Solved in ${solved.minMoves} moves. Use Undo/Redo step to inspect sequence.`,
+      })
+    } catch (error) {
+      updateCreator({
+        message: `Solve failed: ${error?.message ?? 'invalid puzzle data'}`,
+      })
+    }
+  }
+
+  function renderCreatorScreen() {
+    const boardForRender = creatorState.replayBoards.length > 0
+      ? creatorState.replayBoards[creatorState.replayIndex]
+      : toBoardMapFromCells(creatorState.cells)
+
+    const creatorEl = renderPuzzleCreator({
+      model: {
+        ...creatorState,
+        cells: (() => {
+          if (creatorState.replayBoards.length === 0) return creatorState.cells
+          const replayCells = new Map()
+          for (let row = 0; row < creatorState.height; row += 1) {
+            for (let col = 0; col < creatorState.width; col += 1) {
+              const key = `${col},${row}`
+              const src = creatorState.cells.get(key)
+              const replay = boardForRender.get(key)
+              replayCells.set(key, {
+                isVoid: !src || src.isVoid,
+                isGoal: !!replay?.isGoal,
+                pieceChar: replay?.piece
+                  ? (replay.piece.color === 'white' ? replay.piece.type.toUpperCase() : replay.piece.type)
+                  : null,
+              })
+            }
+          }
+          return replayCells
+        })(),
+      },
+      onChangeField(field, value) {
+        const patch = { [field]: value }
+        if (field === 'goalType' && value === 'capture-all-targets') {
+          patch.goalTargets = {}
+          if (creatorState.placementMode === 'red-piece' || creatorState.placementMode === 'red-target') {
+            patch.placementMode = 'black-piece'
+          }
+        }
+        if (field === 'goalType' && value === 'reach-all-goal-squares') {
+          if (creatorState.placementMode === 'black-piece') {
+            patch.placementMode = 'red-piece'
+          }
+        }
+        updateCreator({
+          ...patch,
+          replayBoards: [],
+          replayIndex: 0,
+        })
+      },
+      onResize({ width, height }) {
+        const nextWidth = clampBoardSize(width)
+        const nextHeight = clampBoardSize(height)
+        const resizedCells = resizeCreatorCells(creatorState.cells, nextWidth, nextHeight)
+        const nextGoalTargets = {}
+        Object.entries(creatorState.goalTargets).forEach(([key, char]) => {
+          const cell = resizedCells.get(key)
+          if (cell?.isGoal) nextGoalTargets[key] = char
+        })
+        updateCreator({
+          width: nextWidth,
+          height: nextHeight,
+          cells: resizedCells,
+          goalTargets: nextGoalTargets,
+          replayBoards: [],
+          replayIndex: 0,
+        })
+      },
+      onSelectEditMode(editMode) {
+        updateCreator({ editMode })
+      },
+      onSelectPlacementMode(placementMode) {
+        updateCreator({ placementMode })
+      },
+      onSelectPieceType(pieceType) {
+        updateCreator({ pieceType })
+      },
+      onCellAction(cellKey) {
+        if (creatorState.replayBoards.length > 0) {
+          updateCreator({
+            replayBoards: [],
+            replayIndex: 0,
+            message: 'Replay cleared after board edit.',
+          })
+        }
+        const next = applyToolToCell({
+          cells: creatorState.cells,
+          goalTargets: creatorState.goalTargets,
+          cellKey,
+          editMode: creatorState.editMode,
+          placementMode: creatorState.placementMode,
+          pieceType: creatorState.pieceType,
+          goalType: creatorState.goalType,
+        })
+        updateCreator({ cells: next.cells, goalTargets: next.goalTargets })
+      },
+      onExport: exportCreatorPuzzle,
+      onSolve: solveCreatorPuzzle,
+      onUndoStep() {
+        if (creatorState.replayIndex <= 0) return
+        updateCreator({ replayIndex: creatorState.replayIndex - 1 })
+      },
+      onRedoStep() {
+        if (creatorState.replayIndex >= creatorState.replayBoards.length - 1) return
+        updateCreator({ replayIndex: creatorState.replayIndex + 1 })
+      },
+      onResetReplay() {
+        updateCreator({ replayBoards: [], replayIndex: 0 })
+      },
+    })
+
+    renderShellView({
+      mode: 'creator',
+      title: 'Puzzle Creator',
+      content: creatorEl,
+    })
   }
 
   function renderStartScreenView() {
@@ -1000,6 +1218,19 @@ export function mountGameUi(root = document.querySelector('#app')) {
       if (screenMode !== 'play') return
       syncPuzzleInfoPanel()
       fitBoardToViewport()
+    })
+
+    window.addEventListener('hashchange', () => {
+      if (window.location.hash === '#creator') {
+        screenMode = 'creator'
+        rerender()
+        return
+      }
+
+      if (screenMode === 'creator') {
+        screenMode = 'start'
+        rerender()
+      }
     })
   }
 

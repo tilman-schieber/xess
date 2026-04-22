@@ -10,7 +10,6 @@
 // Run all puzzles:  node src/puzzles/solver.js
 // Import:          import { solve } from './solver.js'
 
-import { fileURLToPath } from 'url'
 import catalogue from './catalogue.js'
 import { parsePuzzle, posKey } from './loader.js'
 import { getLegalMoves } from '../engine/moves.js'
@@ -54,23 +53,23 @@ function stateKey(board) {
  *
  * @param {Object} rawPuzzle   - entry from catalogue.js
  * @param {number} maxDepth    - give up after this many moves
- * @returns {{ solvable: boolean, minMoves: number|null, statesExplored: number }}
+ * @returns {{ solvable: boolean, minMoves: number|null, statesExplored: number, moves: Array<{from: string, to: string}> }}
  */
-export function solve(rawPuzzle, maxDepth = DEFAULT_MAX_DEPTH) {
+export function solveWithPath(rawPuzzle, maxDepth = DEFAULT_MAX_DEPTH) {
   const puzzle = parsePuzzle(rawPuzzle)
 
   // Depth-0 check: already won (degenerate puzzle)
   if (checkWin(puzzle.board, puzzle)) {
-    return { solvable: true, minMoves: 0, statesExplored: 1 }
+    return { solvable: true, minMoves: 0, statesExplored: 1, moves: [] }
   }
 
-  // BFS frontier: each entry is { board, depth }
-  const queue   = [{ board: puzzle.board, depth: 0 }]
+  // BFS frontier: each entry is { board, depth, path }
+  const queue   = [{ board: puzzle.board, depth: 0, path: [] }]
   const visited = new Set([stateKey(puzzle.board)])
   let statesExplored = 1
 
   while (queue.length > 0) {
-    const { board, depth } = queue.shift()
+    const { board, depth, path } = queue.shift()
     if (depth >= maxDepth) continue
 
     // moveo — the move relation: enumerate all successor states
@@ -84,22 +83,32 @@ export function solve(rawPuzzle, maxDepth = DEFAULT_MAX_DEPTH) {
         if (destination?.piece && !canCapture(puzzle, moverColor, destination.piece.color)) continue
 
         const next = applyMove(board, fromKey, toKey, puzzle).board
+        const nextPath = [...path, { from: fromKey, to: toKey }]
         statesExplored++
 
         if (checkWin(next, puzzle)) {
-          return { solvable: true, minMoves: depth + 1, statesExplored }
+          return { solvable: true, minMoves: depth + 1, statesExplored, moves: nextPath }
         }
 
         const sk = stateKey(next)
         if (!visited.has(sk)) {
           visited.add(sk)
-          queue.push({ board: next, depth: depth + 1 })
+          queue.push({ board: next, depth: depth + 1, path: nextPath })
         }
       }
     }
   }
 
-  return { solvable: false, minMoves: null, statesExplored }
+  return { solvable: false, minMoves: null, statesExplored, moves: [] }
+}
+
+export function solve(rawPuzzle, maxDepth = DEFAULT_MAX_DEPTH) {
+  const result = solveWithPath(rawPuzzle, maxDepth)
+  return {
+    solvable: result.solvable,
+    minMoves: result.minMoves,
+    statesExplored: result.statesExplored,
+  }
 }
 
 // ── CLI runner ────────────────────────────────────────────────────────────────
@@ -143,8 +152,21 @@ function runAll(maxDepth = DEFAULT_MAX_DEPTH) {
   console.log()
 }
 
-// Only run when invoked directly (not when imported by tests)
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+function isDirectCliInvocation() {
+  if (typeof process === 'undefined' || !Array.isArray(process.argv) || process.argv.length < 2) {
+    return false
+  }
+
+  try {
+    const path = decodeURIComponent(new URL(import.meta.url).pathname)
+    return process.argv[1] === path
+  } catch {
+    return false
+  }
+}
+
+// Only run when invoked directly via Node CLI (not in browser/tests)
+if (isDirectCliInvocation()) {
   const maxDepth = parseInt(process.argv[2], 10) || DEFAULT_MAX_DEPTH
   runAll(maxDepth)
 }

@@ -119,6 +119,11 @@ body {
   max-width: var(--app-max-width-desktop);
 }
 
+.app-shell[data-shell-mode='creator'] {
+  inline-size: min(100%, var(--app-max-width-desktop));
+  max-width: var(--app-max-width-desktop);
+}
+
 .app-shell-topbar {
   display: flex;
   align-items: center;
