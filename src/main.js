@@ -169,6 +169,11 @@ function clampBoardSize(value) {
   return Math.max(2, Math.min(12, value))
 }
 
+function clampSolverDepth(value) {
+  if (!Number.isFinite(value)) return 60
+  return Math.max(1, Math.min(200, value))
+}
+
 function createInitialCreatorState() {
   const width = 6
   const height = 6
@@ -192,6 +197,8 @@ function createInitialCreatorState() {
     placementMode: 'red-piece',
     pieceType: 'r',
     exportJson: '',
+    copyStatus: '',
+    solverMaxDepth: 60,
     message: 'Tip: set board size, paint cells, then export JSON.',
     replayBoards: [],
     replayIndex: 0,
@@ -882,17 +889,50 @@ export function mountGameUi(root = document.querySelector('#app')) {
     return toRawPuzzle(creatorState)
   }
 
+  function buildValidatedCreatorExport() {
+    const raw = buildCreatorRawPuzzle()
+    parsePuzzle(raw)
+    return `${JSON.stringify(raw, null, 2)}\n`
+  }
+
   function exportCreatorPuzzle() {
     try {
-      const raw = buildCreatorRawPuzzle()
-      parsePuzzle(raw)
+      const exportJson = buildValidatedCreatorExport()
       updateCreator({
-        exportJson: `${JSON.stringify(raw, null, 2)}\n`,
+        exportJson,
+        copyStatus: '',
         message: 'Export successful. JSON is valid against loader rules.',
       })
     } catch (error) {
       updateCreator({
+        copyStatus: '',
         message: `Export failed: ${error?.message ?? 'invalid puzzle data'}`,
+      })
+    }
+  }
+
+  async function copyCreatorExportJson() {
+    try {
+      const exportJson = buildValidatedCreatorExport()
+      if (typeof navigator === 'undefined' || typeof navigator.clipboard?.writeText !== 'function') {
+        updateCreator({
+          exportJson,
+          copyStatus: 'failed',
+          message: 'Clipboard unavailable in this browser context.',
+        })
+        return
+      }
+
+      await navigator.clipboard.writeText(exportJson)
+      updateCreator({
+        exportJson,
+        copyStatus: 'copied',
+        message: 'Copied JSON to clipboard.',
+      })
+    } catch (error) {
+      updateCreator({
+        copyStatus: 'failed',
+        message: `Copy failed: ${error?.message ?? 'clipboard error'}`,
       })
     }
   }
@@ -901,12 +941,12 @@ export function mountGameUi(root = document.querySelector('#app')) {
     try {
       const raw = buildCreatorRawPuzzle()
       parsePuzzle(raw)
-      const solved = solveWithPath(raw, 60)
+      const solved = solveWithPath(raw, clampSolverDepth(creatorState.solverMaxDepth))
       if (!solved.solvable) {
         updateCreator({
           replayBoards: [],
           replayIndex: 0,
-          message: `No solution found within 60 moves (explored ${solved.statesExplored} states).`,
+          message: `No solution found within ${clampSolverDepth(creatorState.solverMaxDepth)} moves (explored ${solved.statesExplored} states).`,
         })
         return
       }
@@ -920,10 +960,12 @@ export function mountGameUi(root = document.querySelector('#app')) {
       updateCreator({
         replayBoards: snapshots,
         replayIndex: 0,
+        copyStatus: '',
         message: `Solved in ${solved.minMoves} moves. Use Undo/Redo step to inspect sequence.`,
       })
     } catch (error) {
       updateCreator({
+        copyStatus: '',
         message: `Solve failed: ${error?.message ?? 'invalid puzzle data'}`,
       })
     }
@@ -977,12 +1019,13 @@ export function mountGameUi(root = document.querySelector('#app')) {
         }
         updateCreator({
           ...patch,
+          copyStatus: '',
           replayBoards: [],
           replayIndex: 0,
         })
       },
       onGenerateId() {
-        updateCreator({ id: generateUuid() })
+        updateCreator({ id: generateUuid(), copyStatus: '' })
       },
       onLoadPreset() {
         const raw = catalogue.find(entry => entry.id === creatorState.selectedPresetId)
@@ -1000,10 +1043,29 @@ export function mountGameUi(root = document.querySelector('#app')) {
           placementMode: loaded.goalType === 'capture-all-targets' ? 'black-piece' : 'red-piece',
           pieceType: 'r',
           exportJson: '',
+          copyStatus: '',
           message: `Loaded preset: ${loaded.title || loaded.id}`,
           replayBoards: [],
           replayIndex: 0,
         })
+      },
+      onNewPuzzle() {
+        const fresh = createInitialCreatorState()
+        const nextWidth = creatorState.width
+        const nextHeight = creatorState.height
+        const nextCells = createEmptyCreatorCells(nextWidth, nextHeight)
+        updateCreator({
+          ...fresh,
+          width: nextWidth,
+          height: nextHeight,
+          cells: nextCells,
+          selectedPresetId: creatorState.selectedPresetId,
+          presetOptions: creatorState.presetOptions,
+          message: 'Started a fresh draft puzzle.',
+        })
+      },
+      onCopyExport() {
+        copyCreatorExportJson()
       },
       onResize({ width, height }) {
         const nextWidth = clampBoardSize(width)
@@ -1019,9 +1081,13 @@ export function mountGameUi(root = document.querySelector('#app')) {
           height: nextHeight,
           cells: resizedCells,
           goalTargets: nextGoalTargets,
+          copyStatus: '',
           replayBoards: [],
           replayIndex: 0,
         })
+      },
+      onChangeSolverDepth(depth) {
+        updateCreator({ solverMaxDepth: clampSolverDepth(depth) })
       },
       onSelectEditMode(editMode) {
         updateCreator({ editMode })

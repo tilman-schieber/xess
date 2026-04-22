@@ -84,6 +84,8 @@ export function renderPuzzleCreator({
   onChangeField,
   onGenerateId,
   onLoadPreset,
+  onNewPuzzle,
+  onCopyExport,
   onResize,
   onSelectEditMode,
   onSelectPlacementMode,
@@ -91,6 +93,7 @@ export function renderPuzzleCreator({
   onCellAction,
   onExport,
   onSolve,
+  onChangeSolverDepth,
   onUndoStep,
   onRedoStep,
   onResetReplay,
@@ -299,6 +302,18 @@ export function renderPuzzleCreator({
   exportBtn.textContent = 'Export JSON'
   bindActivate(exportBtn, onExport)
 
+  const copyBtn = document.createElement('button')
+  copyBtn.type = 'button'
+  copyBtn.className = 'creator-action'
+  copyBtn.textContent = model.copyStatus === 'copied' ? 'Copied' : 'Copy JSON'
+  bindActivate(copyBtn, onCopyExport)
+
+  const newPuzzleBtn = document.createElement('button')
+  newPuzzleBtn.type = 'button'
+  newPuzzleBtn.className = 'creator-action'
+  newPuzzleBtn.textContent = 'New puzzle'
+  bindActivate(newPuzzleBtn, onNewPuzzle)
+
   const solveBtn = document.createElement('button')
   solveBtn.type = 'button'
   solveBtn.className = 'creator-action'
@@ -326,8 +341,22 @@ export function renderPuzzleCreator({
   resetReplayBtn.disabled = model.replayBoards.length === 0
   bindActivate(resetReplayBtn, onResetReplay)
 
-  editorActions.append(exportBtn)
+  editorActions.append(exportBtn, copyBtn, newPuzzleBtn)
   solverActions.append(solveBtn, undoBtn, redoBtn, resetReplayBtn)
+
+  const solverDepthRow = document.createElement('div')
+  solverDepthRow.className = 'creator-size creator-size--solver'
+  const solverDepthLabel = document.createElement('span')
+  solverDepthLabel.textContent = 'Max depth'
+  const solverDepthInput = document.createElement('input')
+  solverDepthInput.type = 'number'
+  solverDepthInput.min = '1'
+  solverDepthInput.max = '200'
+  solverDepthInput.value = String(model.solverMaxDepth)
+  solverDepthInput.addEventListener('input', () => {
+    onChangeSolverDepth(Number.parseInt(solverDepthInput.value, 10))
+  })
+  solverDepthRow.append(solverDepthLabel, solverDepthInput)
 
   const message = document.createElement('p')
   message.className = 'creator-message'
@@ -355,7 +384,7 @@ export function renderPuzzleCreator({
   const solverSectionTitle = document.createElement('h3')
   solverSectionTitle.className = 'creator-subsection-title'
   solverSectionTitle.textContent = 'Solver and replay'
-  solverSection.append(solverSectionTitle, solverActions, message)
+  solverSection.append(solverSectionTitle, solverDepthRow, solverActions, message)
 
   controls.append(heading, copy, form, editorSection, solverSection)
 
