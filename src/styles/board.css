@@ -1,5 +1,7 @@
 .board {
-  --board-edge: min(100vw - 1.5rem, 100svh - 7.5rem, var(--board-max-size-mobile));
+  --board-max-by-width: calc(100vw - 1.5rem);
+  --board-max-by-height: calc((100svh - 7.5rem) * var(--cols) / var(--rows));
+  --board-edge: min(var(--board-max-by-width), var(--board-max-by-height), var(--board-max-size-mobile));
 
   inline-size: var(--board-edge);
   max-inline-size: var(--board-edge);
@@ -153,7 +155,9 @@
 
 @media (min-width: 768px) {
   .board {
-    --board-edge: min(78vh, var(--board-max-size-desktop));
+    --board-max-by-width: calc(100vw - 3rem);
+    --board-max-by-height: calc(78vh * var(--cols) / var(--rows));
+    --board-edge: min(var(--board-max-by-width), var(--board-max-by-height), var(--board-max-size-desktop));
     gap: 0.2rem;
     padding: 0.2rem;
   }
