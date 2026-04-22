@@ -123,7 +123,7 @@ export function renderPuzzleCreator({
   const idInput = document.createElement('input')
   idInput.type = 'text'
   idInput.value = model.id
-  idInput.addEventListener('input', () => onChangeField('id', idInput.value))
+  idInput.addEventListener('change', () => onChangeField('id', idInput.value))
   const uuidButton = document.createElement('button')
   uuidButton.type = 'button'
   uuidButton.className = 'creator-action creator-action--compact'
@@ -139,7 +139,7 @@ export function renderPuzzleCreator({
   const titleInput = document.createElement('input')
   titleInput.type = 'text'
   titleInput.value = model.title
-  titleInput.addEventListener('input', () => onChangeField('title', titleInput.value))
+  titleInput.addEventListener('change', () => onChangeField('title', titleInput.value))
   titleWrap.append(titleInput)
   form.append(titleWrap)
 
@@ -209,7 +209,7 @@ export function renderPuzzleCreator({
   const descriptionInput = document.createElement('textarea')
   descriptionInput.className = 'creator-description-input'
   descriptionInput.value = model.descriptionHtml
-  descriptionInput.addEventListener('input', () => onChangeField('descriptionHtml', descriptionInput.value))
+  descriptionInput.addEventListener('change', () => onChangeField('descriptionHtml', descriptionInput.value))
   descriptionWrap.append(descriptionInput)
   form.append(descriptionWrap)
 
@@ -253,7 +253,6 @@ export function renderPuzzleCreator({
 
   const editModeDefs = [
     { value: 'place', label: 'Place' },
-    { value: 'goal', label: 'Goal + Ghost' },
     { value: 'empty', label: 'Empty' },
     { value: 'void', label: 'Impassable' },
   ]
@@ -374,7 +373,7 @@ export function renderPuzzleCreator({
   editorSectionTitle.textContent = 'Board editor'
 
   editorSection.append(editorSectionTitle, sizeRow, tools)
-  if (model.editMode === 'place' || model.editMode === 'goal') {
+  if (model.editMode === 'place') {
     editorSection.append(placementRow, piecesRow)
   }
   editorSection.append(editorActions, exportArea)
@@ -499,16 +498,6 @@ export function applyToolToCell({ cells, goalTargets, cellKey, editMode, placeme
     nextCell.isGoal = false
     nextCell.pieceChar = null
     delete nextGoalTargets[cellKey]
-  } else if (editMode === 'goal') {
-    const goalTargetChar = charForPlacement(placementMode, pieceType)
-    nextCell.isVoid = false
-    nextCell.isGoal = true
-    nextCell.pieceChar = null
-    if (goalType === 'reach-all-goal-squares' && goalTargetChar) {
-      nextGoalTargets[cellKey] = goalTargetChar
-    } else {
-      delete nextGoalTargets[cellKey]
-    }
   } else if (editMode === 'place' && isPlacementModeAllowed(goalType, placementMode)) {
     const pieceChar = charForPlacement(placementMode, pieceType)
     if (!pieceChar) return { cells: nextCells, goalTargets: nextGoalTargets }
