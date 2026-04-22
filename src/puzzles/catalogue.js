@@ -178,6 +178,27 @@ export default [
     promote: true,
   },
   {
+    // Puzzle — Night Stable
+    schemaVersion: 1,
+    id: '1c693c',
+    title: 'Night Stable',
+    goalType: 'reach-all-goal-squares',
+    grid: [
+      'xGGGGx',
+      'xxxxxx',
+      '-x--x-',
+      'xx--xx',
+      'xxxxxx',
+      'xnnnnx',
+    ],
+    goalTargets: {
+      '1,0': 'n',
+      '2,0': 'n',
+      '3,0': 'n',
+      '4,0': 'n',
+    },
+  },
+  {
     // Puzzle — Square Dance
     schemaVersion: 1,
     id: 'draft-puzzle',
