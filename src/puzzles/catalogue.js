@@ -178,6 +178,23 @@ export default [
     promote: true,
   },
   {
+    // Puzzle — Route the Rook
+    schemaVersion: 1,
+    id: 'f2c10a',
+    title: 'Route the Rook',
+    goalType: 'reach-all-goal-squares',
+    grid: [
+      'rxxx',
+      'BBBB',
+      'NNNN',
+      'PPPP',
+      'xxxG',
+    ],
+    goalTargets: {
+      '3,4': 'r',
+    },
+  },
+  {
     // Puzzle — Night Stable
     schemaVersion: 1,
     id: '1c693c',
