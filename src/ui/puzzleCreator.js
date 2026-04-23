@@ -150,13 +150,13 @@ export function renderPuzzleCreator({
   const presetRow = document.createElement('div')
   presetRow.className = 'creator-inline-field'
   const presetSelect = document.createElement('select')
-  presetSelect.value = model.selectedPresetId
   model.presetOptions.forEach(option => {
     const opt = document.createElement('option')
     opt.value = option.id
     opt.textContent = option.label
     presetSelect.append(opt)
   })
+  presetSelect.value = model.selectedPresetId
   presetSelect.addEventListener('change', () => onChangeField('selectedPresetId', presetSelect.value))
   const loadButton = document.createElement('button')
   loadButton.type = 'button'
@@ -171,7 +171,6 @@ export function renderPuzzleCreator({
   goalWrap.className = 'creator-field'
   goalWrap.textContent = 'Goal type'
   const goalSelect = document.createElement('select')
-  goalSelect.value = model.goalType
   ;[
     { value: 'reach-all-goal-squares', label: 'Reach all goal squares' },
     { value: 'capture-all-targets', label: 'Capture all targets' },
@@ -181,6 +180,7 @@ export function renderPuzzleCreator({
     opt.textContent = option.label
     goalSelect.append(opt)
   })
+  goalSelect.value = model.goalType
   goalSelect.addEventListener('change', () => onChangeField('goalType', goalSelect.value))
   goalWrap.append(goalSelect)
   form.append(goalWrap)
@@ -189,7 +189,6 @@ export function renderPuzzleCreator({
   targetWrap.className = 'creator-field'
   targetWrap.textContent = 'Capture target color'
   const targetSelect = document.createElement('select')
-  targetSelect.value = model.targetColor
   ;[
     { value: 'black', label: 'black' },
     { value: 'white', label: 'white' },
@@ -199,6 +198,7 @@ export function renderPuzzleCreator({
     opt.textContent = option.label
     targetSelect.append(opt)
   })
+  targetSelect.value = model.targetColor
   targetSelect.disabled = model.goalType !== 'capture-all-targets'
   targetSelect.addEventListener('change', () => onChangeField('targetColor', targetSelect.value))
   targetWrap.append(targetSelect)
