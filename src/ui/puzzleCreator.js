@@ -93,6 +93,7 @@ export function renderPuzzleCreator({
   onCellAction,
   onExport,
   onSolve,
+  onCancelSolve,
   onChangeSolverDepth,
   onUndoStep,
   onRedoStep,
@@ -316,28 +317,33 @@ export function renderPuzzleCreator({
   const solveBtn = document.createElement('button')
   solveBtn.type = 'button'
   solveBtn.className = 'creator-action'
-  solveBtn.textContent = 'Solve'
-  bindActivate(solveBtn, onSolve)
+  if (model.solving) {
+    solveBtn.textContent = 'Cancel'
+    bindActivate(solveBtn, onCancelSolve)
+  } else {
+    solveBtn.textContent = 'Solve'
+    bindActivate(solveBtn, onSolve)
+  }
 
   const undoBtn = document.createElement('button')
   undoBtn.type = 'button'
   undoBtn.className = 'creator-action'
   undoBtn.textContent = 'Undo step'
-  undoBtn.disabled = model.replayIndex <= 0
+  undoBtn.disabled = model.solving || model.replayIndex <= 0
   bindActivate(undoBtn, onUndoStep)
 
   const redoBtn = document.createElement('button')
   redoBtn.type = 'button'
   redoBtn.className = 'creator-action'
   redoBtn.textContent = 'Redo step'
-  redoBtn.disabled = model.replayIndex >= (model.replayBoards.length - 1)
+  redoBtn.disabled = model.solving || model.replayIndex >= (model.replayBoards.length - 1)
   bindActivate(redoBtn, onRedoStep)
 
   const resetReplayBtn = document.createElement('button')
   resetReplayBtn.type = 'button'
   resetReplayBtn.className = 'creator-action'
   resetReplayBtn.textContent = 'Reset replay'
-  resetReplayBtn.disabled = model.replayBoards.length === 0
+  resetReplayBtn.disabled = model.solving || model.replayBoards.length === 0
   bindActivate(resetReplayBtn, onResetReplay)
 
   editorActions.append(exportBtn, copyBtn, newPuzzleBtn)
@@ -352,6 +358,7 @@ export function renderPuzzleCreator({
   solverDepthInput.min = '1'
   solverDepthInput.max = '200'
   solverDepthInput.value = String(model.solverMaxDepth)
+  solverDepthInput.disabled = model.solving
   solverDepthInput.addEventListener('input', () => {
     onChangeSolverDepth(Number.parseInt(solverDepthInput.value, 10))
   })

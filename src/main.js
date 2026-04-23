@@ -33,7 +33,6 @@ import {
 } from './puzzles/nav.js'
 import catalogue from './puzzles/catalogue.js'
 import { parsePuzzle } from './puzzles/loader.js'
-import { solveWithPath } from './puzzles/solver.js'
 import { loadStore, saveTutorialOnboarding } from './store/store.js'
 import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
 import { initDragDrop } from './ui/dragDrop.js'
@@ -199,6 +198,7 @@ function createInitialCreatorState() {
     exportJson: '',
     copyStatus: '',
     solverMaxDepth: 60,
+    solving: false,
     message: 'Tip: set board size, paint cells, then export JSON.',
     replayBoards: [],
     replayIndex: 0,
@@ -710,6 +710,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   let selectedTrackId = null
   let ui = null
   let creatorState = createInitialCreatorState()
+  let _solverWorker = null   // active solver Web Worker, or null
   let _dragCleanup = null    // cleanup fn returned by initDragDrop
   let _isDragging = false    // true once drag threshold exceeded this pointer sequence
   let _suppressTapPointerId = null
@@ -937,13 +938,46 @@ export function mountGameUi(root = document.querySelector('#app')) {
     }
   }
 
+  function cancelSolverWorker() {
+    if (_solverWorker) {
+      _solverWorker.terminate()
+      _solverWorker = null
+    }
+  }
+
   function solveCreatorPuzzle() {
+    cancelSolverWorker()
+
+    let raw
     try {
-      const raw = buildCreatorRawPuzzle()
-      parsePuzzle(raw)
-      const solved = solveWithPath(raw, clampSolverDepth(creatorState.solverMaxDepth))
+      raw = buildCreatorRawPuzzle()
+      parsePuzzle(raw) // validate before dispatching
+    } catch (error) {
+      updateCreator({ message: `Solve failed: ${error?.message ?? 'invalid puzzle data'}` })
+      return
+    }
+
+    updateCreator({ solving: true, message: 'Solving…' })
+
+    const worker = new Worker(
+      new URL('./puzzles/solver.worker.js', import.meta.url),
+      { type: 'module' },
+    )
+    _solverWorker = worker
+
+    worker.onmessage = ({ data }) => {
+      if (worker !== _solverWorker) return // stale
+      _solverWorker = null
+
+      if (data.type === 'error') {
+        updateCreator({ solving: false, message: `Solve failed: ${data.message}` })
+        return
+      }
+
+      const solved = data.result
       if (!solved.solvable) {
         updateCreator({
+          solving: false,
           replayBoards: [],
           replayIndex: 0,
           message: `No solution found within ${clampSolverDepth(creatorState.solverMaxDepth)} moves (explored ${solved.statesExplored} states).`,
@@ -952,23 +986,28 @@ export function mountGameUi(root = document.querySelector('#app')) {
       }
 
       const parsed = parsePuzzle(raw)
-      const snapshots = applyMovesToBoard({
-        board: parsed.board,
-        puzzle: parsed,
-        moves: solved.moves,
-      })
+      const snapshots = applyMovesToBoard({ board: parsed.board, puzzle: parsed, moves: solved.moves })
       updateCreator({
+        solving: false,
         replayBoards: snapshots,
         replayIndex: 0,
         copyStatus: '',
         message: `Solved in ${solved.minMoves} moves. Use Undo/Redo step to inspect sequence.`,
       })
-    } catch (error) {
-      updateCreator({
-        copyStatus: '',
-        message: `Solve failed: ${error?.message ?? 'invalid puzzle data'}`,
-      })
     }
+
+    worker.onerror = (err) => {
+      if (worker !== _solverWorker) return
+      _solverWorker = null
+      updateCreator({ solving: false, message: `Solve failed: ${err?.message ?? 'worker error'}` })
+    }
+
+    worker.postMessage({ raw, maxDepth: clampSolverDepth(creatorState.solverMaxDepth) })
+  }
+
+  function cancelSolve() {
+    cancelSolverWorker()
+    updateCreator({ solving: false, message: 'Solve cancelled.' })
   }
 
   function renderCreatorScreen() {
@@ -1119,6 +1158,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
       },
       onExport: exportCreatorPuzzle,
       onSolve: solveCreatorPuzzle,
+      onCancelSolve: cancelSolve,
       onUndoStep() {
         if (creatorState.replayIndex <= 0) return
         updateCreator({ replayIndex: creatorState.replayIndex - 1 })
