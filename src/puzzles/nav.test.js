@@ -155,20 +155,20 @@ describe('track navigation contracts', () => {
     const launchId = getTrackLaunchPuzzleId({
       trackId: 'puzzle-master',
       solvedIds: [],
-      activePuzzleId: 'b4c5d6e7',
+      activePuzzleId: 'knight-relay',
     })
 
-    expect(launchId).toBe('b4c5d6e7')
+    expect(launchId).toBe('knight-relay')
   })
 
   it('getTrackLaunchPuzzleId falls back to first unsolved puzzle when active is outside track', () => {
     const launchId = getTrackLaunchPuzzleId({
       trackId: 'puzzle-master',
-      solvedIds: ['b4c5d6e7'],
-      activePuzzleId: 'd1e2f3g4',
+      solvedIds: ['knight-relay'],
+      activePuzzleId: 'detour',
     })
 
-    expect(launchId).toBe('c7d8e9f0')
+    expect(launchId).toBe('crown-the-ro')
   })
 
   it('getTrackLaunchPuzzleId falls back to first puzzle when track is fully solved', () => {
@@ -247,14 +247,14 @@ describe('track navigation contracts', () => {
   it('resolveLandingContinueAction falls back from stale active puzzle to first unsolved in last track', () => {
     const action = resolveLandingContinueAction({
       lastTrackId: 'puzzle-master',
-      solvedIds: ['b4c5d6e7'],
+      solvedIds: ['knight-relay'],
       activePuzzleId: 'stale-id',
     })
 
     expect(action).toEqual({
       kind: 'play',
       trackId: 'puzzle-master',
-      puzzleId: 'c7d8e9f0',
+      puzzleId: 'crown-the-ro',
     })
   })
 

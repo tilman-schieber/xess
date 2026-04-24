@@ -54,39 +54,39 @@ describe('track launch selection via controller', () => {
     mockStore = {
       schemaVersion: 1,
       solvedIds: [],
-      activeState: { puzzleId: 'b4c5d6e7', boardEntries: [], undoEntries: [] },
+      activeState: { puzzleId: 'knight-relay', boardEntries: [], undoEntries: [] },
     }
 
     const controller = createController()
     const launchId = controller.getTrackLaunchPuzzleId('puzzle-master')
 
-    expect(launchId).toBe('b4c5d6e7')
+    expect(launchId).toBe('knight-relay')
   })
 
   it('falls back to first unsolved puzzle when active puzzle is outside selected track', () => {
     mockStore = {
       schemaVersion: 1,
-      solvedIds: ['b4c5d6e7'],
-      activeState: { puzzleId: 'd1e2f3g4', boardEntries: [], undoEntries: [] },
+      solvedIds: ['knight-relay'],
+      activeState: { puzzleId: 'detour', boardEntries: [], undoEntries: [] },
     }
 
     const controller = createController()
     const launchId = controller.getTrackLaunchPuzzleId('puzzle-master')
 
-    expect(launchId).toBe('c7d8e9f0')
+    expect(launchId).toBe('crown-the-ro')
   })
 
   it('falls back to first puzzle for fully solved track', () => {
     mockStore = {
       schemaVersion: 1,
-      solvedIds: ['b4c5d6e7', 'c7d8e9f0'],
+      solvedIds: ['knight-relay', 'crown-the-ro'],
       activeState: null,
     }
 
     const controller = createController()
     const launchId = controller.getTrackLaunchPuzzleId('puzzle-master')
 
-    expect(launchId).toBe('b4c5d6e7')
+    expect(launchId).toBe('knight-relay')
   })
 })
 
@@ -117,7 +117,7 @@ describe('main track-first screen flow', () => {
 
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-open-track="puzzle-master"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-puzzle-id="b4c5d6e7"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-puzzle-id="knight-relay"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('[data-track-browser]')).toBeNull()
     expect(document.querySelector('[data-board]')).not.toBeNull()
@@ -126,7 +126,7 @@ describe('main track-first screen flow', () => {
   it('resume action falls back safely when persisted active puzzle is stale', () => {
     mockStore = {
       schemaVersion: 1,
-      solvedIds: ['xk3m9pq2', 'gt7wz4r1'],
+      solvedIds: ['corner-trap', 'find-the-squ'],
       activeState: { puzzleId: 'stale-id', boardEntries: [], undoEntries: [] },
       tutorialDismissed: false,
       tutorialCompleted: false,
@@ -212,7 +212,7 @@ describe('main track-first screen flow', () => {
 
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-open-track="puzzle-master"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-puzzle-id="b4c5d6e7"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-puzzle-id="knight-relay"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-shell-menu-toggle]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-shell-nav-tracks]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
@@ -225,7 +225,7 @@ describe('main track-first screen flow', () => {
 
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-open-track="puzzle-master"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-puzzle-id="b4c5d6e7"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-puzzle-id="knight-relay"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     const beforeCounter = document.querySelector('[data-move-counter]')?.textContent
 

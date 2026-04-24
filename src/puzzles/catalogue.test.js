@@ -36,7 +36,7 @@ describe('catalogue', () => {
   })
 
   it('applies default no-capture dual-control policy for reach puzzles without explicit policy fields', () => {
-    const raw = catalogue.find(entry => entry.id === 'b4c5d6e7')
+    const raw = catalogue.find(entry => entry.id === 'knight-relay')
     expect(raw).toBeDefined()
     expect(Object.hasOwn(raw, 'controllableColors')).toBe(false)
     expect(Object.hasOwn(raw, 'capturableByColor')).toBe(false)
@@ -51,7 +51,7 @@ describe('catalogue', () => {
   })
 
   it('supports promotion-required queen goal puzzle policy in active catalogue', () => {
-    const raw = catalogue.find(entry => entry.id === 'c7d8e9f0')
+    const raw = catalogue.find(entry => entry.id === 'crown-the-ro')
     expect(raw).toBeDefined()
     expect(Object.hasOwn(raw, 'controllableColors')).toBe(false)
     expect(Object.hasOwn(raw, 'capturableByColor')).toBe(false)

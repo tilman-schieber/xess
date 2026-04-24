@@ -34,9 +34,9 @@ beforeEach(() => {
 describe('loadPuzzle', () => {
   it('loads parsed puzzle state with board map and defaults', () => {
     const ctrl = createController()
-    const result = ctrl.loadPuzzle('g3h4i5j6')
+    const result = ctrl.loadPuzzle('knight-leap')
 
-    expect(result.puzzle.id).toBe('g3h4i5j6')
+    expect(result.puzzle.id).toBe('knight-leap')
     expect(result.board).toBeInstanceOf(Map)
     expect(result.undoStack).toEqual([])
     expect(result.won).toBe(false)
@@ -44,7 +44,7 @@ describe('loadPuzzle', () => {
 
   it('uses canonical case mapping from loader (lowercase piece is black)', () => {
     const ctrl = createController()
-    const { board } = ctrl.loadPuzzle('xk3m9pq2')
+    const { board } = ctrl.loadPuzzle('corner-trap')
     expect(board.get('1,1').piece).toEqual({ type: 'p', color: 'black' })
   })
 })
@@ -52,20 +52,20 @@ describe('loadPuzzle', () => {
 describe('selectPiece policy', () => {
   it('allows default white control and rejects black piece selection', () => {
     const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
+    ctrl.loadPuzzle('knight-leap')
 
     expect(ctrl.selectPiece('0,0').length).toBeGreaterThan(0)
     expect(ctrl.selectPiece('1,2')).toEqual([])
   })
 
   it('respects puzzle-level controllableColors override', () => {
-    const raw = getRawPuzzle('g3h4i5j6')
+    const raw = getRawPuzzle('knight-leap')
     const prev = raw.controllableColors
     raw.controllableColors = ['black']
 
     try {
       const ctrl = createController()
-      ctrl.loadPuzzle('g3h4i5j6')
+      ctrl.loadPuzzle('knight-leap')
       expect(ctrl.selectPiece('0,0')).toEqual([])
       expect(ctrl.selectPiece('1,2').length).toBeGreaterThan(0)
     } finally {
@@ -78,7 +78,7 @@ describe('selectPiece policy', () => {
 describe('makeMove policy and invariants', () => {
   it('legal non-winning move mutates board and persists active state', () => {
     const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
+    ctrl.loadPuzzle('knight-leap')
 
     const result = ctrl.makeMove('0,0', '2,1')
     expect(result.error).toBeUndefined()
@@ -90,13 +90,13 @@ describe('makeMove policy and invariants', () => {
   })
 
   it('disallowed capture by capturableByColor policy is rejected as illegal_move', () => {
-    const raw = getRawPuzzle('g3h4i5j6')
+    const raw = getRawPuzzle('knight-leap')
     const prev = raw.capturableByColor
     raw.capturableByColor = { white: [], black: ['white'] }
 
     try {
       const ctrl = createController()
-      ctrl.loadPuzzle('g3h4i5j6')
+      ctrl.loadPuzzle('knight-leap')
 
       const result = ctrl.makeMove('0,0', '1,2')
       expect(result).toEqual({ error: 'illegal_move' })
@@ -110,13 +110,13 @@ describe('makeMove policy and invariants', () => {
   })
 
   it('selectPiece does not surface non-capturable destinations', () => {
-    const raw = getRawPuzzle('g3h4i5j6')
+    const raw = getRawPuzzle('knight-leap')
     const prev = raw.capturableByColor
     raw.capturableByColor = { white: [], black: ['white'] }
 
     try {
       const ctrl = createController()
-      ctrl.loadPuzzle('g3h4i5j6')
+      ctrl.loadPuzzle('knight-leap')
       const legal = ctrl.selectPiece('0,0')
       expect(legal).not.toContain('1,2')
     } finally {
@@ -127,13 +127,13 @@ describe('makeMove policy and invariants', () => {
 
   it('winning capture writes solved progress and clears active state', () => {
     const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
+    ctrl.loadPuzzle('knight-leap')
 
     const result = ctrl.makeMove('0,0', '1,2')
     expect(result.won).toBe(true)
     expect(saveProgress).toHaveBeenCalledWith(
-      expect.arrayContaining(['g3h4i5j6']),
-      expect.objectContaining({ g3h4i5j6: 1 }),
+      expect.arrayContaining(['knight-leap']),
+      expect.objectContaining({ 'knight-leap': 1 }),
     )
     expect(clearActiveState).toHaveBeenCalledTimes(1)
     expect(saveActiveState).not.toHaveBeenCalled()
@@ -141,7 +141,7 @@ describe('makeMove policy and invariants', () => {
 
   it('reach-mode no-capture puzzles reject capture attempts through policy gates (MODE-05)', () => {
     const ctrl = createController()
-    ctrl.loadPuzzle('b4c5d6e7')
+    ctrl.loadPuzzle('knight-relay')
 
     const legalFromKnightStart = ctrl.selectPiece('0,0')
     expect(legalFromKnightStart).not.toContain('2,1')
@@ -153,7 +153,7 @@ describe('makeMove policy and invariants', () => {
 
   it('capture-mode completion remains tied to legal captures (MODE-04)', () => {
     const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
+    ctrl.loadPuzzle('knight-leap')
 
     const nonCapture = ctrl.makeMove('0,0', '2,1')
     expect(nonCapture.error).toBeUndefined()
@@ -167,7 +167,7 @@ describe('makeMove policy and invariants', () => {
 
   it('rejected moves are fully non-mutating (board, undo stack, persistence)', () => {
     const ctrl = createController()
-    const { board: initialBoard } = ctrl.loadPuzzle('g3h4i5j6')
+    const { board: initialBoard } = ctrl.loadPuzzle('knight-leap')
 
     const beforeSelection = ctrl.selectPiece('0,0')
     expect(beforeSelection.length).toBeGreaterThan(0)
@@ -191,7 +191,7 @@ describe('makeMove policy and invariants', () => {
 describe('tracking events and move counters', () => {
   it('emits one canonical event and increments move count for legal commits only', () => {
     const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
+    ctrl.loadPuzzle('knight-leap')
 
     const afterLegal = ctrl.makeMove('0,0', '2,1')
     expect(afterLegal.error).toBeUndefined()
@@ -216,7 +216,7 @@ describe('tracking events and move counters', () => {
 
   it('keeps moveCount synchronized across makeMove, undo, and redo', () => {
     const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
+    ctrl.loadPuzzle('knight-leap')
 
     ctrl.makeMove('0,0', '2,1')
     expect(ctrl.getTrackingState().moveCount).toBe(1)
@@ -232,7 +232,7 @@ describe('tracking events and move counters', () => {
 describe('undo/redo divergence and tracking rehydration', () => {
   it('supports multi-step undo/redo with synchronized counter and availability state', () => {
     const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
+    ctrl.loadPuzzle('knight-leap')
 
     ctrl.makeMove('0,0', '2,1')
     const secondHop = ctrl.selectPiece('2,1')[0]
@@ -255,7 +255,7 @@ describe('undo/redo divergence and tracking rehydration', () => {
 
   it('clears redo availability after divergent move post-undo', () => {
     const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
+    ctrl.loadPuzzle('knight-leap')
 
     ctrl.makeMove('0,0', '2,1')
     ctrl.undo()
@@ -268,15 +268,15 @@ describe('undo/redo divergence and tracking rehydration', () => {
   })
 
   it('rehydrates board history and tracking payload from activeState and preserves solved metadata on win', () => {
-    const parsed = parsePuzzle(getRawPuzzle('g3h4i5j6'))
+    const parsed = parsePuzzle(getRawPuzzle('knight-leap'))
     const first = applyMove(parsed.board, '0,0', '2,1', parsed)
 
     loadStore.mockReturnValue({
       schemaVersion: 1,
-      solvedIds: ['xk3m9pq2'],
-      solvedMoveCounts: { xk3m9pq2: 4 },
+      solvedIds: ['corner-trap'],
+      solvedMoveCounts: { 'corner-trap': 4 },
       activeState: {
-        puzzleId: 'g3h4i5j6',
+        puzzleId: 'knight-leap',
         boardEntries: Array.from(first.board.entries()),
         undoEntries: [Array.from(parsed.board.entries())],
         redoEntries: [],
@@ -286,7 +286,7 @@ describe('undo/redo divergence and tracking rehydration', () => {
     })
 
     const ctrl = createController()
-    const loaded = ctrl.loadPuzzle('g3h4i5j6')
+    const loaded = ctrl.loadPuzzle('knight-leap')
     expect(loaded.undoStack).toHaveLength(1)
     expect(ctrl.getTrackingState().moveCount).toBe(1)
     expect(loaded.board.get('2,1').piece).toEqual({ type: 'n', color: 'white' })
@@ -300,8 +300,8 @@ describe('undo/redo divergence and tracking rehydration', () => {
     const solved = ctrl.makeMove('0,0', '1,2')
     expect(solved.won).toBe(true)
     expect(saveProgress).toHaveBeenCalledWith(
-      expect.arrayContaining(['xk3m9pq2', 'g3h4i5j6']),
-      expect.objectContaining({ xk3m9pq2: 4, g3h4i5j6: expect.any(Number) }),
+      expect.arrayContaining(['corner-trap', 'knight-leap']),
+      expect.objectContaining({ 'corner-trap': 4, 'knight-leap': expect.any(Number) }),
     )
   })
 })
@@ -309,7 +309,7 @@ describe('undo/redo divergence and tracking rehydration', () => {
 describe('undo/reset and nav delegation', () => {
   it('undo restores previous snapshot after one legal move', () => {
     const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
+    ctrl.loadPuzzle('knight-leap')
     ctrl.makeMove('0,0', '2,1')
 
     const restored = ctrl.undo()
@@ -319,7 +319,7 @@ describe('undo/reset and nav delegation', () => {
   })
 
   it('reset clears active state and reloads latest catalogue puzzle over persisted active snapshot', () => {
-    const raw = getRawPuzzle('g3h4i5j6')
+    const raw = getRawPuzzle('knight-leap')
     const parsed = parsePuzzle(raw)
     const moved = applyMove(parsed.board, '0,0', '2,1', parsed)
 
@@ -328,7 +328,7 @@ describe('undo/reset and nav delegation', () => {
       solvedIds: [],
       solvedMoveCounts: {},
       activeState: {
-        puzzleId: 'g3h4i5j6',
+        puzzleId: 'knight-leap',
         boardEntries: Array.from(moved.board.entries()),
         undoEntries: [Array.from(parsed.board.entries())],
         redoEntries: [],
@@ -338,7 +338,7 @@ describe('undo/reset and nav delegation', () => {
     })
 
     const ctrl = createController()
-    const loaded = ctrl.loadPuzzle('g3h4i5j6')
+    const loaded = ctrl.loadPuzzle('knight-leap')
     expect(loaded.board.get('0,0').piece).toBeNull()
 
     const previousTitle = raw.title
@@ -357,27 +357,27 @@ describe('undo/reset and nav delegation', () => {
   })
 
   it('delegates navigation helpers with current solved state', () => {
-    loadStore.mockReturnValue({ schemaVersion: 1, solvedIds: ['xk3m9pq2'], activeState: null })
-    getPuzzleList.mockReturnValue([{ id: 'xk3m9pq2', status: 'solved' }])
+    loadStore.mockReturnValue({ schemaVersion: 1, solvedIds: ['corner-trap'], activeState: null })
+    getPuzzleList.mockReturnValue([{ id: 'corner-trap', status: 'solved' }])
 
     const ctrl = createController()
-    ctrl.loadPuzzle('g3h4i5j6')
+    ctrl.loadPuzzle('knight-leap')
 
-    expect(ctrl.getPuzzleList()).toEqual([{ id: 'xk3m9pq2', status: 'solved' }])
-    expect(getPuzzleList).toHaveBeenCalledWith(['xk3m9pq2'])
+    expect(ctrl.getPuzzleList()).toEqual([{ id: 'corner-trap', status: 'solved' }])
+    expect(getPuzzleList).toHaveBeenCalledWith(['corner-trap'])
 
-    ctrl.getPuzzlePosition('g3h4i5j6')
-    expect(getPuzzlePosition).toHaveBeenCalledWith('g3h4i5j6')
+    ctrl.getPuzzlePosition('knight-leap')
+    expect(getPuzzlePosition).toHaveBeenCalledWith('knight-leap')
 
-    ctrl.isUnlocked('g3h4i5j6')
-    expect(isUnlocked).toHaveBeenCalledWith('g3h4i5j6', ['xk3m9pq2'])
+    ctrl.isUnlocked('knight-leap')
+    expect(isUnlocked).toHaveBeenCalledWith('knight-leap', ['corner-trap'])
   })
 
   it('getTrackLaunchPuzzleId passes sanitized solved and active IDs', () => {
     loadStore.mockReturnValue({
       schemaVersion: 1,
-      solvedIds: ['xk3m9pq2', 'stale-id'],
-      activeState: { puzzleId: 'g3h4i5j6', boardEntries: [], undoEntries: [] },
+      solvedIds: ['corner-trap', 'stale-id'],
+      activeState: { puzzleId: 'knight-leap', boardEntries: [], undoEntries: [] },
     })
 
     const ctrl = createController()
@@ -385,8 +385,8 @@ describe('undo/reset and nav delegation', () => {
 
     expect(getTrackLaunchPuzzleId).toHaveBeenCalledWith({
       trackId: 'foundations',
-      solvedIds: ['xk3m9pq2'],
-      activePuzzleId: 'g3h4i5j6',
+      solvedIds: ['corner-trap'],
+      activePuzzleId: 'knight-leap',
     })
   })
 })

@@ -21,7 +21,7 @@ describe('main UI interaction flow', () => {
   })
 
   it('initial render has no selected or legal interaction frame by default', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
     const model = ui.getRenderModel()
 
     const highlighted = model.cells.filter(cell =>
@@ -35,7 +35,7 @@ describe('main UI interaction flow', () => {
   })
 
   it('tapping an empty square without a selected piece does not show selection feedback', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
 
     ui.tapCell('2,2')
     const model = ui.getRenderModel()
@@ -47,7 +47,7 @@ describe('main UI interaction flow', () => {
   })
 
   it('selecting a white piece marks legal destination cells (INT-01)', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
 
     ui.tapCell('0,0')
     const model = ui.getRenderModel()
@@ -61,7 +61,7 @@ describe('main UI interaction flow', () => {
   })
 
   it('tapping a legal destination performs move and clears selection/highlights (INT-02)', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
 
     ui.tapCell('0,0')
     ui.tapCell('0,2')
@@ -83,7 +83,7 @@ describe('main UI interaction flow', () => {
   })
 
   it('illegal destination tap applies temporary feedback and does not mutate board state (INT-02)', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
 
     ui.tapCell('0,0')
     const before = Array.from(ui.getState().board.entries())
@@ -99,7 +99,7 @@ describe('main UI interaction flow', () => {
   })
 
   it('winning move shows visible win marker immediately (INT-02)', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
 
     ui.tapCell('0,0')
     ui.tapCell('0,2')
@@ -113,7 +113,7 @@ describe('main UI interaction flow', () => {
   })
 
   it('restart resets board state and clears win/selection feedback', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
 
     ui.tapCell('0,0')
     ui.tapCell('0,2')
@@ -133,7 +133,7 @@ describe('main UI interaction flow', () => {
   })
 
   it('reach puzzles expose a goal ghost for the required target piece before completion', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
     const model = ui.getRenderModel()
     const cells = byKey(model)
 
@@ -154,7 +154,7 @@ describe('main UI interaction flow', () => {
 
 describe('tracking runtime and UI contracts', () => {
   it('undo/redo actions keep move counter synchronized across move, undo, redo, and restart', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
 
     expect(ui.getRenderModel().moveCount).toBe(0)
 
@@ -173,7 +173,7 @@ describe('tracking runtime and UI contracts', () => {
   })
 
   it('divergent move after undo invalidates redo availability immediately', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
 
     ui.tapCell('0,0')
     ui.tapCell('0,2')
@@ -187,7 +187,7 @@ describe('tracking runtime and UI contracts', () => {
   })
 
   it('runtime state exposes chronological move history data while list rendering remains deferred', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
 
     ui.tapCell('0,0')
     ui.tapCell('0,2')
@@ -199,12 +199,12 @@ describe('tracking runtime and UI contracts', () => {
   })
 
   it('capture and reach puzzle objectives stay behaviorally distinct in UI controller flow', () => {
-    const captureUi = createGameUiController({ puzzleId: 'g3h4i5j6' })
+    const captureUi = createGameUiController({ puzzleId: 'knight-leap' })
     captureUi.tapCell('0,0')
     captureUi.tapCell('1,2')
     expect(captureUi.getState().won).toBe(true)
 
-    const reachUi = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const reachUi = createGameUiController({ puzzleId: 'find-the-squ' })
     reachUi.tapCell('0,0')
     reachUi.tapCell('0,2')
     reachUi.tapCell('0,2')
@@ -213,7 +213,7 @@ describe('tracking runtime and UI contracts', () => {
   })
 
   it('reach-mode dual-control puzzle still blocks captures through UI legality gates', () => {
-    const ui = createGameUiController({ puzzleId: 'b4c5d6e7' })
+    const ui = createGameUiController({ puzzleId: 'knight-relay' })
 
     ui.tapCell('0,0')
     const pre = ui.getRenderModel()

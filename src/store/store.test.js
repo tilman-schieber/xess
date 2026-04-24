@@ -31,8 +31,8 @@ function makeBoard(entries) {
   return new Map(entries)
 }
 
-const VALID_ID_A = 'b4c5d6e7'
-const VALID_ID_B = 'c7d8e9f0'
+const VALID_ID_A = 'knight-relay'
+const VALID_ID_B = 'crown-the-ro'
 
 // ─── Group: loadStore ────────────────────────────────────────────────────────
 

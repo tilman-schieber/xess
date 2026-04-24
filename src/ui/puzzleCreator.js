@@ -45,6 +45,12 @@ function bindActivate(el, callback) {
   el.addEventListener('pointerdown', (event) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
     event.preventDefault()
+    // Commit any in-progress text input before handling button action.
+    // preventDefault above prevents blur from happening automatically, so
+    // we trigger it manually so 'change' fires on any focused text field.
+    if (document.activeElement && document.activeElement !== el) {
+      document.activeElement.blur()
+    }
     callback(event)
   })
 
@@ -128,7 +134,7 @@ export function renderPuzzleCreator({
   const uuidButton = document.createElement('button')
   uuidButton.type = 'button'
   uuidButton.className = 'creator-action creator-action--compact'
-  uuidButton.textContent = 'Generate UUID'
+  uuidButton.textContent = 'Generate ID'
   bindActivate(uuidButton, onGenerateId)
   idRow.append(idInput, uuidButton)
   idWrap.append(idRow)

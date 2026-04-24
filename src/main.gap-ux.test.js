@@ -20,13 +20,13 @@ function byKey(model) {
 
 describe('gap UX regressions: objective context + static square geometry', () => {
   it('render model includes puzzle title and human-readable objective copy', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
     const model = ui.getRenderModel()
 
     expect(model.puzzleTitle).toBe('Find the Square')
     expect(model.objectiveText).toBe('The red pieces have to reach their goal squares.')
 
-    const captureUi = createGameUiController({ puzzleId: 'xk3m9pq2' })
+    const captureUi = createGameUiController({ puzzleId: 'corner-trap' })
     const captureModel = captureUi.getRenderModel()
     expect(captureModel.puzzleTitle).toBe('Corner Trap')
     expect(captureModel.objectiveText).toBe('Capture all black targets.')
@@ -34,7 +34,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
   })
 
   it('move, illegal, and win interaction classes remain intact with objective-aware UI', () => {
-    const ui = createGameUiController({ puzzleId: 'gt7wz4r1' })
+    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
 
     ui.tapCell('0,0')
     let model = ui.getRenderModel()
@@ -68,7 +68,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
       width: 1,
       height: 1,
-      puzzleId: 'xk3m9pq2',
+      puzzleId: 'corner-trap',
       prevId: null,
       nextId: null,
     }
@@ -98,7 +98,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
       width: 1,
       height: 1,
-      puzzleId: 'xk3m9pq2',
+      puzzleId: 'corner-trap',
       prevId: null,
       nextId: null,
     }
@@ -127,7 +127,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
       width: 1,
       height: 1,
-      puzzleId: 'xk3m9pq2',
+      puzzleId: 'corner-trap',
       prevId: null,
       nextId: null,
     }
@@ -163,9 +163,9 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
       width: 1,
       height: 1,
-      puzzleId: 'gt7wz4r1',
+      puzzleId: 'find-the-squ',
       prevId: null,
-      nextId: 'xk3m9pq2',
+      nextId: 'corner-trap',
     }
 
     const root = dom.window.document.querySelector('#root')
@@ -195,8 +195,8 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
       width: 1,
       height: 1,
-      puzzleId: 'xk3m9pq2',
-      prevId: 'gt7wz4r1',
+      puzzleId: 'corner-trap',
+      prevId: 'find-the-squ',
       nextId: null,
     }
 
@@ -218,17 +218,17 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     globalThis.window = dom.window
     globalThis.DOMParser = dom.window.DOMParser
 
-    const reachUi = createGameUiController({ puzzleId: 'b4c5d6e7' })
+    const reachUi = createGameUiController({ puzzleId: 'knight-relay' })
     const reachRoot = dom.window.document.querySelector('#root')
-    renderToDom(reachRoot, { ...reachUi.getRenderModel(), puzzleId: 'b4c5d6e7', prevId: null, nextId: null })
+    renderToDom(reachRoot, { ...reachUi.getRenderModel(), puzzleId: 'knight-relay', prevId: null, nextId: null })
 
     const reachBoard = reachRoot.querySelector('[data-board]')
     expect(reachBoard?.getAttribute('data-goal-type')).toBe('reach-all-goal-squares')
     expect(reachBoard?.getAttribute('data-board-mode')).toBe('reach')
     expect(reachBoard?.className).toContain('board--mode-reach')
 
-    const captureUi = createGameUiController({ puzzleId: 'xk3m9pq2' })
-    renderToDom(reachRoot, { ...captureUi.getRenderModel(), puzzleId: 'xk3m9pq2', prevId: null, nextId: null })
+    const captureUi = createGameUiController({ puzzleId: 'corner-trap' })
+    renderToDom(reachRoot, { ...captureUi.getRenderModel(), puzzleId: 'corner-trap', prevId: null, nextId: null })
     const captureBoard = reachRoot.querySelector('[data-board]')
     expect(captureBoard?.getAttribute('data-goal-type')).toBe('capture-all-targets')
     expect(captureBoard?.getAttribute('data-board-mode')).toBe('capture')

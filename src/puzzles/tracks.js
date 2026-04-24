@@ -12,8 +12,8 @@ export default [
       tutorial: { enabled: true },
     },
     puzzleIds: [
-      'd1e2f3g4',
-      'z1i2g3z4',
+      'detour',
+      'zig-zag',
     ],
   },
   {
@@ -26,8 +26,8 @@ export default [
       tutorial: { enabled: false },
     },
     puzzleIds: [
-      'b4c5d6e7',
-      'c7d8e9f0',
+      'knight-relay',
+      'crown-the-ro',
     ],
   },
   {
@@ -40,11 +40,12 @@ export default [
       tutorial: { enabled: false },
     },
     puzzleIds: [
-      'm4n5o6p7',
-      'q2r3s4t5',
-      'u1v2w3x4',
-      'f2c10a',
-      '1c693c',
+      'bishopping',
+      'knight-train',
+      'pawn-ascent',
+      'route-the-ro',
+      'night-stable',
+      'four-queen-s',
     ],
   },
   {
@@ -57,8 +58,8 @@ export default [
       tutorial: { enabled: false },
     },
     puzzleIds: [
-      'k8l9m0n1',
-      'draft-puzzle',
+      'capture-the',
+      'square-dance',
     ],
   },
 ]
