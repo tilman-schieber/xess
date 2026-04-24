@@ -191,6 +191,17 @@ export function renderPuzzleCreator({
   goalWrap.append(goalSelect)
   form.append(goalWrap)
 
+  const promoWrap = document.createElement('label')
+  promoWrap.className = 'creator-checkbox'
+  const promoInput = document.createElement('input')
+  promoInput.type = 'checkbox'
+  promoInput.checked = model.promote
+  promoInput.addEventListener('change', () => onChangeField('promote', promoInput.checked))
+  const promoLabel = document.createElement('span')
+  promoLabel.textContent = 'Enable pawn promotion'
+  promoWrap.append(promoInput, promoLabel)
+  form.append(promoWrap)
+
   const targetWrap = document.createElement('label')
   targetWrap.className = 'creator-field'
   targetWrap.textContent = 'Capture target color'
@@ -219,17 +230,6 @@ export function renderPuzzleCreator({
   descriptionInput.addEventListener('change', () => onChangeField('descriptionHtml', descriptionInput.value))
   descriptionWrap.append(descriptionInput)
   form.append(descriptionWrap)
-
-  const promoWrap = document.createElement('label')
-  promoWrap.className = 'creator-checkbox'
-  const promoInput = document.createElement('input')
-  promoInput.type = 'checkbox'
-  promoInput.checked = model.promote
-  promoInput.addEventListener('change', () => onChangeField('promote', promoInput.checked))
-  const promoLabel = document.createElement('span')
-  promoLabel.textContent = 'Enable pawn promotion'
-  promoWrap.append(promoInput, promoLabel)
-  form.append(promoWrap)
 
   const sizeRow = document.createElement('div')
   sizeRow.className = 'creator-size'
@@ -379,26 +379,43 @@ export function renderPuzzleCreator({
   exportArea.value = model.exportJson
   exportArea.readOnly = true
 
-  const editorSection = document.createElement('section')
-  editorSection.className = 'creator-subsection'
-  const editorSectionTitle = document.createElement('h3')
-  editorSectionTitle.className = 'creator-subsection-title'
-  editorSectionTitle.textContent = 'Board editor'
+  const settingsDetails = document.createElement('details')
+  settingsDetails.className = 'creator-collapsible'
+  settingsDetails.open = true
+  const settingsSummary = document.createElement('summary')
+  settingsSummary.className = 'creator-collapsible-title'
+  settingsSummary.textContent = 'Puzzle Settings'
+  const settingsContent = document.createElement('div')
+  settingsContent.className = 'creator-collapsible-content'
+  settingsContent.append(form)
+  settingsDetails.append(settingsSummary, settingsContent)
 
-  editorSection.append(editorSectionTitle, sizeRow, tools)
+  const editorDetails = document.createElement('details')
+  editorDetails.className = 'creator-collapsible'
+  editorDetails.open = true
+  const editorSummary = document.createElement('summary')
+  editorSummary.className = 'creator-collapsible-title'
+  editorSummary.textContent = 'Board Editor'
+  const editorContent = document.createElement('div')
+  editorContent.className = 'creator-collapsible-content'
+  editorContent.append(sizeRow, tools)
   if (model.editMode === 'place') {
-    editorSection.append(placementRow, piecesRow)
+    editorContent.append(placementRow, piecesRow)
   }
-  editorSection.append(editorActions, exportArea)
+  editorContent.append(editorActions, exportArea)
+  editorDetails.append(editorSummary, editorContent)
 
-  const solverSection = document.createElement('section')
-  solverSection.className = 'creator-subsection creator-subsection--solver'
-  const solverSectionTitle = document.createElement('h3')
-  solverSectionTitle.className = 'creator-subsection-title'
-  solverSectionTitle.textContent = 'Solver and replay'
-  solverSection.append(solverSectionTitle, solverDepthRow, solverActions, message)
+  const solverDetails = document.createElement('details')
+  solverDetails.className = 'creator-collapsible creator-collapsible--solver'
+  const solverSummary = document.createElement('summary')
+  solverSummary.className = 'creator-collapsible-title'
+  solverSummary.textContent = 'Solver and replay'
+  const solverContent = document.createElement('div')
+  solverContent.className = 'creator-collapsible-content'
+  solverContent.append(solverDepthRow, solverActions, message)
+  solverDetails.append(solverSummary, solverContent)
 
-  controls.append(heading, copy, form, editorSection, solverSection)
+  controls.append(heading, copy, settingsDetails, editorDetails, solverDetails)
 
   const boardPanel = document.createElement('section')
   boardPanel.className = 'creator-board-panel'

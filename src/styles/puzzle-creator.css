@@ -33,7 +33,6 @@
 .creator-form {
   display: grid;
   gap: var(--space-xs);
-  margin-block: var(--space-sm);
 }
 
 .creator-field,
@@ -140,23 +139,54 @@
   margin-block: var(--space-sm);
 }
 
-.creator-subsection {
+.creator-collapsible {
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   border-radius: 0.75rem;
   background: color-mix(in srgb, var(--glass-chip-bg) 65%, transparent);
-  padding: var(--space-sm);
   margin-block: var(--space-sm);
+  overflow: hidden;
 }
 
-.creator-subsection-title {
+.creator-collapsible-title {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm);
   margin: 0;
   color: var(--text-primary);
   font-size: var(--text-label);
   font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
 }
 
-.creator-subsection--solver {
+.creator-collapsible-title::-webkit-details-marker {
+  display: none;
+}
+
+.creator-collapsible-title::after {
+  content: '›';
+  margin-inline-start: auto;
+  display: inline-block;
+  font-size: 1.1em;
+  transform: rotate(90deg);
+  transition: transform 0.15s ease;
+}
+
+.creator-collapsible[open] > .creator-collapsible-title::after {
+  transform: rotate(-90deg);
+}
+
+.creator-collapsible[open] > .creator-collapsible-title {
+  border-bottom: 1px solid var(--glass-border-soft);
+}
+
+.creator-collapsible-content {
+  padding: var(--space-sm);
+}
+
+.creator-collapsible--solver {
   background: color-mix(in srgb, var(--glass-chip-bg) 45%, transparent);
 }
 
