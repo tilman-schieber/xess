@@ -199,6 +199,7 @@ function createInitialCreatorState() {
     copyStatus: '',
     solverMaxDepth: 60,
     solving: false,
+    collapsibleOpen: { settings: true, editor: true, solver: false },
     message: 'Tip: set board size, paint cells, then export JSON.',
     replayBoards: [],
     replayIndex: 0,
@@ -1167,6 +1168,13 @@ export function mountGameUi(root = document.querySelector('#app')) {
       },
       onResetReplay() {
         updateCreator({ replayBoards: [], replayIndex: 0 })
+      },
+      onToggleCollapsible(section, isOpen) {
+        creatorState = {
+          ...creatorState,
+          collapsibleOpen: { ...creatorState.collapsibleOpen, [section]: isOpen },
+        }
+        // No full rerender — just persist the state change silently
       },
     })
 

@@ -104,6 +104,7 @@ export function renderPuzzleCreator({
   onUndoStep,
   onRedoStep,
   onResetReplay,
+  onToggleCollapsible,
 }) {
   const root = document.createElement('section')
   root.className = 'puzzle-creator'
@@ -379,9 +380,12 @@ export function renderPuzzleCreator({
   exportArea.value = model.exportJson
   exportArea.readOnly = true
 
+  const open = model.collapsibleOpen ?? { settings: true, editor: true, solver: false }
+
   const settingsDetails = document.createElement('details')
   settingsDetails.className = 'creator-collapsible'
-  settingsDetails.open = true
+  if (open.settings) settingsDetails.open = true
+  settingsDetails.addEventListener('toggle', () => onToggleCollapsible('settings', settingsDetails.open))
   const settingsSummary = document.createElement('summary')
   settingsSummary.className = 'creator-collapsible-title'
   settingsSummary.textContent = 'Puzzle Settings'
@@ -392,7 +396,8 @@ export function renderPuzzleCreator({
 
   const editorDetails = document.createElement('details')
   editorDetails.className = 'creator-collapsible'
-  editorDetails.open = true
+  if (open.editor) editorDetails.open = true
+  editorDetails.addEventListener('toggle', () => onToggleCollapsible('editor', editorDetails.open))
   const editorSummary = document.createElement('summary')
   editorSummary.className = 'creator-collapsible-title'
   editorSummary.textContent = 'Board Editor'
@@ -407,6 +412,8 @@ export function renderPuzzleCreator({
 
   const solverDetails = document.createElement('details')
   solverDetails.className = 'creator-collapsible creator-collapsible--solver'
+  if (open.solver) solverDetails.open = true
+  solverDetails.addEventListener('toggle', () => onToggleCollapsible('solver', solverDetails.open))
   const solverSummary = document.createElement('summary')
   solverSummary.className = 'creator-collapsible-title'
   solverSummary.textContent = 'Solver and replay'
