@@ -456,195 +456,72 @@ export function renderToDom(root, model) {
   const app = document.createElement('section')
   app.className = 'xess-ui'
 
-  const meta = document.createElement('header')
-  meta.className = 'puzzle-meta'
-  meta.setAttribute('data-puzzle-meta', 'true')
-
-  // Meta top row: title + sound toggle
-  const metaTop = document.createElement('div')
-  metaTop.className = 'puzzle-meta-top'
+  // ── Topbar: title + info button (mobile) + sound toggle ──
+  const topbar = document.createElement('header')
+  topbar.className = 'puzzle-topbar'
+  topbar.setAttribute('data-puzzle-meta', 'true')
 
   const title = document.createElement('h1')
   title.className = 'puzzle-title'
   title.setAttribute('data-puzzle-title', 'true')
   title.textContent = model.puzzleTitle
 
-  const metaControls = document.createElement('div')
-  metaControls.className = 'puzzle-meta-controls'
+  const topbarControls = document.createElement('div')
+  topbarControls.className = 'puzzle-topbar-controls'
 
-  metaTop.append(title, metaControls)
+  const infoBtn = document.createElement('button')
+  infoBtn.type = 'button'
+  infoBtn.className = 'nav-btn puzzle-info-btn'
+  infoBtn.setAttribute('data-puzzle-info-toggle', 'true')
+  infoBtn.setAttribute('aria-label', 'Puzzle info')
+  infoBtn.textContent = 'i'
+
+  topbarControls.append(infoBtn, renderSoundToggle())
+  topbar.append(title, topbarControls)
+
+  // ── Inline puzzle info (visible on desktop, hidden on mobile) ──
+  const descriptionHtml = getPuzzleDescriptionHtml(model.puzzle)
+  const badge = getGoalBadgeData(model.puzzle)
+  const position = model.puzzleId ? getPuzzlePosition(model.puzzleId) : null
+
+  const inlineInfo = document.createElement('div')
+  inlineInfo.className = 'puzzle-inline-info'
 
   const objective = document.createElement('p')
   objective.className = 'puzzle-objective'
   objective.setAttribute('data-puzzle-objective', 'true')
   objective.textContent = model.objectiveText
+  inlineInfo.append(objective)
 
-  const descriptionHtml = getPuzzleDescriptionHtml(model.puzzle)
-  let descriptionRegion = null
   if (descriptionHtml.length > 0) {
-    const infoToggle = document.createElement('button')
-    infoToggle.type = 'button'
-    infoToggle.className = 'puzzle-info-toggle'
-    infoToggle.setAttribute('data-puzzle-info-toggle', 'true')
-    infoToggle.setAttribute('aria-label', 'Show details')
-    infoToggle.setAttribute('aria-expanded', 'false')
-    infoToggle.setAttribute('aria-controls', 'puzzle-description-region')
-    infoToggle.textContent = 'i'
-
-    descriptionRegion = document.createElement('div')
-    descriptionRegion.className = 'puzzle-description-region'
-    descriptionRegion.id = 'puzzle-description-region'
-    descriptionRegion.setAttribute('data-puzzle-info-region', 'true')
-
-    const description = document.createElement('div')
-    description.className = 'puzzle-description'
-    description.setAttribute('data-puzzle-description', 'true')
-    description.innerHTML = descriptionHtml
-
-    descriptionRegion.append(description)
-    metaControls.append(infoToggle)
+    const desc = document.createElement('div')
+    desc.className = 'puzzle-description'
+    desc.setAttribute('data-puzzle-description', 'true')
+    desc.innerHTML = descriptionHtml
+    inlineInfo.append(desc)
   }
 
-  metaControls.append(renderSoundToggle())
+  const goalBadgeInline = document.createElement('div')
+  goalBadgeInline.className = 'goal-badge'
+  goalBadgeInline.setAttribute('data-goal-type', badge.type)
+  const badgeLabelInline = document.createElement('span')
+  badgeLabelInline.className = 'goal-badge-label'
+  badgeLabelInline.textContent = badge.label
+  goalBadgeInline.append(badgeLabelInline)
+  inlineInfo.append(goalBadgeInline)
 
-  // Goal badge
-  const badge = getGoalBadgeData(model.puzzle)
-  const goalBadge = document.createElement('div')
-  goalBadge.className = 'goal-badge'
-  goalBadge.setAttribute('data-goal-type', badge.type)
-  const badgeLabel = document.createElement('span')
-  badgeLabel.className = 'goal-badge-label'
-  badgeLabel.textContent = badge.label
-  goalBadge.append(badgeLabel)
-
-  // Position indicator
-  const position = model.puzzleId ? getPuzzlePosition(model.puzzleId) : null
-  const posSpan = document.createElement('span')
-  posSpan.className = 'puzzle-position'
-  posSpan.setAttribute('data-puzzle-position', 'true')
-  posSpan.textContent = position ?? ''
-
-  meta.append(metaTop, objective)
-  if (descriptionRegion) {
-    meta.append(descriptionRegion)
-  }
-  meta.append(goalBadge, posSpan)
-  app.append(meta)
-
-  // Nav controls
-  const nav = document.createElement('div')
-  nav.className = 'puzzle-nav'
-
-  const prevBtn = document.createElement('button')
-  prevBtn.type = 'button'
-  prevBtn.className = 'nav-btn'
-  prevBtn.setAttribute('data-prev-puzzle', 'true')
-  prevBtn.setAttribute('aria-label', 'Previous puzzle')
-  prevBtn.disabled = !model.prevId
-  prevBtn.appendChild(svgIcon(ICONS.chevronLeft))
-  prevBtn.appendChild(btnLabel('Prev'))
-
-  const nextNavBtn = document.createElement('button')
-  nextNavBtn.type = 'button'
-  nextNavBtn.className = 'nav-btn'
-  nextNavBtn.setAttribute('data-next-puzzle', 'true')
-  nextNavBtn.setAttribute('aria-label', 'Next puzzle')
-  nextNavBtn.disabled = !model.nextId
-  nextNavBtn.appendChild(svgIcon(ICONS.chevronRight))
-  nextNavBtn.appendChild(btnLabel('Next'))
-
-  const restartBtn = document.createElement('button')
-  restartBtn.type = 'button'
-  restartBtn.className = 'nav-btn'
-  restartBtn.setAttribute('data-restart-puzzle', 'true')
-  restartBtn.setAttribute('aria-label', 'Restart puzzle')
-  restartBtn.appendChild(svgIcon(ICONS.restart))
-  restartBtn.appendChild(btnLabel('Reset'))
-
-  nav.append(prevBtn, restartBtn, nextNavBtn)
-
-  const trackingControls = document.createElement('div')
-  trackingControls.className = 'tracking-controls'
-  trackingControls.setAttribute('data-tracking-controls', 'true')
-
-  const counter = document.createElement('span')
-  counter.className = 'tracking-counter'
-  counter.setAttribute('data-move-counter', 'true')
-  counter.textContent = model.moveCounterText ?? `${model.moveCount ?? 0}`
-
-  const undoBtn = document.createElement('button')
-  undoBtn.type = 'button'
-  undoBtn.className = 'nav-btn tracking-btn'
-  undoBtn.setAttribute('data-undo-move', 'true')
-  undoBtn.setAttribute('aria-label', 'Undo move')
-  undoBtn.disabled = !model.canUndo
-  undoBtn.appendChild(svgIcon(ICONS.undo))
-  undoBtn.appendChild(btnLabel('Undo'))
-
-  const redoBtn = document.createElement('button')
-  redoBtn.type = 'button'
-  redoBtn.className = 'nav-btn tracking-btn'
-  redoBtn.setAttribute('data-redo-move', 'true')
-  redoBtn.setAttribute('aria-label', 'Redo move')
-  redoBtn.disabled = !model.canRedo
-  redoBtn.appendChild(svgIcon(ICONS.redo))
-  redoBtn.appendChild(btnLabel('Redo'))
-
-  trackingControls.append(counter, undoBtn, redoBtn)
-  nav.append(trackingControls)
-  app.append(nav)
-
-  // Win banner
-  const isWon = model.boardClasses.includes('is-won')
-  const winBanner = document.createElement('div')
-  winBanner.setAttribute('data-win-banner', 'true')
-  winBanner.className = isWon ? 'win-banner is-won' : 'win-banner'
-
-  if (isWon) {
-    if (model.nextId) {
-      winBanner.setAttribute('data-win-state', 'puzzle-solved')
-
-      const solvedState = document.createElement('div')
-      solvedState.className = 'win-banner-state win-banner-state--puzzle-solved'
-
-      const solvedSpan = document.createElement('p')
-      solvedSpan.className = 'win-banner-headline'
-      solvedSpan.setAttribute('data-win-headline', 'true')
-      solvedSpan.textContent = 'Puzzle solved!'
-
-      const actionRow = document.createElement('div')
-      actionRow.className = 'win-banner-action'
-      actionRow.setAttribute('data-win-action', 'true')
-
-      const nextPuzzleBtn = document.createElement('button')
-      nextPuzzleBtn.type = 'button'
-      nextPuzzleBtn.className = 'btn-next-puzzle'
-      nextPuzzleBtn.setAttribute('data-win-next-puzzle', 'true')
-      nextPuzzleBtn.textContent = 'Next Puzzle'
-
-      actionRow.append(nextPuzzleBtn)
-      solvedState.append(solvedSpan, actionRow)
-      winBanner.append(solvedState)
-    } else {
-      winBanner.setAttribute('data-win-state', 'all-solved')
-
-      const allSolvedState = document.createElement('div')
-      allSolvedState.className = 'win-banner-state win-banner-state--all-solved'
-
-      // End of catalogue — count total puzzles from position string
-      const total = catalogue.length
-      const endSpan = document.createElement('p')
-      endSpan.className = 'win-banner-headline'
-      endSpan.setAttribute('data-win-headline', 'true')
-      endSpan.setAttribute('data-win-all-solved', 'true')
-      endSpan.textContent = total ? `All ${total} puzzles solved! 🎉` : 'All puzzles solved! 🎉'
-      allSolvedState.append(endSpan)
-      winBanner.append(allSolvedState)
-    }
+  if (position) {
+    const posInline = document.createElement('span')
+    posInline.className = 'puzzle-position'
+    posInline.setAttribute('data-puzzle-position', 'true')
+    posInline.textContent = position
+    inlineInfo.append(posInline)
   }
 
-  app.append(winBanner)
+  topbar.append(inlineInfo)
+  app.append(topbar)
 
+  // ── Board ──
   const boardGoalType = typeof model?.puzzle?.goalType === 'string' ? model.puzzle.goalType : 'unknown'
   const boardModeClass = boardGoalType === 'capture-all-targets'
     ? 'board--mode-capture'
@@ -693,6 +570,152 @@ export function renderToDom(root, model) {
   })
 
   app.append(board)
+
+  // ── Controls bar: prev | undo | counter | redo | next ──
+  const controls = document.createElement('div')
+  controls.className = 'puzzle-controls'
+
+  const prevBtn = document.createElement('button')
+  prevBtn.type = 'button'
+  prevBtn.className = 'nav-btn'
+  prevBtn.setAttribute('data-prev-puzzle', 'true')
+  prevBtn.setAttribute('aria-label', 'Previous puzzle')
+  prevBtn.disabled = !model.prevId
+  prevBtn.appendChild(svgIcon(ICONS.chevronLeft))
+  prevBtn.appendChild(btnLabel('Prev'))
+
+  const undoBtn = document.createElement('button')
+  undoBtn.type = 'button'
+  undoBtn.className = 'nav-btn tracking-btn'
+  undoBtn.setAttribute('data-undo-move', 'true')
+  undoBtn.setAttribute('aria-label', 'Undo move')
+  undoBtn.disabled = !model.canUndo
+  undoBtn.appendChild(svgIcon(ICONS.undo))
+  undoBtn.appendChild(btnLabel('Undo'))
+
+  const counter = document.createElement('span')
+  counter.className = 'tracking-counter'
+  counter.setAttribute('data-move-counter', 'true')
+  counter.textContent = model.moveCounterText ?? `${model.moveCount ?? 0}`
+
+  const redoBtn = document.createElement('button')
+  redoBtn.type = 'button'
+  redoBtn.className = 'nav-btn tracking-btn'
+  redoBtn.setAttribute('data-redo-move', 'true')
+  redoBtn.setAttribute('aria-label', 'Redo move')
+  redoBtn.disabled = !model.canRedo
+  redoBtn.appendChild(svgIcon(ICONS.redo))
+  redoBtn.appendChild(btnLabel('Redo'))
+
+  const nextBtn = document.createElement('button')
+  nextBtn.type = 'button'
+  nextBtn.className = 'nav-btn'
+  nextBtn.setAttribute('data-next-puzzle', 'true')
+  nextBtn.setAttribute('aria-label', 'Next puzzle')
+  nextBtn.disabled = !model.nextId
+  nextBtn.appendChild(svgIcon(ICONS.chevronRight))
+  nextBtn.appendChild(btnLabel('Next'))
+
+  const restartBtn = document.createElement('button')
+  restartBtn.type = 'button'
+  restartBtn.className = 'nav-btn'
+  restartBtn.setAttribute('data-restart-puzzle', 'true')
+  restartBtn.setAttribute('aria-label', 'Restart puzzle')
+  restartBtn.appendChild(svgIcon(ICONS.restart))
+  restartBtn.appendChild(btnLabel('Reset'))
+
+  controls.append(prevBtn, undoBtn, counter, redoBtn, nextBtn, restartBtn)
+  app.append(controls)
+
+  // ── Win modal overlay (only when won) ──
+  const isWon = model.boardClasses.includes('is-won')
+  if (isWon) {
+    const winOverlay = document.createElement('div')
+    winOverlay.className = 'win-modal'
+    winOverlay.setAttribute('data-win-banner', 'true')
+    winOverlay.setAttribute('data-win-dismiss', 'true')
+
+    const winContent = document.createElement('div')
+    winContent.className = 'win-modal-content'
+
+    if (model.nextId) {
+      winOverlay.setAttribute('data-win-state', 'puzzle-solved')
+
+      const headline = document.createElement('p')
+      headline.className = 'win-modal-headline'
+      headline.setAttribute('data-win-headline', 'true')
+      headline.textContent = 'Puzzle solved!'
+
+      const nextPuzzleBtn = document.createElement('button')
+      nextPuzzleBtn.type = 'button'
+      nextPuzzleBtn.className = 'btn-next-puzzle'
+      nextPuzzleBtn.setAttribute('data-win-next-puzzle', 'true')
+      nextPuzzleBtn.textContent = 'Next Puzzle'
+
+      winContent.append(headline, nextPuzzleBtn)
+    } else {
+      winOverlay.setAttribute('data-win-state', 'all-solved')
+
+      const total = catalogue.length
+      const headline = document.createElement('p')
+      headline.className = 'win-modal-headline'
+      headline.setAttribute('data-win-headline', 'true')
+      headline.setAttribute('data-win-all-solved', 'true')
+      headline.textContent = total ? `All ${total} puzzles solved!` : 'All puzzles solved!'
+
+      winContent.append(headline)
+    }
+
+    winOverlay.append(winContent)
+    app.append(winOverlay)
+  }
+
+  // ── Info modal (mobile only — toggled by info button) ──
+  const infoOverlay = document.createElement('div')
+  infoOverlay.className = 'info-modal'
+  infoOverlay.setAttribute('data-info-modal', 'true')
+  infoOverlay.setAttribute('data-info-dismiss', 'true')
+  infoOverlay.hidden = true
+
+  const infoContent = document.createElement('div')
+  infoContent.className = 'info-modal-content'
+
+  const infoTitle = document.createElement('h2')
+  infoTitle.className = 'info-modal-title'
+  infoTitle.textContent = model.puzzleTitle
+
+  const infoObjective = document.createElement('p')
+  infoObjective.className = 'info-modal-objective'
+  infoObjective.textContent = model.objectiveText
+
+  infoContent.append(infoTitle, infoObjective)
+
+  if (descriptionHtml.length > 0) {
+    const infoDesc = document.createElement('div')
+    infoDesc.className = 'info-modal-description'
+    infoDesc.innerHTML = descriptionHtml
+    infoContent.append(infoDesc)
+  }
+
+  const goalBadgeModal = document.createElement('div')
+  goalBadgeModal.className = 'goal-badge'
+  goalBadgeModal.setAttribute('data-goal-type', badge.type)
+  const badgeLabelModal = document.createElement('span')
+  badgeLabelModal.className = 'goal-badge-label'
+  badgeLabelModal.textContent = badge.label
+  goalBadgeModal.append(badgeLabelModal)
+  infoContent.append(goalBadgeModal)
+
+  if (position) {
+    const posModal = document.createElement('span')
+    posModal.className = 'puzzle-position'
+    posModal.textContent = position
+    infoContent.append(posModal)
+  }
+
+  infoOverlay.append(infoContent)
+  app.append(infoOverlay)
+
   root.append(app)
 }
 
@@ -713,7 +736,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   let _dragCleanup = null    // cleanup fn returned by initDragDrop
   let _isDragging = false    // true once drag threshold exceeded this pointer sequence
   let _suppressTapPointerId = null
-  let _isPuzzleInfoExpanded = false
+  let _isInfoModalOpen = false
 
   function bindPrimaryAction(element, onActivate) {
     if (!element) return
@@ -797,69 +820,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
     root.append(shell)
   }
 
-  function syncPuzzleInfoPanel() {
-    const meta = root.querySelector('[data-puzzle-meta]')
-    const toggle = root.querySelector('[data-puzzle-info-toggle]')
-    if (!meta || !toggle) return
-
-    const compact = typeof window?.matchMedia === 'function'
-      ? window.matchMedia('(max-width: 40rem)').matches
-      : false
-    const shouldExpand = compact ? _isPuzzleInfoExpanded : true
-    meta.classList.toggle('is-info-expanded', shouldExpand)
-    toggle.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false')
-    toggle.setAttribute('aria-label', shouldExpand ? 'Hide details' : 'Show details')
-    toggle.title = shouldExpand ? 'Hide details' : 'Show details'
-  }
-
-  function fitBoardToViewport() {
-    const board = root.querySelector('[data-board]')
-    const uiRoot = root.querySelector('.xess-ui')
-    if (!board || !uiRoot) return
-
-    const compact = typeof window?.matchMedia === 'function'
-      ? window.matchMedia('(max-width: 40rem)').matches
-      : false
-
-    if (!compact) {
-      board.style.inlineSize = ''
-      board.style.blockSize = ''
-      board.style.maxInlineSize = ''
-      board.style.maxBlockSize = ''
-      return
-    }
-
-    const cols = Number.parseInt(board.style.getPropertyValue('--cols'), 10)
-    const rows = Number.parseInt(board.style.getPropertyValue('--rows'), 10)
-    if (!Number.isFinite(cols) || !Number.isFinite(rows) || cols <= 0 || rows <= 0) return
-
-    const boardStyles = window.getComputedStyle(board)
-    const uiStyles = window.getComputedStyle(uiRoot)
-    const gap = Number.parseFloat(boardStyles.gap) || 0
-    const paddingX = (Number.parseFloat(boardStyles.paddingLeft) || 0) + (Number.parseFloat(boardStyles.paddingRight) || 0)
-    const paddingY = (Number.parseFloat(boardStyles.paddingTop) || 0) + (Number.parseFloat(boardStyles.paddingBottom) || 0)
-    const rowGap = Number.parseFloat(uiStyles.rowGap || uiStyles.gap) || 0
-
-    const siblings = Array.from(uiRoot.children).filter(el => el !== board && el.getBoundingClientRect().height > 0)
-    const siblingHeights = siblings.reduce((sum, el) => sum + el.getBoundingClientRect().height, 0)
-    const occupied = siblingHeights + (rowGap * siblings.length)
-
-    const availableWidth = uiRoot.clientWidth
-    const availableHeight = Math.max(0, uiRoot.clientHeight - occupied)
-    if (availableWidth <= 0 || availableHeight <= 0) return
-
-    const maxCellByWidth = (availableWidth - paddingX - (gap * (cols - 1))) / cols
-    const maxCellByHeight = (availableHeight - paddingY - (gap * (rows - 1))) / rows
-    const cell = Math.floor(Math.min(maxCellByWidth, maxCellByHeight))
-    if (!Number.isFinite(cell) || cell <= 0) return
-
-    const boardWidth = (cell * cols) + (gap * (cols - 1)) + paddingX
-    const boardHeight = (cell * rows) + (gap * (rows - 1)) + paddingY
-    board.style.inlineSize = `${boardWidth}px`
-    board.style.blockSize = `${boardHeight}px`
-    board.style.maxInlineSize = `${boardWidth}px`
-    board.style.maxBlockSize = `${boardHeight}px`
-  }
 
   function rerender() {
     if (screenMode === 'play') {
@@ -1267,18 +1227,37 @@ export function mountGameUi(root = document.querySelector('#app')) {
       content: playContent.firstElementChild,
     })
 
-    syncPuzzleInfoPanel()
-    fitBoardToViewport()
-
     // Tear down previous drag listener if board was re-rendered
     if (_dragCleanup) { _dragCleanup(); _dragCleanup = null }
 
-    const infoToggle = root.querySelector('[data-puzzle-info-toggle]')
-    if (infoToggle) {
-      bindPrimaryAction(infoToggle, () => {
-        _isPuzzleInfoExpanded = !_isPuzzleInfoExpanded
-        syncPuzzleInfoPanel()
-        fitBoardToViewport()
+    // Info button → toggle info modal (mobile only, button hidden on desktop via CSS)
+    const infoBtnEl = root.querySelector('[data-puzzle-info-toggle]')
+    if (infoBtnEl) {
+      bindPrimaryAction(infoBtnEl, () => {
+        const modal = root.querySelector('[data-info-modal]')
+        if (modal) modal.hidden = !modal.hidden
+      })
+    }
+
+    // Info modal dismiss on backdrop click
+    const infoModal = root.querySelector('[data-info-dismiss]')
+    if (infoModal) {
+      infoModal.addEventListener('pointerdown', (e) => {
+        if (e.target === infoModal) {
+          e.preventDefault()
+          infoModal.hidden = true
+        }
+      })
+    }
+
+    // Win modal dismiss on backdrop click
+    const winModal = root.querySelector('[data-win-dismiss]')
+    if (winModal) {
+      winModal.addEventListener('pointerdown', (e) => {
+        if (e.target === winModal) {
+          e.preventDefault()
+          winModal.remove()
+        }
       })
     }
 
@@ -1288,10 +1267,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
       _dragCleanup = initDragDrop(boardEl, {
         onDragStart(fromKey) {
           _isDragging = true
-          ui.tapCell(fromKey)   // selects the piece, computes legal move highlights
-          // Do NOT rerender here — rebuilding the DOM would destroy the board element
-          // and kill the in-flight drag state (ghost + pointer capture).
-          // Instead, patch only the interaction CSS classes on existing cell elements.
+          ui.tapCell(fromKey)
           const snapshot = ui.getState()
           boardEl.querySelectorAll('[data-cell-key]').forEach(cellEl => {
             const key = cellEl.dataset.cellKey
@@ -1318,10 +1294,9 @@ export function mountGameUi(root = document.querySelector('#app')) {
         onCancel(fromKey, pointerId) {
           _isDragging = false
           _suppressTapPointerId = pointerId
-          // Deselect: tapCell with the currently-selected key toggles off
           const snapshot = ui.getState()
           if (snapshot.selectedKey === fromKey) {
-            ui.tapCell(fromKey)  // second tap on selected key → clearSelection
+            ui.tapCell(fromKey)
           }
           rerender()
         },
@@ -1384,11 +1359,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
   rerender()
 
   if (typeof window !== 'undefined') {
-    window.addEventListener('resize', () => {
-      if (screenMode !== 'play') return
-      syncPuzzleInfoPanel()
-      fitBoardToViewport()
-    })
 
     window.addEventListener('hashchange', () => {
       if (isCreatorRoute()) {

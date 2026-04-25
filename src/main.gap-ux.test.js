@@ -174,10 +174,9 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     const winBanner = root.querySelector('[data-win-banner]')
     expect(winBanner).not.toBeNull()
     expect(winBanner?.getAttribute('data-win-state')).toBe('puzzle-solved')
-    const solvedState = winBanner?.querySelector('.win-banner-state--puzzle-solved')
-    expect(solvedState).not.toBeNull()
+    expect(winBanner?.querySelector('.win-modal-content')).not.toBeNull()
     expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toBe('Puzzle solved!')
-    expect(winBanner?.querySelector('[data-win-action] [data-win-next-puzzle]')?.textContent).toBe('Next Puzzle')
+    expect(winBanner?.querySelector('[data-win-next-puzzle]')?.textContent).toBe('Next Puzzle')
 
   })
 
@@ -206,10 +205,10 @@ describe('gap UX regressions: objective context + static square geometry', () =>
     const winBanner = root.querySelector('[data-win-banner]')
     expect(winBanner).not.toBeNull()
     expect(winBanner?.getAttribute('data-win-state')).toBe('all-solved')
-    expect(winBanner?.querySelector('.win-banner-state--all-solved')).not.toBeNull()
+    expect(winBanner?.querySelector('.win-modal-content')).not.toBeNull()
     expect(winBanner?.querySelector('[data-win-all-solved]')).not.toBeNull()
     expect(winBanner?.querySelector('[data-win-next-puzzle]')).toBeNull()
-    expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toMatch(/All .* puzzles solved! 🎉|All puzzles solved! 🎉/)
+    expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toMatch(/All .* puzzles solved!|All puzzles solved!/)
   })
 
   it('renders board with explicit mode metadata hooks for reach and capture puzzles', () => {

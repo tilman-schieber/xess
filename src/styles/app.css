@@ -175,27 +175,33 @@ body {
 }
 
 
+/* ─── Game layout: topbar → board → controls ────────────────────────────── */
+
 .xess-ui {
   inline-size: min(100%, var(--app-max-width-desktop));
   max-width: var(--app-max-width-desktop);
   display: grid;
+  grid-template-rows: auto 1fr auto;
   justify-items: center;
-  gap: var(--app-gap);
-  padding-block: var(--space-xs);
+  gap: var(--space-xs);
+  padding: var(--space-xs);
+  min-height: 0;
 }
 
-.puzzle-meta {
+/* ── Topbar ─────────────────────────────────────────────────────────────── */
+
+.puzzle-topbar {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border-radius: 1rem;
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-radius: 0.75rem;
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   background: var(--glass-meta-bg);
   box-shadow: var(--glass-shadow-soft);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
-  display: grid;
-  gap: 0.5rem;
 }
 
 .puzzle-title {
@@ -206,11 +212,29 @@ body {
   color: var(--text-primary);
 }
 
+.puzzle-topbar-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+/* Info button — visible on mobile only */
+.puzzle-info-btn {
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* ── Inline puzzle info (visible on desktop, hidden on mobile) ──────── */
+
+.puzzle-inline-info {
+  display: grid;
+  gap: var(--space-xs);
+}
+
 .puzzle-objective {
   margin: 0;
   font-size: var(--text-body);
   line-height: 1.5;
-  font-weight: 400;
   color: var(--text-secondary);
 }
 
@@ -219,28 +243,6 @@ body {
   font-size: var(--text-label);
   line-height: 1.45;
   color: var(--text-secondary);
-}
-
-.puzzle-info-toggle {
-  display: none;
-  min-inline-size: var(--touch-target-min, 44px);
-  min-block-size: var(--touch-target-min, 44px);
-  justify-content: center;
-  align-items: center;
-  border-radius: 0.65rem;
-  border: 1px solid var(--glass-border-soft);
-  border-top-color: var(--glass-border-strong);
-  background: var(--glass-control-bg);
-  color: var(--text-primary);
-  font-size: var(--text-label);
-  font-weight: 600;
-  line-height: 1;
-  padding: 0;
-  cursor: pointer;
-}
-
-.puzzle-description-region {
-  width: 100%;
 }
 
 .puzzle-description p {
@@ -262,97 +264,15 @@ body {
   text-decoration: underline;
 }
 
-.win-banner {
-  margin: 0;
-  min-height: 1.5rem;
-  width: 100%;
-  text-align: center;
-  font-size: var(--text-display);
-  font-weight: 600;
-  color: var(--text-muted);
-  gap: var(--space-xs);
-}
+/* ── Controls bar ───────────────────────────────────────────────────────── */
 
-.win-banner.is-won {
-  color: var(--accent-win);
-  display: grid;
-  justify-items: center;
-  align-content: start;
-  row-gap: var(--space-xs);
-}
-
-.win-banner-headline {
-  margin: 0;
-  line-height: 1.3;
-  text-wrap: balance;
-}
-
-.win-banner-state {
-  display: grid;
-  justify-items: center;
-  row-gap: var(--space-xs);
-}
-
-.win-banner-state--all-solved {
-  max-inline-size: 28ch;
-}
-
-.win-banner-action {
-  display: grid;
-  justify-items: center;
-}
-
-.puzzle-meta-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-xs);
-}
-
-.puzzle-meta-controls {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.goal-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  inline-size: fit-content;
-  padding: 0.24rem 0.55rem;
-  border-radius: 999px;
-  border: 1px solid var(--glass-border-soft);
-  background: var(--glass-chip-bg);
-  box-shadow: inset 0 1px 0 var(--glass-highlight);
-}
-
-.goal-badge-label {
-  font-size: var(--text-label);
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.puzzle-position {
-  font-size: var(--text-label);
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.puzzle-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-  justify-content: center;
-  width: 100%;
-}
-
-.tracking-controls {
+.puzzle-controls {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
+  padding: var(--space-xs) 0;
 }
 
 .tracking-counter {
@@ -416,7 +336,6 @@ body {
   transition: color 0.15s, border-color 0.15s;
 }
 
-
 .nav-btn:not(:disabled):active {
   transform: translateY(1px);
 }
@@ -448,6 +367,141 @@ body {
   cursor: pointer;
 }
 
+/* ── Win modal overlay ──────────────────────────────────────────────────── */
+
+.win-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 100;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.win-modal-content {
+  text-align: center;
+  padding: var(--space-xl) var(--space-2xl);
+  border-radius: 1rem;
+  border: 1px solid var(--glass-border-soft);
+  border-top-color: var(--glass-border-strong);
+  background: var(--glass-meta-bg);
+  box-shadow: var(--glass-shadow-deep);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  display: grid;
+  gap: var(--space-md);
+  justify-items: center;
+}
+
+.win-modal-headline {
+  margin: 0;
+  font-size: var(--text-display);
+  font-weight: 600;
+  color: var(--accent-win);
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+/* ── Info modal overlay ─────────────────────────────────────────────────── */
+
+.info-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 90;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.info-modal[hidden] {
+  display: none;
+}
+
+.info-modal-content {
+  inline-size: min(92vw, 28rem);
+  padding: var(--space-lg);
+  border-radius: 1rem;
+  border: 1px solid var(--glass-border-soft);
+  border-top-color: var(--glass-border-strong);
+  background: var(--glass-meta-bg);
+  box-shadow: var(--glass-shadow-deep);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.info-modal-title {
+  margin: 0;
+  font-size: var(--text-display);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.info-modal-objective {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.info-modal-description {
+  margin: 0;
+  font-size: var(--text-label);
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.info-modal-description p {
+  margin: 0;
+}
+
+.info-modal-description ul,
+.info-modal-description ol {
+  margin: var(--space-xs) 0;
+  padding-inline-start: 1.1rem;
+}
+
+.info-modal-description li {
+  margin: 0;
+}
+
+.info-modal-description a {
+  color: var(--accent-goal);
+  text-decoration: underline;
+}
+
+.goal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  inline-size: fit-content;
+  padding: 0.24rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border-soft);
+  background: var(--glass-chip-bg);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+
+.goal-badge-label {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.puzzle-position {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+
+/* Desktop: hide info button (info shown inline), topbar is multi-row */
 @media (min-width: 768px) {
   #app {
     padding: 1.5rem;
@@ -458,31 +512,41 @@ body {
     max-width: var(--app-max-width-desktop);
   }
 
-  .puzzle-meta {
-    padding: 0.95rem 1rem;
+  .puzzle-info-btn {
+    display: none;
   }
 
-  .puzzle-title {
-    font-size: var(--text-heading);
+  .puzzle-topbar {
+    grid-template-columns: 1fr auto;
   }
 
-  .puzzle-objective {
-    font-size: var(--text-body);
-  }
-
-  .win-banner {
-    font-size: var(--text-display);
+  .puzzle-inline-info {
+    grid-column: 1 / -1;
   }
 }
 
+/* Mobile: hide inline info, show info button, compact topbar row */
 @media (max-width: 40rem) {
+  .puzzle-inline-info {
+    display: none;
+  }
+
+  .puzzle-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+  }
+
   #app[data-screen-mode='play'] {
     padding: 0;
   }
 
   #app[data-screen-mode='play'] .app-shell {
-    min-height: 100dvh;
+    height: 100dvh;
     grid-template-rows: auto 1fr;
+    overflow: hidden;
   }
 
   #app[data-screen-mode='play'] .app-shell-content {
@@ -502,48 +566,20 @@ body {
 
   #app[data-screen-mode='play'] .xess-ui {
     inline-size: 100%;
-    min-height: 100%;
-    align-content: start;
-    padding-inline: var(--space-sm);
+    height: 100%;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+    padding: var(--space-xs);
+  }
+
+  #app[data-screen-mode='play'] .puzzle-topbar {
+    border-radius: 0.5rem;
   }
 
   #app[data-screen-mode='play'] .board {
-    max-inline-size: none;
-  }
-
-  #app[data-screen-mode='play'] .puzzle-meta {
-    position: relative;
-    padding: var(--space-xs) var(--space-sm);
-    gap: var(--space-xs);
-  }
-
-  #app[data-screen-mode='play'] .puzzle-objective,
-  #app[data-screen-mode='play'] .goal-badge,
-  #app[data-screen-mode='play'] .puzzle-position {
-    display: none;
-  }
-
-  .puzzle-info-toggle {
-    display: inline-grid;
-    place-items: center;
-  }
-
-  .puzzle-description-region {
-    display: none;
-    position: absolute;
-    inset-inline: 0;
-    top: calc(100% + var(--space-xs));
-    z-index: 20;
-    border-radius: 0.75rem;
-    border: 1px solid var(--glass-border-soft);
-    border-top-color: var(--glass-border-strong);
-    background: var(--glass-meta-bg);
-    box-shadow: var(--glass-shadow-soft);
-    padding: var(--space-sm);
-  }
-
-  .puzzle-meta.is-info-expanded .puzzle-description-region {
-    display: block;
+    /* Constrain board to fit the 1fr grid row without overflow */
+    --board-width: min(calc(100vw - var(--space-sm) * 2), var(--board-max-size-mobile));
+    max-block-size: 100%;
   }
 }
 
