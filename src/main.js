@@ -1374,8 +1374,11 @@ export function mountGameUi(root = document.querySelector('#app')) {
     })
   }
 
+  let _pointerDownInPlay = false  // true only if pointerdown originated in play mode
+
   root.addEventListener('pointerdown', (event) => {
-    if (screenMode !== 'play') return
+    _pointerDownInPlay = (screenMode === 'play')
+    if (!_pointerDownInPlay) return
     _isDragging = false  // reset for this pointer sequence
     if (_suppressTapPointerId === event.pointerId) {
       _suppressTapPointerId = null
@@ -1383,6 +1386,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   })
 
   root.addEventListener('pointerup', (event) => {
+    if (!_pointerDownInPlay) return  // pointerdown was outside play mode
     if (screenMode !== 'play') return
     if (event.target.closest?.('[data-shell-topbar]')) return
     if (_suppressTapPointerId === event.pointerId) {
