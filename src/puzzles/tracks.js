@@ -46,6 +46,8 @@ export default [
       'route-the-ro',
       'night-stable',
       'four-queen-s',
+      'boxed-knight',
+      'rook-maze',
     ],
   },
   {
@@ -60,6 +62,7 @@ export default [
     puzzleIds: [
       'capture-the',
       'square-dance',
+      'pawn-wall',
     ],
   },
 ]
