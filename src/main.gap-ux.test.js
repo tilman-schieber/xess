@@ -20,16 +20,16 @@ function byKey(model) {
 
 describe('gap UX regressions: objective context + static square geometry', () => {
   it('render model includes puzzle title and human-readable objective copy', () => {
-    const ui = createGameUiController({ puzzleId: 'find-the-squ' })
+    const ui = createGameUiController({ puzzleId: 'rook-maze' })
     const model = ui.getRenderModel()
 
-    expect(model.puzzleTitle).toBe('Find the Square')
+    expect(model.puzzleTitle).toBe('Rook Maze')
     expect(model.objectiveText).toBe('The red pieces have to reach their goal squares.')
 
-    const captureUi = createGameUiController({ puzzleId: 'corner-trap' })
+    const captureUi = createGameUiController({ puzzleId: 'boxed-knight' })
     const captureModel = captureUi.getRenderModel()
-    expect(captureModel.puzzleTitle).toBe('Corner Trap')
-    expect(captureModel.objectiveText).toBe('Capture all black targets.')
+    expect(captureModel.puzzleTitle).toBe('Boxed Knight')
+    expect(captureModel.objectiveText).toBe('The red pieces have to reach their goal squares.')
 
   })
 
@@ -68,7 +68,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
       width: 1,
       height: 1,
-      puzzleId: 'corner-trap',
+      puzzleId: 'boxed-knight',
       prevId: null,
       nextId: null,
     }
@@ -98,7 +98,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
       width: 1,
       height: 1,
-      puzzleId: 'corner-trap',
+      puzzleId: 'boxed-knight',
       prevId: null,
       nextId: null,
     }
@@ -127,7 +127,7 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
       width: 1,
       height: 1,
-      puzzleId: 'corner-trap',
+      puzzleId: 'boxed-knight',
       prevId: null,
       nextId: null,
     }
@@ -163,9 +163,9 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
       width: 1,
       height: 1,
-      puzzleId: 'find-the-squ',
+      puzzleId: 'rook-maze',
       prevId: null,
-      nextId: 'corner-trap',
+      nextId: 'boxed-knight',
     }
 
     const root = dom.window.document.querySelector('#root')
@@ -194,8 +194,8 @@ describe('gap UX regressions: objective context + static square geometry', () =>
       cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
       width: 1,
       height: 1,
-      puzzleId: 'corner-trap',
-      prevId: 'find-the-squ',
+      puzzleId: 'boxed-knight',
+      prevId: 'rook-maze',
       nextId: null,
     }
 

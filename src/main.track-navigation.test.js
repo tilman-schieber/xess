@@ -67,7 +67,7 @@ describe('track launch selection via controller', () => {
     mockStore = {
       schemaVersion: 1,
       solvedIds: ['knight-relay'],
-      activeState: { puzzleId: 'detour', boardEntries: [], undoEntries: [] },
+      activeState: { puzzleId: 'rook-gauntl', boardEntries: [], undoEntries: [] },
     }
 
     const controller = createController()
@@ -126,7 +126,7 @@ describe('main track-first screen flow', () => {
   it('resume action falls back safely when persisted active puzzle is stale', () => {
     mockStore = {
       schemaVersion: 1,
-      solvedIds: ['corner-trap', 'find-the-squ'],
+      solvedIds: ['boxed-knight', 'rook-maze'],
       activeState: { puzzleId: 'stale-id', boardEntries: [], undoEntries: [] },
       tutorialDismissed: false,
       tutorialCompleted: false,

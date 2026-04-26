@@ -12,7 +12,7 @@ export default [
       tutorial: { enabled: true },
     },
     puzzleIds: [
-      'detour',
+      'rook-gauntl',
       'zig-zag',
     ],
   },

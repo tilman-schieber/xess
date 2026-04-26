@@ -165,7 +165,7 @@ describe('track navigation contracts', () => {
     const launchId = getTrackLaunchPuzzleId({
       trackId: 'puzzle-master',
       solvedIds: ['knight-relay'],
-      activePuzzleId: 'detour',
+      activePuzzleId: 'rook-gauntl',
     })
 
     expect(launchId).toBe('crown-the-ro')

@@ -3,17 +3,22 @@
 
 export default [
   {
-    // Tutorial placeholder — Detour
+    // Tutorial — Rook Gauntlet
     schemaVersion: 1,
-    id: 'detour',
-    title: 'Detour',
-    goalType: 'capture-all-targets',
-    targetColor: 'black',
+    id: 'rook-gauntl',
+    title: 'Rook Gauntlet',
+    descriptionHtml: '<p><strong>Theme:</strong> Thread the red rook through a maze of bishops to reach the goal.</p>',
+    goalType: 'reach-all-goal-squares',
     grid: [
-      'R-x-',
-      '----',
-      '--rb',
+      'r-B-x',
+      'BxBx-',
+      '-B-Bx',
+      'xBxB-',
+      'x-B-G',
     ],
+    goalTargets: {
+      '4,4': 'r',
+    },
   },
   {
     // Tutorial puzzle — Zig-zag
@@ -31,46 +36,54 @@ export default [
     },
   },
   {
-    // Legacy contract puzzle — Corner Trap
+    // Boxed Knight — navigate a knight through rook-guarded corridors
     schemaVersion: 1,
-    id: 'corner-trap',
-    title: 'Corner Trap',
-    descriptionHtml: '<p><strong>Theme:</strong> Cut off escape squares before capturing.</p><ul><li>Use tempo to force the target into the corner.</li></ul>',
-    goalType: 'capture-all-targets',
-    targetColor: 'black',
-    grid: [
-      'x-P',
-      '-p-',
-      'n-x',
-    ],
-  },
-  {
-    // Legacy contract puzzle — Find the Square
-    schemaVersion: 1,
-    id: 'find-the-squ',
-    title: 'Find the Square',
-    descriptionHtml: '<p><em>Hint:</em> Rook paths stay open on files and ranks.</p><p><strong>Reach rules:</strong> The red pieces have to reach their goal squares. No pieces can be captured, and normal chess movement still applies.</p>',
+    id: 'boxed-knight',
+    title: 'Boxed Knight',
+    descriptionHtml: '<p><strong>Theme:</strong> The knight must hop through a grid of rook-guarded squares to reach the opposite corner.</p>',
     goalType: 'reach-all-goal-squares',
     grid: [
-      'R--',
-      '-x-',
-      '--G',
+      'G-x-x',
+      'xRxRx',
+      '-R-R-',
+      'xRxRx',
+      'x-x-n',
     ],
     goalTargets: {
-      '2,2': 'R',
+      '0,0': 'n',
     },
   },
   {
-    // Legacy contract puzzle — Knight Leap
+    // Rook Maze — navigate a rook through a blocked corridor
     schemaVersion: 1,
-    id: 'knight-leap',
-    title: 'Knight Leap',
+    id: 'rook-maze',
+    title: 'Rook Maze',
+    descriptionHtml: '<p><strong>Theme:</strong> Clear a path for the red rook by moving blockers out of the way.</p>',
+    goalType: 'reach-all-goal-squares',
+    grid: [
+      'rxBx',
+      'BxN-',
+      '-NRx',
+      'xB-G',
+    ],
+    goalTargets: {
+      '3,3': 'r',
+    },
+  },
+  {
+    // Pawn Wall — knights must capture pawns across a wall of voids
+    schemaVersion: 1,
+    id: 'pawn-wall',
+    title: 'Pawn Wall',
+    descriptionHtml: '<p><strong>Theme:</strong> Two knights must jump across the void wall to capture the opposing pawns.</p>',
     goalType: 'capture-all-targets',
     targetColor: 'black',
     grid: [
-      'N--',
-      '---',
-      '-n-',
+      'N-n-n',
+      '-xxx-',
+      '-----',
+      '-xxx-',
+      'N-n-n',
     ],
   },
   {
@@ -246,6 +259,58 @@ export default [
       '-xx-',
       '-xx-',
       'PppP',
+    ],
+  },
+
+  // --- Test fixtures (not in any track, not shown in UI) ---
+  {
+    schemaVersion: 1,
+    id: 'knight-leap',
+    title: 'Knight Leap',
+    goalType: 'capture-all-targets',
+    targetColor: 'black',
+    grid: [
+      'N--',
+      '---',
+      '-n-',
+    ],
+  },
+  {
+    schemaVersion: 1,
+    id: 'corner-trap',
+    title: 'Corner Trap',
+    goalType: 'capture-all-targets',
+    targetColor: 'black',
+    grid: [
+      'x-P',
+      '-p-',
+      'n-x',
+    ],
+  },
+  {
+    schemaVersion: 1,
+    id: 'find-the-squ',
+    title: 'Find the Square',
+    goalType: 'reach-all-goal-squares',
+    grid: [
+      'R--',
+      '-x-',
+      '--G',
+    ],
+    goalTargets: {
+      '2,2': 'R',
+    },
+  },
+  {
+    schemaVersion: 1,
+    id: 'detour',
+    title: 'Detour',
+    goalType: 'capture-all-targets',
+    targetColor: 'black',
+    grid: [
+      'R-x-',
+      '----',
+      '--rb',
     ],
   },
 ]
