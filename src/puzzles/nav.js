@@ -228,3 +228,21 @@ export function getNextIdInTrack(puzzleId, trackId, tracks = _tracks, catalogue 
   }
   return getNextId(puzzleId, catalogue)
 }
+
+/**
+ * Returns the 1-based position string "N / M" scoped to a track.
+ * Returns null if trackId is null or puzzleId is not in that track.
+ *
+ * @param {string} puzzleId
+ * @param {string|null} trackId
+ * @param {object[]} [tracks]
+ * @returns {string|null}
+ */
+export function getTrackPuzzlePosition(puzzleId, trackId, tracks = _tracks) {
+  if (!trackId) return null
+  const track = getIntegritySafeTracks(tracks).find(t => t.id === trackId)
+  if (!track) return null
+  const idx = track.puzzleIds.indexOf(puzzleId)
+  if (idx === -1) return null
+  return `${idx + 1} / ${track.puzzleIds.length}`
+}

@@ -168,6 +168,11 @@ body {
   border-color: var(--accent);
 }
 
+.app-shell-nav-action:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 .app-shell-content {
   inline-size: 100%;
   display: grid;

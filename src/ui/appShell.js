@@ -22,6 +22,8 @@ export function renderAppShell({
   onNavigateHome,
   onNavigateTracks,
   showTracks = true,
+  hasPrevPuzzle = false,
+  hasNextPuzzle = false,
 }) {
   const shell = document.createElement('section')
   shell.className = 'app-shell'
@@ -54,6 +56,27 @@ export function renderAppShell({
     bindActivate(tracksButton, onNavigateTracks)
     topbar.append(tracksButton)
   }
+
+  if (hasPrevPuzzle !== false || hasNextPuzzle !== false) {
+    const prevBtn = document.createElement('button')
+    prevBtn.type = 'button'
+    prevBtn.className = 'app-shell-nav-action'
+    prevBtn.setAttribute('data-prev-puzzle', 'true')
+    prevBtn.setAttribute('aria-label', 'Previous puzzle')
+    prevBtn.textContent = '‹'
+    prevBtn.disabled = !hasPrevPuzzle
+
+    const nextBtn = document.createElement('button')
+    nextBtn.type = 'button'
+    nextBtn.className = 'app-shell-nav-action'
+    nextBtn.setAttribute('data-next-puzzle', 'true')
+    nextBtn.setAttribute('aria-label', 'Next puzzle')
+    nextBtn.textContent = '›'
+    nextBtn.disabled = !hasNextPuzzle
+
+    topbar.append(prevBtn, nextBtn)
+  }
+
   shell.append(topbar)
 
   const body = document.createElement('div')

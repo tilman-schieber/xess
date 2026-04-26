@@ -29,6 +29,7 @@ import {
   getPrevIdInTrack,
   getNextIdInTrack,
   getPuzzlePosition,
+  getTrackPuzzlePosition,
   getTracks,
   getTrackPuzzleList,
   resolveLandingContinueAction,
@@ -484,7 +485,8 @@ export function renderToDom(root, model) {
   // ── Inline puzzle info (visible on desktop, hidden on mobile) ──
   const descriptionHtml = getPuzzleDescriptionHtml(model.puzzle)
   const badge = getGoalBadgeData(model.puzzle)
-  const position = model.puzzleId ? getPuzzlePosition(model.puzzleId) : null
+  const rawPosition = model.trackPosition ?? (model.puzzleId ? getPuzzlePosition(model.puzzleId) : null)
+  const position = rawPosition && model.trackTitle ? `${rawPosition} · ${model.trackTitle}` : rawPosition
 
   const inlineInfo = document.createElement('div')
   inlineInfo.className = 'puzzle-inline-info'
@@ -577,15 +579,6 @@ export function renderToDom(root, model) {
   const controls = document.createElement('div')
   controls.className = 'puzzle-controls'
 
-  const prevBtn = document.createElement('button')
-  prevBtn.type = 'button'
-  prevBtn.className = 'nav-btn'
-  prevBtn.setAttribute('data-prev-puzzle', 'true')
-  prevBtn.setAttribute('aria-label', 'Previous puzzle')
-  prevBtn.disabled = !model.prevId
-  prevBtn.appendChild(svgIcon(ICONS.chevronLeft))
-  prevBtn.appendChild(btnLabel('Prev'))
-
   const undoBtn = document.createElement('button')
   undoBtn.type = 'button'
   undoBtn.className = 'nav-btn tracking-btn'
@@ -609,15 +602,6 @@ export function renderToDom(root, model) {
   redoBtn.appendChild(svgIcon(ICONS.redo))
   redoBtn.appendChild(btnLabel('Redo'))
 
-  const nextBtn = document.createElement('button')
-  nextBtn.type = 'button'
-  nextBtn.className = 'nav-btn'
-  nextBtn.setAttribute('data-next-puzzle', 'true')
-  nextBtn.setAttribute('aria-label', 'Next puzzle')
-  nextBtn.disabled = !model.nextId
-  nextBtn.appendChild(svgIcon(ICONS.chevronRight))
-  nextBtn.appendChild(btnLabel('Next'))
-
   const restartBtn = document.createElement('button')
   restartBtn.type = 'button'
   restartBtn.className = 'nav-btn'
@@ -626,7 +610,7 @@ export function renderToDom(root, model) {
   restartBtn.appendChild(svgIcon(ICONS.restart))
   restartBtn.appendChild(btnLabel('Reset'))
 
-  controls.append(prevBtn, undoBtn, counter, redoBtn, nextBtn, restartBtn)
+  controls.append(undoBtn, counter, redoBtn, restartBtn)
   app.append(controls)
 
   // ── Win modal overlay (only when won) ──
@@ -655,6 +639,22 @@ export function renderToDom(root, model) {
       nextPuzzleBtn.textContent = 'Next Puzzle'
 
       winContent.append(headline, nextPuzzleBtn)
+    } else if (model.trackId) {
+      winOverlay.setAttribute('data-win-state', 'track-complete')
+
+      const headline = document.createElement('p')
+      headline.className = 'win-modal-headline'
+      headline.setAttribute('data-win-headline', 'true')
+      const label = model.trackTitle ? `${model.trackTitle} complete!` : 'Track complete!'
+      headline.textContent = label
+
+      const backBtn = document.createElement('button')
+      backBtn.type = 'button'
+      backBtn.className = 'btn-next-puzzle'
+      backBtn.setAttribute('data-win-back-to-tracks', 'true')
+      backBtn.textContent = 'Back to Tracks'
+
+      winContent.append(headline, backBtn)
     } else {
       winOverlay.setAttribute('data-win-state', 'all-solved')
 
@@ -797,12 +797,14 @@ export function mountGameUi(root = document.querySelector('#app')) {
     rerender()
   }
 
-  function renderShellView({ mode, title, content }) {
+  function renderShellView({ mode, title, content, prevId = null, nextId = null }) {
     const shell = renderAppShell({
       mode,
       title,
       content,
       showTracks: mode !== 'creator',
+      hasPrevPuzzle: mode === 'play' ? !!prevId : false,
+      hasNextPuzzle: mode === 'play' ? !!nextId : false,
       onNavigateHome() {
         if (typeof window !== 'undefined' && window.location.pathname.endsWith('/creator.html')) {
           window.location.href = '/'
@@ -1215,11 +1217,15 @@ export function mountGameUi(root = document.querySelector('#app')) {
     }
 
     const model = ui.getRenderModel()
+    const trackData = selectedTrackId ? getTracks().find(t => t.id === selectedTrackId) : null
     const extModel = {
       ...model,
       puzzleId: currentPuzzleId,
       prevId: getPrevIdInTrack(currentPuzzleId, selectedTrackId),
       nextId: getNextIdInTrack(currentPuzzleId, selectedTrackId),
+      trackId: selectedTrackId,
+      trackTitle: trackData?.title ?? null,
+      trackPosition: getTrackPuzzlePosition(currentPuzzleId, selectedTrackId),
     }
     const playContent = document.createElement('div')
     renderToDom(playContent, extModel)
@@ -1227,6 +1233,8 @@ export function mountGameUi(root = document.querySelector('#app')) {
       mode: 'play',
       title: extModel.puzzleTitle,
       content: playContent.firstElementChild,
+      prevId: extModel.prevId,
+      nextId: extModel.nextId,
     })
 
     // Tear down previous drag listener if board was re-rendered
@@ -1306,10 +1314,10 @@ export function mountGameUi(root = document.querySelector('#app')) {
     }
 
     bindPrimaryAction(root.querySelector('[data-prev-puzzle]'), () => {
-      if (extModel.prevId) loadPuzzle(extModel.prevId)
+      if (extModel.prevId) loadPuzzle(extModel.prevId, { trackId: selectedTrackId })
     })
     bindPrimaryAction(root.querySelector('[data-next-puzzle]'), () => {
-      if (extModel.nextId) loadPuzzle(extModel.nextId)
+      if (extModel.nextId) loadPuzzle(extModel.nextId, { trackId: selectedTrackId })
     })
     bindPrimaryAction(root.querySelector('[data-restart-puzzle]'), () => {
       ui.restart()
@@ -1324,7 +1332,10 @@ export function mountGameUi(root = document.querySelector('#app')) {
       rerender()
     })
     bindPrimaryAction(root.querySelector('[data-win-next-puzzle]'), () => {
-      if (extModel.nextId) loadPuzzle(extModel.nextId)
+      if (extModel.nextId) loadPuzzle(extModel.nextId, { trackId: selectedTrackId })
+    })
+    bindPrimaryAction(root.querySelector('[data-win-back-to-tracks]'), () => {
+      goToTrackBrowser(selectedTrackId)
     })
   }
 
