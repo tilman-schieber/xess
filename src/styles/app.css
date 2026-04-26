@@ -2,74 +2,10 @@
 @import '@fontsource/inter/400.css';
 @import '@fontsource/inter/600.css';
 
+@import './tokens.css';
 @import './board.css';
 @import './start-screen.css';
 @import './track-browser.css';
-
-:root {
-  /* Layout */
-  --touch-target-min: 44px;
-  --app-max-width-mobile: 375px;
-  --app-max-width-desktop: 960px;
-  --board-max-size-mobile: 360px;
-  --board-max-size-desktop: 720px;
-  --app-gap: 1rem;
-
-  /* Spacing scale (4px multiples) */
-  --space-xs: 0.25rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 4rem;
-
-  /* Color */
-  --surface-bg: #090d16;
-  --surface-card: rgba(12, 18, 34, 0.84);
-  --surface-board: rgba(15, 22, 38, 0.9);
-  --accent: #61d9a7;
-  --accent-goal: #52d6a2;
-  --destructive: #ff6f7a;
-  --accent-win: #61d9a7;
-
-  /* Liquid-glass gameplay tokens */
-  --glass-bg-1: rgba(27, 41, 72, 0.42);
-  --glass-bg-2: rgba(16, 26, 50, 0.24);
-  --glass-border-soft: rgba(206, 223, 255, 0.34);
-  --glass-border-strong: rgba(230, 240, 255, 0.5);
-  --glass-highlight: rgba(255, 255, 255, 0.22);
-  --glass-shadow-soft: 0 12px 32px rgba(3, 9, 21, 0.46);
-  --glass-shadow-deep: 0 22px 42px rgba(2, 7, 17, 0.5);
-  --glass-blur: saturate(140%) blur(16px);
-  --glass-meta-bg: linear-gradient(155deg, var(--glass-bg-1) 0%, var(--glass-bg-2) 100%);
-  --glass-control-bg: linear-gradient(155deg, rgba(37, 55, 95, 0.52) 0%, rgba(20, 31, 56, 0.3) 100%);
-  --glass-chip-bg: rgba(31, 46, 84, 0.44);
-
-  /* Text */
-  --text-primary: #f5f7ff;
-  --text-secondary: #c7d2f4;
-  --text-muted: #6b7aa3;
-
-  /* Borders */
-  --border-subtle: #2a365d;
-  --border-board: #273155;
-
-  /* Cells */
-  --cell-playable-start: #e7ecff;
-  --cell-playable-end: #d2dbf6;
-  --cell-goal-start: #f6ffe9;
-  --cell-goal-end: #dff7cd;
-
-  /* Interaction */
-  --selected-ring: #4a6fff;
-
-  /* Typography sizes */
-  --text-body: 1rem;
-  --text-label: 0.875rem;
-  --text-heading: 1.125rem;
-  --text-display: 1.25rem;
-}
 
 * {
   box-sizing: border-box;
@@ -131,7 +67,7 @@ body {
   flex-wrap: wrap;
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
-  border-radius: 0.95rem;
+  border-radius: var(--radius-panel);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   background: var(--glass-meta-bg);
@@ -151,7 +87,7 @@ body {
 .app-shell-nav-action {
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
-  border-radius: 0.65rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   background: var(--glass-control-bg);
@@ -160,7 +96,7 @@ body {
   font-weight: 600;
   padding: var(--space-xs) var(--space-md);
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .app-shell-nav-action:hover {
@@ -200,7 +136,7 @@ body {
   display: grid;
   gap: var(--space-sm);
   padding: var(--space-sm);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-card);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   background: var(--glass-meta-bg);
@@ -289,7 +225,7 @@ body {
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
   padding: var(--space-xs) var(--space-sm);
-  border-radius: 0.65rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   background: var(--glass-control-bg);
@@ -330,7 +266,7 @@ body {
   background: var(--glass-control-bg);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
-  border-radius: 0.65rem;
+  border-radius: var(--radius-control);
   box-shadow:
     inset 0 1px 0 var(--glass-highlight),
     0 10px 22px rgba(5, 12, 28, 0.42);
@@ -338,7 +274,7 @@ body {
   backdrop-filter: saturate(125%) blur(10px);
   color: var(--text-primary);
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .nav-btn:not(:disabled):active {
@@ -364,7 +300,7 @@ body {
   background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 86%, white) 0%, var(--accent) 100%);
   color: var(--surface-bg);
   border: 1px solid color-mix(in srgb, var(--accent) 70%, white);
-  border-radius: 0.65rem;
+  border-radius: var(--radius-control);
   box-shadow: 0 12px 20px rgba(32, 126, 93, 0.36);
   padding: var(--space-sm) var(--space-md);
   font-size: var(--text-label);
@@ -380,7 +316,7 @@ body {
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.55);
-  z-index: 100;
+  z-index: var(--z-modal);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
@@ -388,7 +324,7 @@ body {
 .win-modal-content {
   text-align: center;
   padding: var(--space-xl) var(--space-2xl);
-  border-radius: 1rem;
+  border-radius: var(--radius-panel);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   background: var(--glass-meta-bg);
@@ -417,7 +353,7 @@ body {
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.55);
-  z-index: 90;
+  z-index: var(--z-modal);
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
@@ -429,7 +365,7 @@ body {
 .info-modal-content {
   inline-size: min(92vw, 28rem);
   padding: var(--space-lg);
-  border-radius: 1rem;
+  border-radius: var(--radius-panel);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   background: var(--glass-meta-bg);
@@ -486,7 +422,7 @@ body {
   gap: var(--space-xs);
   inline-size: fit-content;
   padding: 0.24rem 0.55rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--glass-border-soft);
   background: var(--glass-chip-bg);
   box-shadow: inset 0 1px 0 var(--glass-highlight);
@@ -578,7 +514,7 @@ body {
   }
 
   #app[data-screen-mode='play'] .puzzle-topbar {
-    border-radius: 0.5rem;
+    border-radius: var(--radius-sm);
   }
 
   #app[data-screen-mode='play'] .board {
@@ -627,7 +563,7 @@ svg.icon {
     0 10px 20px rgba(5, 12, 28, 0.4);
   -webkit-backdrop-filter: saturate(125%) blur(10px);
   backdrop-filter: saturate(125%) blur(10px);
-  transition: color 0.15s, border-color 0.15s;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
 /* Universal interactive button hover — accent border highlight */

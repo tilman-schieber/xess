@@ -11,7 +11,7 @@
   grid-template-rows: repeat(var(--rows), 1fr);
   gap: 0.15rem;
   padding: 0.15rem;
-  border-radius: 0.95rem;
+  border-radius: var(--radius-panel);
   border: 1px solid var(--glass-border-soft, var(--border-board));
   border-top-color: var(--glass-border-strong, var(--border-board));
   background:
@@ -30,7 +30,7 @@
   inset-inline: 0.4rem;
   top: -0.35rem;
   block-size: 0.3rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   pointer-events: none;
   background: linear-gradient(
     90deg,
@@ -49,7 +49,7 @@
   aspect-ratio: 1 / 1;
   border: 0;
   margin: 0;
-  border-radius: 0.45rem;
+  border-radius: var(--radius-cell);
   display: grid;
   place-items: center;
   padding: 0;
@@ -169,7 +169,7 @@
 .drag-ghost {
   position: fixed;
   pointer-events: none;
-  z-index: 9999;
+  z-index: var(--z-drag);
   display: block;
   border-radius: 0;
   box-shadow: none;

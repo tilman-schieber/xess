@@ -4,7 +4,7 @@
   position: fixed;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: var(--z-banner);
   background: var(--surface-card, rgba(12, 18, 34, 0.95));
   border-top: 1px solid var(--border-subtle, #2a365d);
   padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);

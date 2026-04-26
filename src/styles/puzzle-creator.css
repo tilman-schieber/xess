@@ -6,7 +6,7 @@
 
 .creator-panel,
 .creator-board-panel {
-  border-radius: 0.95rem;
+  border-radius: var(--radius-panel);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   background: var(--glass-meta-bg);
@@ -62,7 +62,7 @@
 .creator-size input {
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--glass-chip-bg) 70%, transparent);
   color: var(--text-primary);
   font-size: var(--text-label);
@@ -113,7 +113,7 @@
 .creator-action {
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
-  border-radius: 0.65rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   background: var(--glass-control-bg);
@@ -142,7 +142,7 @@
 .creator-collapsible {
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-card);
   background: color-mix(in srgb, var(--glass-chip-bg) 65%, transparent);
   margin-block: var(--space-sm);
   overflow: hidden;
@@ -171,7 +171,7 @@
   display: inline-block;
   font-size: 1.1em;
   transform: rotate(90deg);
-  transition: transform 0.15s ease;
+  transition: transform var(--transition-fast) ease;
 }
 
 .creator-collapsible[open] > .creator-collapsible-title::after {

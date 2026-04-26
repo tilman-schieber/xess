@@ -24,7 +24,7 @@
   display: grid;
   gap: var(--space-md);
   padding: var(--space-md);
-  border-radius: 0.95rem;
+  border-radius: var(--radius-panel);
   background: var(--glass-meta-bg);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
@@ -55,7 +55,7 @@
   display: inline-flex;
   align-items: center;
   min-block-size: 1.8rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--glass-border-soft);
   background: var(--glass-chip-bg);
   box-shadow: inset 0 1px 0 var(--glass-highlight);
@@ -73,7 +73,7 @@
 .start-card {
   display: grid;
   gap: var(--space-xs);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-card);
   border: 1px solid var(--glass-border-soft);
   background: color-mix(in srgb, var(--glass-chip-bg) 72%, transparent);
   padding: var(--space-sm);
@@ -81,7 +81,7 @@
 
 .start-card--interactive {
   cursor: pointer;
-  transition: border-color 0.15s, transform 0.15s;
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .start-card--interactive:hover,
@@ -109,7 +109,7 @@
   min-inline-size: var(--touch-target-min, 44px);
   min-block-size: var(--touch-target-min, 44px);
   justify-self: start;
-  border-radius: 0.65rem;
+  border-radius: var(--radius-control);
   border: 1px solid var(--glass-border-soft);
   border-top-color: var(--glass-border-strong);
   background: var(--glass-control-bg);
@@ -118,7 +118,7 @@
   font-weight: 600;
   padding: 0 var(--space-md);
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .start-card-dismiss:hover {
