@@ -511,16 +511,34 @@ body {
     grid-template-rows: auto 1fr auto;
     overflow: hidden;
     padding: var(--space-xs);
+    /* Enable container queries so the board can reference the actual height */
+    container-type: size;
   }
 
   #app[data-screen-mode='play'] .puzzle-topbar {
     border-radius: var(--radius-sm);
   }
 
-  #app[data-screen-mode='play'] .board {
-    /* Constrain board to fit the 1fr grid row without overflow */
-    --board-width: min(calc(100vw - var(--space-sm) * 2), var(--board-max-size-mobile));
-    max-block-size: 100%;
+  /*
+   * Fit board within available height, maintaining square cells.
+   * cqh = 1% of the .xess-ui container height (the actual rendered height,
+   * not an estimate — immune to device size and browser bar differences).
+   * Internal chrome: padding (8px) + puzzle-topbar (~52px) + gaps (8px)
+   *                + puzzle-controls (~52px) + padding (8px) = 128px
+   */
+  @container (height > 0px) {
+    #app[data-screen-mode='play'] .board {
+      --play-inner-chrome: 128px;
+      --board-w-from-h: calc((100cqh - var(--play-inner-chrome)) * var(--cols) / var(--rows));
+      --board-width: min(
+        calc(100vw - var(--space-sm) * 2),
+        var(--board-max-size-mobile),
+        var(--board-w-from-h)
+      );
+      inline-size: var(--board-width);
+      block-size: calc(var(--board-width) * var(--rows) / var(--cols));
+      max-block-size: 100%;
+    }
   }
 }
 
