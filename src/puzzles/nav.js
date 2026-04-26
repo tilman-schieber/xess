@@ -196,3 +196,35 @@ export function getNextId(puzzleId, catalogue = _catalogue) {
   const idx = catalogue.findIndex(e => e.id === puzzleId)
   return idx === -1 || idx === catalogue.length - 1 ? null : catalogue[idx + 1].id
 }
+
+/**
+ * Returns the id of the puzzle immediately before puzzleId within the given track.
+ * Falls back to catalogue order if trackId is null or puzzle is not in that track.
+ */
+export function getPrevIdInTrack(puzzleId, trackId, tracks = _tracks, catalogue = _catalogue) {
+  if (trackId) {
+    const track = getIntegritySafeTracks(tracks).find(t => t.id === trackId)
+    if (track) {
+      const idx = track.puzzleIds.indexOf(puzzleId)
+      if (idx > 0) return track.puzzleIds[idx - 1]
+      if (idx === 0) return null
+    }
+  }
+  return getPrevId(puzzleId, catalogue)
+}
+
+/**
+ * Returns the id of the puzzle immediately after puzzleId within the given track.
+ * Falls back to catalogue order if trackId is null or puzzle is not in that track.
+ */
+export function getNextIdInTrack(puzzleId, trackId, tracks = _tracks, catalogue = _catalogue) {
+  if (trackId) {
+    const track = getIntegritySafeTracks(tracks).find(t => t.id === trackId)
+    if (track) {
+      const idx = track.puzzleIds.indexOf(puzzleId)
+      if (idx !== -1 && idx < track.puzzleIds.length - 1) return track.puzzleIds[idx + 1]
+      if (idx === track.puzzleIds.length - 1) return null
+    }
+  }
+  return getNextId(puzzleId, catalogue)
+}

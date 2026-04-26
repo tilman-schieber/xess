@@ -26,6 +26,8 @@ import {
 import {
   getPrevId,
   getNextId,
+  getPrevIdInTrack,
+  getNextIdInTrack,
   getPuzzlePosition,
   getTracks,
   getTrackPuzzleList,
@@ -1216,8 +1218,8 @@ export function mountGameUi(root = document.querySelector('#app')) {
     const extModel = {
       ...model,
       puzzleId: currentPuzzleId,
-      prevId: getPrevId(currentPuzzleId),
-      nextId: getNextId(currentPuzzleId),
+      prevId: getPrevIdInTrack(currentPuzzleId, selectedTrackId),
+      nextId: getNextIdInTrack(currentPuzzleId, selectedTrackId),
     }
     const playContent = document.createElement('div')
     renderToDom(playContent, extModel)
