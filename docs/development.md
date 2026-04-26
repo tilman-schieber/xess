@@ -89,7 +89,7 @@ All persistence goes through `src/store/store.js`. A single key `xess_v1` stores
     "boardEntries": [["a1", { ... }], ...],
     "undoEntries": [[["a1", { ... }], ...], ...],
     "moveEvents": [{ "from": "a1", "to": "b2" }, ...],
-    "redoEntries": [],
+    "redoEntries": [[["a1", { ... }], ...], ...],
     "moveCount": 3
   },
   "tutorialDismissed": false,

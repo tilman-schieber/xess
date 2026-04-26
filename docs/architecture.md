@@ -35,17 +35,21 @@ Puzzle data and navigation logic.
 
 - `catalogue.js` — static array of all puzzle definitions
 - `loader.js` — parses a puzzle definition (string grid → board `Map`) and validates fields
-- `nav.js` — navigation helpers: track listing, puzzle unlock state, continue-action resolver
+- `nav.js` — navigation helpers: track listing, puzzle unlock state, continue-action resolver; also exports `getPrevIdInTrack`, `getNextIdInTrack`, and `getTrackPuzzlePosition` for track-scoped navigation
 - `tracks.js` — track metadata (names, ordering, tutorial designation)
 - `contentIntegrity.js` — validates catalogue structure at startup
+- `solver.js` — BFS puzzle solver
+- `solver.worker.js` — Web Worker wrapper for the solver
 
 ### `ui/`
 
 Rendering modules. Each is a pure function of its inputs — no internal state, no localStorage access.
 
-- `appShell.js` — persistent header, footer, and hamburger menu rendered across all modes
+- `appShell.js` — persistent topbar rendered across all modes; includes a Home button, a Tracks button, and optional Prev/Next puzzle navigation buttons (added when mode is 'play')
 - `startScreen.js` — landing dashboard with Continue / Tutorial / Browse action cards
 - `trackBrowser.js` — track list with puzzle progress chips
+- `puzzleList.js` — puzzle list UI component for per-track puzzle browsing
+- `puzzleCreator.js` — hidden visual puzzle creator tool
 - `boardRenderer.js` — renders the puzzle board as a CSS Grid with piece SVGs
 - `dragDrop.js` — pointer/touch event handling for piece selection and moves
 - `interactionFeedback.js` — selected-piece and legal-move overlay state machine
@@ -68,6 +72,7 @@ Vanilla CSS with custom properties. No framework, no utility classes.
 - `start-screen.css` — landing page layout
 - `track-browser.css` — track list layout
 - `puzzle-list.css` — per-track puzzle list
+- `puzzle-creator.css` — puzzle creator tool styles
 - `pwa-prompts.css` — install/update prompt styles
 
 ### `controller.js`
@@ -119,6 +124,8 @@ catalogue.js (static data)
 **Pawn direction is per-piece.** Pawn forward direction is encoded in the puzzle definition, not inferred from piece color or board orientation. This allows puzzle authors to place pawns pointing in any direction on a non-rectangular board.
 
 **Visual affordances use CSS overlays, not piece recoloring.** Selected pieces and legal-move targets are shown via `::before`/`::after` pseudo-elements on cells, not by recoloring the piece SVG. This keeps piece glyphs readable against the overlay tint.
+
+**Win state is a fixed overlay modal.** On puzzle completion, a `.win-modal { position: fixed; inset: 0 }` overlay renders above the board rather than modifying the board's appearance inline.
 
 **Map serialization via `Array.from(entries)`.** The board `Map` is serialized to localStorage using `Array.from(map.entries())` rather than `JSON.stringify(map)` (which would produce `{}`). Deserialization reconstructs with `new Map(entries)`.
 

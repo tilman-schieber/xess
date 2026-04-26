@@ -71,14 +71,14 @@ Font sizes are rem, never px, for accessibility scaling. No italic is used. Head
 
 - Mobile-first, single-column. Max-width for the gameplay shell: 375px on mobile, 960px on desktop.
 - The board dominates. On small screens, the play view uses the full viewport height with a sticky top bar and the board fills remaining space.
-- The board sizes itself to fit both viewport width and height, whichever is the binding constraint.
+- Board sizing is CSS-only via the `--board-width` custom property in `src/styles/board.css`, constrained by viewport width only (`min(calc(100vw - 1rem), var(--board-max-size-mobile))`). Height is derived from width × (rows/cols) to keep cells square.
 - Desktop layout splits into a two-column grid for the puzzle creator (sidebar + board).
 
 ---
 
 ## Components
 
-### Glass panels (`.puzzle-meta`, `.app-shell-topbar`, `.start-screen-panel`, `.track-card`)
+### Glass panels (`.puzzle-topbar`, `.app-shell-topbar`, `.start-screen-panel`, `.track-card`)
 The repeating pattern:
 - `border-radius` ~0.95rem
 - 1px border with the soft/strong two-tone treatment
@@ -104,7 +104,7 @@ Pill-shaped (`border-radius: 999px`), semi-transparent chip background, glass bo
 - CSS Grid with uniform cell gaps (0.15rem mobile, 0.2rem desktop)
 - Cells are square by `aspect-ratio: 1/1`
 - Board itself has the deep glass treatment
-- Win state: accent-coloured border + glow ring
+- Win state: a fixed overlay modal (`.win-modal { position: fixed; inset: 0 }`) renders above the board
 - Promotion-enabled: a thin destructive-coloured gradient bar at the top edge
 
 ### Interaction overlays
