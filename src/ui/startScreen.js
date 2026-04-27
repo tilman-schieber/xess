@@ -1,5 +1,5 @@
 // src/ui/startScreen.js
-// Pure start screen renderer.
+// Pure start screen renderer — Liquid hero layout.
 
 function bindActivate(element, callback) {
   if (!element || typeof callback !== 'function') return
@@ -41,6 +41,10 @@ function renderCard({ id, title, copy, onActivate }) {
 
 export function renderStartScreen({
   chips = [],
+  continueLabel = 'Continue',
+  continueTrackTitle = null,
+  totalPuzzleCount = 0,
+  solvedPuzzleCount = 0,
   onContinue,
   onTutorial,
   onBrowseTracks,
@@ -51,44 +55,54 @@ export function renderStartScreen({
   screen.className = 'start-screen'
   screen.setAttribute('data-start-screen', 'true')
 
-  const panel = document.createElement('div')
-  panel.className = 'start-screen-panel'
+  // ── Hero card (frost) ──
+  const hero = document.createElement('section')
+  hero.className = 'start-screen-hero'
 
-  const intro = document.createElement('p')
-  intro.className = 'start-screen-intro'
-  intro.textContent = 'Xess is chess movement on strange boards - solve each puzzle by reaching goals or capturing targets.'
+  // Eyebrow: "● CONTINUE · TRACK 03 · DETOUR"
+  const eyebrow = document.createElement('div')
+  eyebrow.className = 'hero-eyebrow'
+  const eyebrowParts = ['Continue']
+  if (continueTrackTitle) eyebrowParts.push(continueTrackTitle)
+  eyebrow.innerHTML = `<span class="hero-eyebrow-dot"></span> ${eyebrowParts.join(' &middot; ')}`
 
-  const heading = document.createElement('h1')
-  heading.className = 'start-screen-title'
-  heading.textContent = 'Xess'
+  // Headline
+  const h1 = document.createElement('h1')
+  h1.className = 'hero-h1'
+  h1.innerHTML = 'Chess pieces.<br><em>Stranger boards.</em>'
 
-  const copy = document.createElement('p')
-  copy.className = 'start-screen-copy'
-  copy.textContent = 'Pick your next move with contextual actions.'
+  // Subtitle
+  const sub = document.createElement('p')
+  sub.className = 'hero-sub'
+  sub.textContent = 'Variable-shaped boards. Impassable squares. Same rules you already know.'
 
-  const chipsRow = document.createElement('div')
-  chipsRow.className = 'start-screen-chips'
-  chipsRow.setAttribute('data-start-chips', 'true')
-  chips.forEach((chipText, index) => {
-    if (typeof chipText !== 'string' || chipText.length === 0) return
-    const chip = document.createElement('span')
-    chip.className = 'start-screen-chip'
-    chip.setAttribute('data-progress-chip', String(index))
-    chip.textContent = chipText
-    chipsRow.append(chip)
-  })
+  // CTA row
+  const ctaRow = document.createElement('div')
+  ctaRow.className = 'hero-cta-row'
 
+  const primaryBtn = document.createElement('button')
+  primaryBtn.type = 'button'
+  primaryBtn.className = 'hero-btn hero-btn--primary'
+  primaryBtn.setAttribute('data-start-card', 'continue')
+  primaryBtn.setAttribute('data-start-action', 'continue')
+  primaryBtn.textContent = continueLabel
+  bindActivate(primaryBtn, onContinue)
+
+  const ghostBtn = document.createElement('button')
+  ghostBtn.type = 'button'
+  ghostBtn.className = 'hero-btn hero-btn--ghost'
+  ghostBtn.setAttribute('data-start-card', 'browse')
+  ghostBtn.setAttribute('data-start-action', 'browse')
+  ghostBtn.textContent = 'All tracks'
+  bindActivate(ghostBtn, onBrowseTracks)
+
+  ctaRow.append(primaryBtn, ghostBtn)
+  hero.append(eyebrow, h1, sub, ctaRow)
+  screen.append(hero)
+
+  // ── Action cards below the hero ──
   const cards = document.createElement('div')
   cards.className = 'start-screen-cards'
-
-  cards.append(
-    renderCard({
-      id: 'continue',
-      title: 'Continue',
-      copy: 'Jump back into your best next puzzle.',
-      onActivate: onContinue,
-    }),
-  )
 
   if (showTutorialCard) {
     const tutorialCard = renderCard({
@@ -113,17 +127,21 @@ export function renderStartScreen({
     cards.append(tutorialCard)
   }
 
-  cards.append(
-    renderCard({
-      id: 'browse',
-      title: 'Browse Tracks',
-      copy: 'Explore tracks and pick a specific puzzle.',
-      onActivate: onBrowseTracks,
-    }),
-  )
+  // Progress chip row
+  const chipsRow = document.createElement('div')
+  chipsRow.className = 'start-screen-chips'
+  chipsRow.setAttribute('data-start-chips', 'true')
+  chips.forEach((chipText, index) => {
+    if (typeof chipText !== 'string' || chipText.length === 0) return
+    const chip = document.createElement('span')
+    chip.className = 'start-screen-chip'
+    chip.setAttribute('data-progress-chip', String(index))
+    chip.textContent = chipText
+    chipsRow.append(chip)
+  })
 
-  panel.append(heading, copy, chipsRow, cards)
-  screen.append(intro, panel)
+  if (cards.children.length > 0) screen.append(cards)
+  if (chipsRow.children.length > 0) screen.append(chipsRow)
 
   return screen
 }

@@ -1176,8 +1176,21 @@ export function mountGameUi(root = document.querySelector('#app')) {
 
     const showTutorialCard = !(tutorialDismissed || tutorialCompleted)
 
+    // Build continue label for CTA button
+    let continueLabel = 'Continue'
+    let continueTrackTitle = null
+    if (continueAction.kind === 'play' && highlightedTrack) {
+      continueTrackTitle = highlightedTrack.title
+      const pos = getTrackPuzzlePosition(continueAction.puzzleId, continueAction.trackId)
+      if (pos) continueLabel = `Continue ${pos}`
+    }
+
     const startEl = renderStartScreen({
       chips,
+      continueLabel,
+      continueTrackTitle,
+      totalPuzzleCount,
+      solvedPuzzleCount,
       onContinue() {
         if (continueAction.kind === 'play') {
           loadPuzzle(continueAction.puzzleId, { trackId: continueAction.trackId })

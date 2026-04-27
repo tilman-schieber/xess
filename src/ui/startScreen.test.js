@@ -14,7 +14,7 @@ describe('renderStartScreen', () => {
     })
 
     const cards = Array.from(view.querySelectorAll('[data-start-card]')).map(card => card.getAttribute('data-start-card'))
-    expect(cards).toEqual(['continue', 'tutorial', 'browse'])
+    expect(cards).toEqual(['continue', 'browse', 'tutorial'])
     expect(view.querySelector('[data-start-action="continue"]')).not.toBeNull()
     expect(view.querySelector('[data-start-action="tutorial"]')).not.toBeNull()
     expect(view.querySelector('[data-start-action="browse"]')).not.toBeNull()
@@ -71,7 +71,7 @@ describe('renderStartScreen', () => {
 
     const cards = Array.from(view.querySelectorAll('[data-start-card]')).map(card => card.getAttribute('data-start-card'))
     expect(cards).toEqual(['continue', 'browse'])
-    expect(view.querySelector('[data-start-action="tutorial"]')).toBeNull()
+    expect(view.querySelector('[data-start-card="tutorial"]')).toBeNull()
   })
 
   it('calls dismiss callback when tutorial dismiss action is triggered', () => {

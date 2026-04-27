@@ -24,6 +24,7 @@
   margin: 0;
   font-size: var(--text-heading);
   font-weight: 600;
+  letter-spacing: -0.2px;
   color: var(--text-primary);
 }
 
@@ -56,6 +57,7 @@
   cursor: pointer;
   min-block-size: var(--touch-target-min);
   border-bottom: 1px solid var(--border-subtle);
+  transition: background var(--transition-fast);
 }
 
 .puzzle-list-item:last-child {
@@ -64,7 +66,11 @@
 
 .puzzle-list-item.is-current {
   border-left-color: var(--accent);
-  background: rgba(97, 217, 167, 0.06);
+  background: rgba(168, 230, 184, 0.06);
+}
+
+.puzzle-list-item:hover {
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .puzzle-list-item.is-locked {
@@ -74,8 +80,10 @@
 }
 
 .puzzle-list-num {
-  font-size: var(--text-label);
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
   color: var(--text-muted);
   min-inline-size: 1.5rem;
 }

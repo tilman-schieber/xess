@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   Design Tokens — Xess
+   Design Tokens — Xess "Liquid"
    ═══════════════════════════════════════════════════════════════════════════
    Two layers:
      1. Primitives (--p-*)  — raw values, never used directly in components
@@ -8,32 +8,32 @@
 
 :root {
   /* ── Primitive: Colors ───────────────────────────────────────────────────── */
-  --p-navy-950: #090d16;
-  --p-navy-900: rgba(12, 18, 34, 0.84);
-  --p-navy-850: rgba(15, 22, 38, 0.9);
-  --p-green-400: #61d9a7;
-  --p-green-450: #52d6a2;
+  --p-navy-950: #070a12;
+  --p-navy-900: rgba(18, 30, 58, 0.28);
+  --p-navy-850: transparent;
+  --p-green-400: #a8e6b8;
+  --p-green-450: #a8e6b8;
   --p-red-400: #ff6f7a;
   --p-white-95: #f5f7ff;
   --p-blue-200: #c7d2f4;
-  --p-blue-400: #6b7aa3;
-  --p-blue-600: #2a365d;
-  --p-blue-700: #273155;
-  --p-blue-800: #4a6fff;
+  --p-blue-400: #7a88b0;
+  --p-blue-600: rgba(255, 255, 255, 0.08);
+  --p-blue-700: transparent;
+  --p-blue-800: #a8e6b8;
 
   /* Primitive: Glass palette */
-  --p-glass-bg-1: rgba(27, 41, 72, 0.42);
-  --p-glass-bg-2: rgba(16, 26, 50, 0.24);
-  --p-glass-border-lo: rgba(206, 223, 255, 0.34);
-  --p-glass-border-hi: rgba(230, 240, 255, 0.5);
-  --p-glass-highlight: rgba(255, 255, 255, 0.22);
-  --p-glass-chip: rgba(31, 46, 84, 0.44);
+  --p-glass-bg-1: rgba(40, 62, 112, 0.42);
+  --p-glass-bg-2: rgba(18, 30, 58, 0.28);
+  --p-glass-border-lo: transparent;
+  --p-glass-border-hi: transparent;
+  --p-glass-highlight: rgba(255, 255, 255, 0.14);
+  --p-glass-chip: rgba(255, 255, 255, 0.06);
 
   /* Primitive: Cell gradients */
-  --p-cell-light-start: #e7ecff;
-  --p-cell-light-end: #d2dbf6;
-  --p-cell-goal-start: #f6ffe9;
-  --p-cell-goal-end: #dff7cd;
+  --p-cell-light-start: #e3e8ff;
+  --p-cell-light-end: #cdd5f1;
+  --p-cell-goal-start: #bef0cf;
+  --p-cell-goal-end: #a4dab5;
 
   /* ── Primitive: Spacing (4px multiples) ──────────────────────────────────── */
   --space-xs: 0.25rem;
@@ -45,17 +45,17 @@
   --space-3xl: 4rem;
 
   /* ── Primitive: Radii ────────────────────────────────────────────────────── */
-  --p-radius-sm: 0.45rem;
-  --p-radius-md: 0.5rem;
-  --p-radius-lg: 0.65rem;
-  --p-radius-xl: 0.75rem;
-  --p-radius-2xl: 0.95rem;
+  --p-radius-sm: 12px;
+  --p-radius-md: 12px;
+  --p-radius-lg: 12px;
+  --p-radius-xl: 16px;
+  --p-radius-2xl: 16px;
   --p-radius-pill: 999px;
 
   /* ── Primitive: Typography sizes ─────────────────────────────────────────── */
-  --text-body: 1rem;
-  --text-label: 0.875rem;
-  --text-heading: 1.125rem;
+  --text-body: 15px;
+  --text-label: 13px;
+  --text-heading: 17px;
   --text-display: 1.25rem;
 
   /* ── Primitive: Timing ───────────────────────────────────────────────────── */
@@ -64,7 +64,7 @@
   /* ── Semantic: Surfaces ──────────────────────────────────────────────────── */
   --surface-bg: var(--p-navy-950);
   --surface-card: var(--p-navy-900);
-  --surface-board: var(--p-navy-850);
+  --surface-board: transparent;
 
   /* ── Semantic: Text ──────────────────────────────────────────────────────── */
   --text-primary: var(--p-white-95);
@@ -75,11 +75,12 @@
   --accent: var(--p-green-400);
   --accent-goal: var(--p-green-450);
   --accent-win: var(--p-green-400);
+  --accent-dim: rgba(168, 230, 184, 0.22);
   --destructive: var(--p-red-400);
 
   /* ── Semantic: Borders ───────────────────────────────────────────────────── */
-  --border-subtle: var(--p-blue-600);
-  --border-board: var(--p-blue-700);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-board: transparent;
 
   /* ── Semantic: Cells ─────────────────────────────────────────────────────── */
   --cell-playable-start: var(--p-cell-light-start);
@@ -93,15 +94,23 @@
   /* ── Semantic: Glass composites ──────────────────────────────────────────── */
   --glass-bg-1: var(--p-glass-bg-1);
   --glass-bg-2: var(--p-glass-bg-2);
-  --glass-border-soft: var(--p-glass-border-lo);
-  --glass-border-strong: var(--p-glass-border-hi);
+  --glass-border-soft: transparent;
+  --glass-border-strong: transparent;
   --glass-highlight: var(--p-glass-highlight);
-  --glass-shadow-soft: 0 12px 32px rgba(3, 9, 21, 0.46);
-  --glass-shadow-deep: 0 22px 42px rgba(2, 7, 17, 0.5);
-  --glass-blur: saturate(140%) blur(16px);
-  --glass-meta-bg: linear-gradient(155deg, var(--glass-bg-1) 0%, var(--glass-bg-2) 100%);
-  --glass-control-bg: linear-gradient(155deg, rgba(37, 55, 95, 0.52) 0%, rgba(20, 31, 56, 0.3) 100%);
-  --glass-chip-bg: var(--p-glass-chip);
+  --glass-shadow-soft:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 20px 50px rgba(0, 0, 0, 0.45),
+    0 2px 6px rgba(0, 0, 0, 0.25);
+  --glass-shadow-deep:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 20px 50px rgba(0, 0, 0, 0.45),
+    0 2px 6px rgba(0, 0, 0, 0.25);
+  --glass-blur: saturate(180%) blur(28px);
+  --glass-meta-bg: linear-gradient(160deg, var(--glass-bg-1) 0%, var(--glass-bg-2) 100%);
+  --glass-control-bg: linear-gradient(160deg, rgba(40, 62, 112, 0.55) 0%, rgba(18, 30, 58, 0.35) 100%);
+  --glass-chip-bg: rgba(255, 255, 255, 0.06);
 
   /* ── Semantic: Radii ─────────────────────────────────────────────────────── */
   --radius-cell: var(--p-radius-sm);
@@ -126,4 +135,15 @@
   --board-max-size-mobile: 360px;
   --board-max-size-desktop: 720px;
   --app-gap: 1rem;
+
+  /* ── Liquid: Typography ──────────────────────────────────────────────────── */
+  --font-sans: "Inter Tight", Inter, -apple-system, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+}
+
+@media (max-width: 700px) {
+  :root {
+    --p-radius-xl: 14px;
+    --p-radius-2xl: 14px;
+  }
 }
