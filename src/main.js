@@ -1459,6 +1459,40 @@ export function mountGameUi(root = document.querySelector('#app')) {
     }
   })
 
+  document.addEventListener('keydown', (e) => {
+    const tag = e.target.tagName
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return
+
+    if (screenMode === 'play' && ui) {
+      if (e.key === 'z' && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+        e.preventDefault()
+        ui.undo()
+        rerender()
+      } else if (
+        (e.key === 'y' && (e.ctrlKey || e.metaKey)) ||
+        (e.key === 'z' && (e.ctrlKey || e.metaKey) && e.shiftKey)
+      ) {
+        e.preventDefault()
+        ui.redo()
+        rerender()
+      }
+    }
+
+    if (screenMode === 'creator' && creatorState.replayBoards.length > 0) {
+      if (e.key === 'ArrowLeft' || e.key === '[') {
+        e.preventDefault()
+        if (creatorState.replayIndex > 0) {
+          updateCreator({ replayIndex: creatorState.replayIndex - 1 })
+        }
+      } else if (e.key === 'ArrowRight' || e.key === ']') {
+        e.preventDefault()
+        if (creatorState.replayIndex < creatorState.replayBoards.length - 1) {
+          updateCreator({ replayIndex: creatorState.replayIndex + 1 })
+        }
+      }
+    }
+  })
+
   return { loadPuzzle, rerender }
 }
 

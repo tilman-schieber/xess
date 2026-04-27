@@ -80,3 +80,9 @@ Key decisions:
 - Custom chess engine (not chess.js) — 8×8 assumption is incompatible with Xess boards
 - Controller is pure (no localStorage); `store.js` handles all persistence
 - No framework — single-screen game with a fixed component inventory
+
+## Other Docs
+
+- [docs/puzzle-format.md](docs/puzzle-format.md) — puzzle JSON contract (schema fields, validation)
+- [docs/development.md](docs/development.md) — dev setup, commands, build instructions
+- [docs/design-guidelines.md](docs/design-guidelines.md) — visual design system snapshot
