@@ -453,6 +453,18 @@ function animatePieceMove(root, fromKey, toKey, renderFn) {
   }, 180)
 }
 
+// Measures the non-board chrome inside .xess-ui (topbar + controls + grid gaps)
+// and sets --play-inner-chrome so the container query can size the board precisely.
+function measurePlayChrome(xessUi) {
+  if (!xessUi) return
+  const topbar = xessUi.querySelector('.puzzle-topbar')
+  const controls = xessUi.querySelector('.puzzle-controls')
+  if (!topbar || !controls) return
+  const rowGap = parseFloat(getComputedStyle(xessUi).rowGap) || 0
+  const chrome = topbar.offsetHeight + controls.offsetHeight + rowGap * 2
+  xessUi.style.setProperty('--play-inner-chrome', `${Math.ceil(chrome)}px`)
+}
+
 export function renderToDom(root, model) {
   root.innerHTML = ''
 
@@ -736,6 +748,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
   let creatorState = createInitialCreatorState()
   let _solverWorker = null   // active solver Web Worker, or null
   let _dragCleanup = null    // cleanup fn returned by initDragDrop
+  let _chromeObserver = null // ResizeObserver for --play-inner-chrome measurement
   let _isDragging = false    // true once drag threshold exceeded this pointer sequence
   let _suppressTapPointerId = null
   let _isInfoModalOpen = false
@@ -1249,6 +1262,13 @@ export function mountGameUi(root = document.querySelector('#app')) {
       prevId: extModel.prevId,
       nextId: extModel.nextId,
     })
+
+    // Measure actual chrome so --play-inner-chrome is accurate for this render
+    const xessUiEl = root.querySelector('.xess-ui')
+    measurePlayChrome(xessUiEl)
+    if (_chromeObserver) _chromeObserver.disconnect()
+    _chromeObserver = new ResizeObserver(() => measurePlayChrome(root.querySelector('.xess-ui')))
+    _chromeObserver.observe(document.documentElement)
 
     // Tear down previous drag listener if board was re-rendered
     if (_dragCleanup) { _dragCleanup(); _dragCleanup = null }
