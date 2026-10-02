@@ -18,9 +18,7 @@ export default [
       '0,2': 'r',
     },
     coach: [
-      'The red rook has to reach the green square. Tap the rook, then tap the glowing square.',
-      'Rooks slide in straight lines, but they can\'t cross the holes. Head down.',
-      'One more slide and you\'re home.',
+      'The red rook has to reach the green square. Rooks slide in straight lines but cannot cross holes. Tap a piece to see where it can go.',
     ],
   },
   {
@@ -38,8 +36,7 @@ export default [
       '3,1': 'r',
     },
     coach: [
-      'A white rook blocks the way. You can move the white pieces too: slide it up.',
-      'Nothing is ever captured in these puzzles, so blockers have to step aside. Now bring the red rook home.',
+      'You can move the white pieces too. Nothing is ever captured in these puzzles, so blockers have to step aside.',
     ],
   },
   {
@@ -59,8 +56,7 @@ export default [
       '3,3': 'n',
     },
     coach: [
-      'Knights move in an L-shape and jump right over pieces and holes. But the square this knight needs is taken: push that pawn up first.',
-      'Now jump.',
+      'Knights move in an L-shape and jump right over pieces and holes, but they need an empty square to land on.',
     ],
   },
   {
@@ -78,10 +74,7 @@ export default [
       '5,1': 'b',
     },
     coach: [
-      'A pawn sits on the red bishop\'s diagonal. Push it up one square.',
-      'The diagonal is open. Move the red bishop down.',
-      'Bishops only move diagonally, so zig-zag back up to the top row.',
-      'Same trick again: open the next gap. From here you are on your own.',
+      'Bishops only move diagonally. Use your pawns to open the way.',
     ],
   },
   {
@@ -101,7 +94,7 @@ export default [
     },
     promote: true,
     coach: [
-      'The goal square shows a queen. A pawn becomes a queen when it reaches the red line at the top. White pieces block both the pawn and the top row, so clear them out. Start with the bishop.',
+      'The goal square shows a queen. A pawn becomes a queen when it reaches the red line at the top.',
     ],
   },
   {
@@ -118,7 +111,7 @@ export default [
       'xxp',
     ],
     coach: [
-      'A new kind of puzzle: capture every black piece. You only move the white pieces, and black never moves. The bishop is in the rook\'s way, so move it first.',
+      'A new kind of puzzle: capture every black piece. You only move the white pieces, and black never moves.',
     ],
   },
   {
@@ -135,7 +128,7 @@ export default [
       'xR-x',
     ],
     coach: [
-      { text: 'Pawns step straight up, capture diagonally upward, and can never go back. Only one of the pawn\'s three moves lets the rook finish the job. If you get stuck, Undo and Reset cost nothing.', show: false },
+      'Pawns step straight up, capture diagonally upward, and can never go back. If you get stuck, Undo and Reset cost nothing.',
     ],
   },
   {

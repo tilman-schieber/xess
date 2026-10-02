@@ -37,7 +37,7 @@ Practical catalogue contract (enforced by `src/puzzles/catalogue.test.js`):
   - each side only keeps `'white'`/`'black'`, with duplicates removed.
   - missing side falls back to default for that side.
 - `promote` (boolean): defaults to `false`; only literal `true` enables promotion.
-- `coach` (array): tutorial coaching lines. Each entry is a string, or `{ text, show: false }` to show advice without highlighting the move. `coach[i]` is shown while the player is on the stored shortest solution with `i` moves played, and the next solution move is highlighted for free. Steps without a line get no highlight, so a puzzle can coach its opening and then let go. Must not be longer than the solution.
+- `coach` (array): tutorial coaching lines that explain a rule. `coach[i]` is shown while the player is on the stored shortest solution with `i` moves played; the catalogue only uses `coach[0]`, an introduction shown until the first move. A plain string never reveals a move; `{ text, show: true }` would also highlight the next solution move for free.
 
 ## Derived: par, hints and score
 

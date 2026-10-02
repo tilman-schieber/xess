@@ -117,27 +117,6 @@ function bindActivate(element, callback) {
   })
 }
 
-function renderCard({ id, title, copy, onActivate }) {
-  const card = document.createElement('article')
-  card.className = 'start-card start-card--interactive'
-  card.setAttribute('data-start-card', id)
-  card.setAttribute('data-start-action', id)
-  card.setAttribute('role', 'button')
-  card.tabIndex = 0
-  bindActivate(card, onActivate)
-
-  const heading = document.createElement('h2')
-  heading.className = 'start-card-title'
-  heading.textContent = title
-
-  const body = document.createElement('p')
-  body.className = 'start-card-copy'
-  body.textContent = copy
-
-  card.append(heading, body)
-  return card
-}
-
 export function renderStartScreen({
   chips = [],
   eyebrowLabel = 'Continue',
@@ -146,10 +125,7 @@ export function renderStartScreen({
   totalPuzzleCount = 0,
   solvedPuzzleCount = 0,
   onContinue,
-  onTutorial,
   onBrowseTracks,
-  onDismissTutorial,
-  showTutorialCard = true,
   stats = null,
   tracks = [],
   currentTrackId = null,
@@ -214,33 +190,6 @@ export function renderStartScreen({
 
   if (stats) screen.append(renderStats(stats))
 
-  // ── Action cards below the hero ──
-  const cards = document.createElement('div')
-  cards.className = 'start-screen-cards'
-
-  if (showTutorialCard) {
-    const tutorialCard = renderCard({
-      id: 'tutorial',
-      title: 'Tutorial',
-      copy: 'Eight short puzzles that teach the goals, the blockers and the pawns.',
-      onActivate: onTutorial,
-    })
-
-    if (typeof onDismissTutorial === 'function') {
-      const dismissAction = document.createElement('button')
-      dismissAction.type = 'button'
-      dismissAction.className = 'start-card-dismiss'
-      dismissAction.setAttribute('data-start-dismiss', 'tutorial')
-      dismissAction.textContent = 'Dismiss'
-      dismissAction.addEventListener('pointerdown', event => event.stopPropagation())
-      dismissAction.addEventListener('keydown', event => event.stopPropagation())
-      bindActivate(dismissAction, onDismissTutorial)
-      tutorialCard.append(dismissAction)
-    }
-
-    cards.append(tutorialCard)
-  }
-
   // Progress chip row
   const chipsRow = document.createElement('div')
   chipsRow.className = 'start-screen-chips'
@@ -253,8 +202,6 @@ export function renderStartScreen({
     chip.textContent = chipText
     chipsRow.append(chip)
   })
-
-  if (cards.children.length > 0) screen.append(cards)
 
   if (tracks.length > 0) {
     const section = el('section', 'hub-section')

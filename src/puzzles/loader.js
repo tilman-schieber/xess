@@ -92,11 +92,12 @@ export function parsePuzzle(raw) {
     promote: raw.promote === true,
     // Par is the length of the stored shortest solution (scripts/generate-solutions.js)
     par: Array.isArray(solutions[raw.id]) && solutions[raw.id].length > 0 ? solutions[raw.id].length : null,
-    // Coach lines are strings, or { text, show: false } to give advice without revealing the move
+    // Coach lines explain a rule; coach[i] is shown after i moves along the stored solution.
+    // { text, show: true } additionally highlights the next move (not used by the catalogue).
     coach: Array.isArray(raw.coach)
       ? raw.coach.map((line) => {
-        if (typeof line === 'string') return { text: line, show: true }
-        return { text: typeof line?.text === 'string' ? line.text : '', show: line?.show !== false }
+        if (typeof line === 'string') return { text: line, show: false }
+        return { text: typeof line?.text === 'string' ? line.text : '', show: line?.show === true }
       })
       : [],
     board,

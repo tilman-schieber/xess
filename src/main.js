@@ -33,7 +33,7 @@ import { evaluateAchievements, getAchievementPoints, getRank } from './puzzles/a
 import { showAchievementToasts } from './ui/achievementToast.js'
 import { renderMiniBoard } from './ui/miniBoard.js'
 import { computeScore, formatStars, starsForScore, HINT_PENALTY } from './puzzles/score.js'
-import { loadStore, saveTutorialOnboarding, saveSeenAchievements } from './store/store.js'
+import { loadStore, saveSeenAchievements } from './store/store.js'
 import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
 import { initDragDrop } from './ui/dragDrop.js'
 import { initPwaPrompts } from './ui/pwaPrompts.js'
@@ -897,15 +897,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
     rerender()
   }
 
-  function markTutorialCompleted() {
-    if (selectedTrackId !== 'tutorial') return
-    // Only once the whole tutorial is done, not after its first puzzle
-    const tutorial = getTracks().find(track => track.id === 'tutorial')
-    const { solvedIds } = getProgress()
-    if (tutorial && !tutorial.puzzleIds.every(id => solvedIds.includes(id))) return
-    saveTutorialOnboarding({ tutorialCompleted: true })
-  }
-
   function getProgress() {
     const persisted = loadStore()
     return {
@@ -976,8 +967,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
       coachKind = 'stuck'
     } else if (coachLine) {
       coachText = coachLine
-    } else if (coachLines.length > 0 && !onLine && model.moveCount > 0) {
-      coachText = 'That is a different route. Carry on, use Undo, or tap Hint.'
     }
 
     return {
@@ -1246,8 +1235,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
     const activePuzzleId = typeof persisted?.activeState?.puzzleId === 'string'
       ? persisted.activeState.puzzleId
       : null
-    const tutorialDismissed = persisted?.tutorialDismissed === true
-    const tutorialCompleted = persisted?.tutorialCompleted === true
 
     const continueAction = resolveLandingContinueAction({
       lastTrackId: selectedTrackId,
@@ -1262,8 +1249,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
     // The hero eyebrow already names the track; the chip only reports overall progress
     // Progress now lives in the stats strip; no chips needed
     const chips = []
-
-    const showTutorialCard = !(tutorialDismissed || tutorialCompleted)
 
     // Hero copy depends on where the player is: first visit, mid-way, or done
     const isFirstVisit = solvedPuzzleCount === 0 && !activePuzzleId
@@ -1327,22 +1312,9 @@ export function mountGameUi(root = document.querySelector('#app')) {
         }
         goToTrackBrowser(null)
       },
-      onTutorial() {
-        const tutorialLaunchId = controller.getTrackLaunchPuzzleId('tutorial')
-        if (tutorialLaunchId) {
-          loadPuzzle(tutorialLaunchId, { trackId: 'tutorial' })
-          return
-        }
-        goToTrackBrowser('tutorial')
-      },
-      onDismissTutorial() {
-        saveTutorialOnboarding({ tutorialDismissed: true })
-        rerender()
-      },
       onBrowseTracks() {
         goToTrackBrowser(null)
       },
-      showTutorialCard,
     })
 
     renderShellView({
@@ -1464,7 +1436,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
             ui.tapCell(toKey)
             const moveResult = ui.getLastMoveResult()
             if (moveResult === 'win') {
-              markTutorialCompleted()
               playSolve()
             }
             else if (moveResult === 'move_made') playMove()
@@ -1627,7 +1598,6 @@ export function mountGameUi(root = document.querySelector('#app')) {
     const moveResult = ui.getLastMoveResult()
     if (moveResult === 'win' || moveResult === 'move_made') {
       if (moveResult === 'win') {
-        markTutorialCompleted()
         playSolve()
       }
       else playMove()

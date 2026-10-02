@@ -107,78 +107,6 @@
   outline-offset: 2px;
 }
 
-/* ── Action cards ─────────────────────────────────────────────────────── */
-
-.start-screen-cards {
-  inline-size: 100%;
-  display: grid;
-  gap: 14px;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-}
-
-.start-card {
-  display: grid;
-  gap: var(--space-sm);
-  border-radius: var(--radius-card);
-  border: none;
-  background: var(--glass-meta-bg);
-  box-shadow: var(--glass-shadow-soft);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  padding: 18px;
-}
-
-.start-card--interactive {
-  cursor: pointer;
-  transition: background var(--transition-fast), transform var(--transition-fast);
-}
-
-.start-card--interactive:hover,
-.start-card--interactive:focus-visible {
-  background: linear-gradient(160deg, rgba(40, 62, 112, 0.55) 0%, rgba(18, 30, 58, 0.38) 100%);
-}
-
-.start-card--interactive:active {
-  transform: translateY(1px);
-}
-
-.start-card-title {
-  margin: 0;
-  font-size: var(--text-heading);
-  font-weight: 600;
-  letter-spacing: -0.2px;
-  color: var(--text-primary);
-}
-
-.start-card-copy {
-  margin: 0;
-  font-size: var(--text-label);
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-.start-card-dismiss {
-  min-inline-size: var(--touch-target-min, 44px);
-  min-block-size: var(--touch-target-min, 44px);
-  justify-self: start;
-  border-radius: var(--radius-pill);
-  border: none;
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: var(--text-primary);
-  font-size: var(--text-label);
-  font-weight: 500;
-  padding: 0 var(--space-md);
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.start-card-dismiss:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
 /* ── Progress chips ───────────────────────────────────────────────────── */
 
 .start-screen-chips {
@@ -239,10 +167,6 @@
   .hero-btn {
     padding: 11px 20px;
     font-size: 13px;
-  }
-
-  .start-card {
-    padding: 14px;
   }
 }
 

@@ -143,10 +143,10 @@ describe('main track-first screen flow', () => {
     expect(document.querySelector('[data-board]')).not.toBeNull()
   })
 
-  it('tutorial action launches the dedicated tutorial route without dead ends', () => {
+  it('starting the tutorial track from the hub enters play without dead ends', () => {
     mountGameUi(document.querySelector('#app'))
 
-    document.querySelector('[data-start-action="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-resume-track="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('[data-board]')).not.toBeNull()
 
@@ -154,58 +154,6 @@ describe('main track-first screen flow', () => {
     document.querySelector('[data-shell-nav-tracks]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('[data-selected-track="tutorial"]')).not.toBeNull()
-  })
-
-  it('shows tutorial card on first-time landing by default', () => {
-    mountGameUi(document.querySelector('#app'))
-    expect(document.querySelector('[data-start-action="tutorial"]')).not.toBeNull()
-  })
-
-  it('hides tutorial card when tutorial was explicitly dismissed', () => {
-    mockStore = {
-      schemaVersion: 1,
-      solvedIds: [],
-      activeState: null,
-      tutorialDismissed: true,
-      tutorialCompleted: false,
-    }
-
-    mountGameUi(document.querySelector('#app'))
-    expect(document.querySelector('[data-start-action="tutorial"]')).toBeNull()
-  })
-
-  it('hides tutorial card when tutorial is already completed', () => {
-    mockStore = {
-      schemaVersion: 1,
-      solvedIds: [],
-      activeState: null,
-      tutorialDismissed: false,
-      tutorialCompleted: true,
-    }
-
-    mountGameUi(document.querySelector('#app'))
-    expect(document.querySelector('[data-start-action="tutorial"]')).toBeNull()
-  })
-
-  it('keeps tutorial card visible when persisted tutorial flags are malformed', () => {
-    mockStore = {
-      schemaVersion: 1,
-      solvedIds: [],
-      activeState: null,
-      tutorialDismissed: 'yes',
-      tutorialCompleted: { done: true },
-    }
-
-    mountGameUi(document.querySelector('#app'))
-    expect(document.querySelector('[data-start-action="tutorial"]')).not.toBeNull()
-  })
-
-  it('dismiss action persists tutorial dismissal and hides card on rerender', () => {
-    mountGameUi(document.querySelector('#app'))
-
-    document.querySelector('[data-start-dismiss="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-
-    expect(saveTutorialOnboarding).toHaveBeenCalledWith({ tutorialDismissed: true })
   })
 
   it('tracks action from play menu returns to previous selected track context', () => {
@@ -238,18 +186,14 @@ describe('main track-first screen flow', () => {
     expect(afterCounter).toBe(beforeCounter)
   })
 
-  it('coaches tutorial puzzles for free and highlights the next move', () => {
+  it('tutorial puzzles explain the rule without revealing a move', () => {
     mountGameUi(document.querySelector('#app'))
-    document.querySelector('[data-start-action="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-resume-track="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('.puzzle-title')?.textContent).toBe('First Steps')
     expect(document.querySelector('[data-coach="coach"]')?.textContent).toMatch(/red rook/)
-    expect(document.querySelector('.is-hint-from')?.getAttribute('data-cell-key')).toBe('0,0')
-    expect(document.querySelector('.is-hint-to')?.getAttribute('data-cell-key')).toBe('2,0')
-
-    // Asking for a hint on a coached step is a no-op and costs nothing
-    document.querySelector('[data-hint]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    expect(document.querySelector('[data-hints-used]')).toBeNull()
+    expect(document.querySelector('.is-hint-from')).toBeNull()
+    expect(document.querySelector('.is-hint-to')).toBeNull()
   })
 
   it('hint button reveals the next solution move and counts the hint', () => {
@@ -267,7 +211,7 @@ describe('main track-first screen flow', () => {
     expect(document.querySelector('[data-coach="hint"]')?.textContent).toMatch(/−20 points/)
   })
 
-  it('advice-only coach lines show text without revealing the move', () => {
+  it('the paid hint still works on a coached tutorial puzzle', () => {
     mountGameUi(document.querySelector('#app'))
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-open-track="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))

@@ -4,29 +4,11 @@ import { describe, expect, it, vi } from 'vitest'
 import { renderStartScreen } from './startScreen.js'
 
 describe('renderStartScreen', () => {
-  it('renders Continue, Tutorial, and Browse cards in fixed order', () => {
-    const view = renderStartScreen({
-      chips: ['Track: Foundations', 'Solved 2/8'],
-      onContinue: () => {},
-      onTutorial: () => {},
-      onBrowseTracks: () => {},
-      onDismissTutorial: () => {},
-    })
-
-    const cards = Array.from(view.querySelectorAll('[data-start-card]')).map(card => card.getAttribute('data-start-card'))
-    expect(cards).toEqual(['continue', 'browse', 'tutorial'])
-    expect(view.querySelector('[data-start-action="continue"]')).not.toBeNull()
-    expect(view.querySelector('[data-start-action="tutorial"]')).not.toBeNull()
-    expect(view.querySelector('[data-start-action="browse"]')).not.toBeNull()
-  })
-
   it('renders compact progress chips without expanding puzzle lists', () => {
     const view = renderStartScreen({
       chips: ['Track: Foundations', 'Solved 2/8'],
       onContinue: () => {},
-      onTutorial: () => {},
       onBrowseTracks: () => {},
-      onDismissTutorial: () => {},
     })
 
     const chips = view.querySelectorAll('[data-progress-chip]')
@@ -34,59 +16,18 @@ describe('renderStartScreen', () => {
     expect(view.querySelector('[data-puzzle-id]')).toBeNull()
   })
 
-  it('keeps pointer and keyboard activation parity across all card actions', () => {
+  it('renders Continue and Browse actions with pointer and keyboard activation', () => {
     const onContinue = vi.fn()
-    const onTutorial = vi.fn()
     const onBrowseTracks = vi.fn()
-
-    const view = renderStartScreen({
-      chips: [],
-      onContinue,
-      onTutorial,
-      onBrowseTracks,
-      onDismissTutorial: () => {},
-    })
-
-    const continueAction = view.querySelector('[data-start-action="continue"]')
-    const tutorialAction = view.querySelector('[data-start-action="tutorial"]')
-    const browseAction = view.querySelector('[data-start-action="browse"]')
-
-    continueAction?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    tutorialAction?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))
-    browseAction?.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }))
-
-    expect(onContinue).toHaveBeenCalledTimes(1)
-    expect(onTutorial).toHaveBeenCalledTimes(1)
-    expect(onBrowseTracks).toHaveBeenCalledTimes(1)
-  })
-
-  it('hides tutorial card when showTutorialCard is false', () => {
-    const view = renderStartScreen({
-      chips: [],
-      onContinue: () => {},
-      onTutorial: () => {},
-      onBrowseTracks: () => {},
-      showTutorialCard: false,
-    })
+    const view = renderStartScreen({ chips: [], onContinue, onBrowseTracks })
 
     const cards = Array.from(view.querySelectorAll('[data-start-card]')).map(card => card.getAttribute('data-start-card'))
     expect(cards).toEqual(['continue', 'browse'])
-    expect(view.querySelector('[data-start-card="tutorial"]')).toBeNull()
-  })
 
-  it('calls dismiss callback when tutorial dismiss action is triggered', () => {
-    const onDismissTutorial = vi.fn()
-
-    const view = renderStartScreen({
-      chips: [],
-      onContinue: () => {},
-      onTutorial: () => {},
-      onBrowseTracks: () => {},
-      onDismissTutorial,
-    })
-
-    view.querySelector('[data-start-dismiss="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    expect(onDismissTutorial).toHaveBeenCalledTimes(1)
+    view.querySelector('[data-start-action="continue"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    view.querySelector('[data-start-action="browse"]')?.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }))
+    expect(onContinue).toHaveBeenCalledTimes(1)
+    expect(onBrowseTracks).toHaveBeenCalledTimes(1)
   })
 
   it('renders the hub: stats with rank, track cards and achievements', () => {
@@ -95,9 +36,7 @@ describe('renderStartScreen', () => {
 
     const view = renderStartScreen({
       onContinue,
-      onTutorial: () => {},
       onBrowseTracks: () => {},
-      showTutorialCard: false,
       stats: {
         points: 1190,
         maxPoints: 2700,
