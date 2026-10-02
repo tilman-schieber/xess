@@ -376,33 +376,34 @@ export default [
     ],
   },
   {
-    // Warm-up — pawn capture order
+    // Warm-up — four pawns, six targets: pushes and captures in the right order
     schemaVersion: 1,
-    id: 'pawn-storm',
+    id: 'pawn-storm-b',
     title: 'Pawn Storm',
-    descriptionHtml: '<p>Two pawns have to take all six. Pawns never go back, so pick your captures carefully.</p>',
+    descriptionHtml: '<p>Four pawns have to take all six. A pawn that pushes past its target, or takes the wrong one, never gets a second chance.</p>',
     goalType: 'capture-all-targets',
     targetColor: 'black',
     grid: [
-      'p-p-',
-      '-p-p',
-      'p-p-',
-      '-P-P',
+      'p-p-p',
+      '-p-p-',
+      '--p--',
+      '-P-P-',
+      'P---P',
     ],
   },
   {
-    // Warm-up — promotion in a capture puzzle
+    // Warm-up — promotion in a capture puzzle; the pawn's own capture is a trap
     schemaVersion: 1,
-    id: 'late-bloomer',
+    id: 'bloomer',
     title: 'Late Bloomer',
-    descriptionHtml: '<p>The pawn cannot reach anything yet. Let it grow up first.</p>',
+    descriptionHtml: '<p>Not every capture is worth taking. This pawn has bigger plans, if the bishop gets out of its way.</p>',
     goalType: 'capture-all-targets',
     targetColor: 'black',
     grid: [
-      '---p',
-      '-xx-',
-      '-xxp',
-      'Pxxx',
+      '--p-',
+      'Bx-p',
+      '-pxx',
+      'Pxp-',
     ],
     promote: true,
   },

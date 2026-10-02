@@ -31,12 +31,12 @@ export default [
     subtitle: 'Short puzzles with one idea each',
     modes: guided(),
     puzzleIds: [
-      'late-bloomer',
       'bishopping',
-      'pawn-storm',
+      'bloomer',
       'pawn-ascent',
       'square-dance',
       'capture-the',
+      'pawn-storm-b',
     ],
   },
   {

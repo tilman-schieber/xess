@@ -200,12 +200,12 @@ describe('main track-first screen flow', () => {
     mountGameUi(document.querySelector('#app'))
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-open-track="warm-up"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-puzzle-id="late-bloomer"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-puzzle-id="bloomer"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('.is-hint-from')).toBeNull()
     document.querySelector('[data-hint]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
-    expect(document.querySelector('.is-hint-from')?.getAttribute('data-cell-key')).toBe('0,3')
+    expect(document.querySelector('.is-hint-from')?.getAttribute('data-cell-key')).toBe('0,1')
     expect(document.querySelector('.is-hint-to')).not.toBeNull()
     expect(document.querySelector('[data-hints-used]')?.textContent).toBe('1')
     expect(document.querySelector('[data-coach="hint"]')?.textContent).toMatch(/−20 points/)
