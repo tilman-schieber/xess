@@ -1,5 +1,7 @@
 // src/puzzles/loader.js
 // D-04: FEN-style character set
+import solutions from './solutions.js'
+
 const PIECE_CHARS = new Set(['p', 'P', 'n', 'N', 'b', 'B', 'r', 'R', 'q', 'Q', 'k', 'K'])
 
 // Coordinate helpers — exported for use by engine modules
@@ -88,6 +90,15 @@ export function parsePuzzle(raw) {
         : [],
     },
     promote: raw.promote === true,
+    // Par is the length of the stored shortest solution (scripts/generate-solutions.js)
+    par: Array.isArray(solutions[raw.id]) && solutions[raw.id].length > 0 ? solutions[raw.id].length : null,
+    // Coach lines are strings, or { text, show: false } to give advice without revealing the move
+    coach: Array.isArray(raw.coach)
+      ? raw.coach.map((line) => {
+        if (typeof line === 'string') return { text: line, show: true }
+        return { text: typeof line?.text === 'string' ? line.text : '', show: line?.show !== false }
+      })
+      : [],
     board,
     goalTargets,
     width,

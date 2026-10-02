@@ -113,6 +113,8 @@ export function getTrackPuzzleList(trackId, solvedIds, tracks = _tracks, catalog
         title: puzzle.title,
         status: solved.has(id) ? 'solved' : 'unlocked',
         position: `${idx + 1} / ${total}`,
+        number: idx + 1,
+        par: Number.isInteger(puzzle.par) ? puzzle.par : null,
       }
     })
     .filter(Boolean)
@@ -132,11 +134,16 @@ export function getTrackLaunchPuzzleId({ trackId, solvedIds, activePuzzleId }, t
   const track = integritySafeTracks.find(entry => entry.id === trackId)
   if (!track || track.puzzleIds.length === 0) return null
 
-  if (typeof activePuzzleId === 'string' && track.puzzleIds.includes(activePuzzleId)) {
+  // An in-progress replay of an already solved puzzle must not hide unsolved ones
+  const solved = new Set(solvedIds)
+  if (
+    typeof activePuzzleId === 'string' &&
+    track.puzzleIds.includes(activePuzzleId) &&
+    !solved.has(activePuzzleId)
+  ) {
     return activePuzzleId
   }
 
-  const solved = new Set(solvedIds)
   const firstUnsolved = track.puzzleIds.find(id => !solved.has(id))
   if (firstUnsolved) return firstUnsolved
 
@@ -161,14 +168,46 @@ export function resolveLandingContinueAction(
   const preferredTrackIds = [lastTrackId, activeTrackId, ...integritySafeTracks.map(track => track.id)]
   const uniqueTrackIds = [...new Set(preferredTrackIds.filter(id => typeof id === 'string' && id.length > 0))]
 
+  // Prefer tracks that still have something to do: an in-progress puzzle or an
+  // unsolved one. A finished track must never swallow the Continue action.
+  const solved = new Set(solvedIds)
+  const byId = new Map(integritySafeTracks.map(track => [track.id, track]))
   for (const trackId of uniqueTrackIds) {
+    const track = byId.get(trackId)
+    if (!track) continue
+    const hasActive = typeof activePuzzleId === 'string' && track.puzzleIds.includes(activePuzzleId) && !solved.has(activePuzzleId)
+    const hasUnsolved = track.puzzleIds.some(id => !solved.has(id))
+    if (!hasActive && !hasUnsolved) continue
+
     const puzzleId = getTrackLaunchPuzzleId({ trackId, solvedIds, activePuzzleId }, integritySafeTracks)
     if (typeof puzzleId === 'string' && puzzleId.length > 0) {
       return { kind: 'play', trackId, puzzleId }
     }
   }
 
-  return { kind: 'tracks' }
+  const hasAnyPuzzle = integritySafeTracks.some(track => track.puzzleIds.length > 0)
+  return hasAnyPuzzle ? { kind: 'tracks', allSolved: true } : { kind: 'tracks' }
+}
+
+/**
+ * Returns the next track (in track order, wrapping) after trackId that still has
+ * an unsolved puzzle, or null when everything else is solved.
+ *
+ * @param {string|null} trackId
+ * @param {Set<string>|string[]} solvedIds
+ * @param {object[]} [tracks]
+ * @returns {{ id: string, title: string }|null}
+ */
+export function getNextUnfinishedTrack(trackId, solvedIds, tracks = _tracks) {
+  const integritySafeTracks = getIntegritySafeTracks(tracks)
+  const solved = new Set(solvedIds)
+  const start = integritySafeTracks.findIndex(track => track.id === trackId)
+  for (let offset = 1; offset <= integritySafeTracks.length; offset += 1) {
+    const track = integritySafeTracks[(start + offset) % integritySafeTracks.length]
+    if (track.id === trackId) continue
+    if (track.puzzleIds.some(id => !solved.has(id))) return { id: track.id, title: track.title }
+  }
+  return null
 }
 
 /**

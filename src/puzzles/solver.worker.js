@@ -1,11 +1,15 @@
 // src/puzzles/solver.worker.js
-// Runs solveWithPath off the main thread so a long BFS cannot freeze the page.
+// Runs the BFS solver off the main thread so a long search cannot freeze the page.
+// With `boardEntries` it solves from that position (hints); otherwise from the start.
 
-import { solveWithPath } from './solver.js'
+import { solveWithPath, solveFromBoard } from './solver.js'
+import { parsePuzzle } from './loader.js'
 
 self.onmessage = ({ data }) => {
   try {
-    const result = solveWithPath(data.raw, data.maxDepth)
+    const result = Array.isArray(data.boardEntries)
+      ? solveFromBoard(parsePuzzle(data.raw), new Map(data.boardEntries), data.maxDepth)
+      : solveWithPath(data.raw, data.maxDepth)
     self.postMessage({ type: 'result', result })
   } catch (err) {
     self.postMessage({ type: 'error', message: err?.message ?? 'solver error' })

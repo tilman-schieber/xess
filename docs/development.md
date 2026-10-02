@@ -46,7 +46,8 @@ To add a puzzle:
 1. Write your puzzle definition following [puzzle-format.md](puzzle-format.md)
 2. Append it to the array in `src/puzzles/catalogue.js`
 3. Assign it to a track in `src/puzzles/tracks.js` (or create a new track)
-4. Run `npm test` — `src/puzzles/catalogue.test.js` validates the catalogue structure
+4. Run `node scripts/generate-solutions.js` — solves every track puzzle and rewrites `src/puzzles/solutions.js` (par, hints and tutorial coaching depend on it; it fails if a puzzle is unsolvable)
+5. Run `npm test` — `catalogue.test.js` validates the structure and `hints.test.js` replays every stored solution
 
 Policy defaults are goal-type-driven and usually should not be repeated in puzzle data:
 
@@ -84,13 +85,16 @@ All persistence goes through `src/store/store.js`. A single key `xess_v1` stores
   "schemaVersion": 1,
   "solvedIds": ["puzzle-id-1", "puzzle-id-2"],
   "solvedMoveCounts": { "puzzle-id-1": 4 },
+  "solvedScores": { "puzzle-id-1": 80 },
+  "seenAchievementIds": ["first-solve"],
   "activeState": {
     "puzzleId": "puzzle-id-1",
     "boardEntries": [["a1", { ... }], ...],
     "undoEntries": [[["a1", { ... }], ...], ...],
     "moveEvents": [{ "from": "a1", "to": "b2" }, ...],
     "redoEntries": [[["a1", { ... }], ...], ...],
-    "moveCount": 3
+    "moveCount": 3,
+    "hintsUsed": 1
   },
   "tutorialDismissed": false,
   "tutorialCompleted": false

@@ -17,6 +17,7 @@ vi.mock('./store/store.js', () => ({
   clearActiveState: vi.fn(),
   flushSync: vi.fn(),
   saveTutorialOnboarding: vi.fn(),
+  saveSeenAchievements: vi.fn(),
 }))
 
 vi.mock('./sound.js', () => ({
@@ -58,7 +59,7 @@ describe('track launch selection via controller', () => {
     }
 
     const controller = createController()
-    const launchId = controller.getTrackLaunchPuzzleId('puzzle-master')
+    const launchId = controller.getTrackLaunchPuzzleId('fiendish')
 
     expect(launchId).toBe('knight-relay')
   })
@@ -67,24 +68,24 @@ describe('track launch selection via controller', () => {
     mockStore = {
       schemaVersion: 1,
       solvedIds: ['knight-relay'],
-      activeState: { puzzleId: 'rook-gauntl', boardEntries: [], undoEntries: [] },
+      activeState: { puzzleId: 'first-steps', boardEntries: [], undoEntries: [] },
     }
 
     const controller = createController()
-    const launchId = controller.getTrackLaunchPuzzleId('puzzle-master')
+    const launchId = controller.getTrackLaunchPuzzleId('fiendish')
 
-    expect(launchId).toBe('crown-the-ro')
+    expect(launchId).toBe('knight-train')
   })
 
   it('falls back to first puzzle for fully solved track', () => {
     mockStore = {
       schemaVersion: 1,
-      solvedIds: ['knight-relay', 'crown-the-ro'],
+      solvedIds: ['knight-relay', 'knight-train', 'route-the-ro', 'boxed-knight', 'four-queen-s', 'crown-the-ro'],
       activeState: null,
     }
 
     const controller = createController()
-    const launchId = controller.getTrackLaunchPuzzleId('puzzle-master')
+    const launchId = controller.getTrackLaunchPuzzleId('fiendish')
 
     expect(launchId).toBe('knight-relay')
   })
@@ -116,7 +117,7 @@ describe('main track-first screen flow', () => {
     mountGameUi(document.querySelector('#app'))
 
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-open-track="puzzle-master"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-open-track="fiendish"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-puzzle-id="knight-relay"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('[data-track-browser]')).toBeNull()
@@ -211,20 +212,20 @@ describe('main track-first screen flow', () => {
     mountGameUi(document.querySelector('#app'))
 
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-open-track="puzzle-master"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-open-track="fiendish"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-puzzle-id="knight-relay"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-shell-menu-toggle]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-shell-nav-tracks]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     expect(document.querySelector('[data-track-browser]')).not.toBeNull()
-    expect(document.querySelector('[data-selected-track="puzzle-master"]')).not.toBeNull()
+    expect(document.querySelector('[data-selected-track="fiendish"]')).not.toBeNull()
   })
 
   it('shell and menu taps do not trigger board move side effects', () => {
     mountGameUi(document.querySelector('#app'))
 
     document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
-    document.querySelector('[data-open-track="puzzle-master"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-open-track="fiendish"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     document.querySelector('[data-puzzle-id="knight-relay"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
 
     const beforeCounter = document.querySelector('[data-move-counter]')?.textContent
@@ -237,4 +238,47 @@ describe('main track-first screen flow', () => {
     expect(afterCounter).toBe(beforeCounter)
   })
 
+  it('coaches tutorial puzzles for free and highlights the next move', () => {
+    mountGameUi(document.querySelector('#app'))
+    document.querySelector('[data-start-action="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(document.querySelector('.puzzle-title')?.textContent).toBe('First Steps')
+    expect(document.querySelector('[data-coach="coach"]')?.textContent).toMatch(/red rook/)
+    expect(document.querySelector('.is-hint-from')?.getAttribute('data-cell-key')).toBe('0,0')
+    expect(document.querySelector('.is-hint-to')?.getAttribute('data-cell-key')).toBe('2,0')
+
+    // Asking for a hint on a coached step is a no-op and costs nothing
+    document.querySelector('[data-hint]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    expect(document.querySelector('[data-hints-used]')).toBeNull()
+  })
+
+  it('hint button reveals the next solution move and counts the hint', () => {
+    mountGameUi(document.querySelector('#app'))
+    document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-open-track="warm-up"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-puzzle-id="late-bloomer"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(document.querySelector('.is-hint-from')).toBeNull()
+    document.querySelector('[data-hint]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(document.querySelector('.is-hint-from')?.getAttribute('data-cell-key')).toBe('0,3')
+    expect(document.querySelector('.is-hint-to')).not.toBeNull()
+    expect(document.querySelector('[data-hints-used]')?.textContent).toBe('1')
+    expect(document.querySelector('[data-coach="hint"]')?.textContent).toMatch(/−20 points/)
+  })
+
+  it('advice-only coach lines show text without revealing the move', () => {
+    mountGameUi(document.querySelector('#app'))
+    document.querySelector('[data-start-action="browse"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-open-track="tutorial"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    document.querySelector('[data-puzzle-id="no-way-back"]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+
+    expect(document.querySelector('[data-coach="coach"]')?.textContent).toMatch(/never go back/)
+    expect(document.querySelector('.is-hint-from')).toBeNull()
+
+    // The paid hint still works on such a step
+    document.querySelector('[data-hint]')?.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+    expect(document.querySelector('.is-hint-from')?.getAttribute('data-cell-key')).toBe('1,1')
+    expect(document.querySelector('[data-hints-used]')?.textContent).toBe('1')
+  })
 })

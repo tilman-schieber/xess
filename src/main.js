@@ -3,16 +3,7 @@ import { createBoardRenderModel } from './ui/boardRenderer.js'
 import { renderStartScreen } from './ui/startScreen.js'
 import { renderTrackBrowser } from './ui/trackBrowser.js'
 import { renderAppShell } from './ui/appShell.js'
-import {
-  applyMovesToBoard,
-  applyToolToCell,
-  creatorStateFromRawPuzzle,
-  createEmptyCreatorCells,
-  renderPuzzleCreator,
-  resizeCreatorCells,
-  toBoardMapFromCells,
-  toRawPuzzle,
-} from './ui/puzzleCreator.js'
+import { createCreatorScreen } from './ui/creatorScreen.js'
 import './styles/app.css'
 import './styles/puzzle-list.css'
 import './styles/puzzle-creator.css'
@@ -32,11 +23,17 @@ import {
   getTrackPuzzlePosition,
   getTracks,
   getTrackPuzzleList,
+  getNextUnfinishedTrack,
   resolveLandingContinueAction,
 } from './puzzles/nav.js'
 import catalogue from './puzzles/catalogue.js'
+import { createSolutionLine, findHintOnLine } from './puzzles/hints.js'
 import { parsePuzzle } from './puzzles/loader.js'
-import { loadStore, saveTutorialOnboarding } from './store/store.js'
+import { evaluateAchievements, getAchievementPoints, getRank } from './puzzles/achievements.js'
+import { showAchievementToasts } from './ui/achievementToast.js'
+import { renderMiniBoard } from './ui/miniBoard.js'
+import { computeScore, formatStars, starsForScore, HINT_PENALTY } from './puzzles/score.js'
+import { loadStore, saveTutorialOnboarding, saveSeenAchievements } from './store/store.js'
 import { initSound, playMove, playSolve, isSoundEnabled, toggleSound } from './sound.js'
 import { initDragDrop } from './ui/dragDrop.js'
 import { initPwaPrompts } from './ui/pwaPrompts.js'
@@ -55,6 +52,7 @@ const ICONS = {
   undo:         'M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z',
   redo:         'M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z',
   menu:         'M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z',
+  hint:         'M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z',
   volumeUp:     'M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z',
   volumeOff:    'M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z',
 }
@@ -110,6 +108,7 @@ function buildInteractionRenderModel({ puzzle, board, renderBoardView, feedback 
     puzzle,
     puzzleTitle: puzzle?.title ?? 'Untitled puzzle',
     objectiveText: getPuzzleObjectiveText(puzzle),
+    rulesText: getPuzzleRulesText(puzzle),
     boardClasses: getBoardInteractionClasses(snapshot),
     animationMs: MOVE_TRANSITION_MS,
     cells: baseModel.cells.map(cell => ({
@@ -122,7 +121,7 @@ function buildInteractionRenderModel({ puzzle, board, renderBoardView, feedback 
 
 function getTrackingSnapshot(controller) {
   if (!controller || typeof controller.getTrackingState !== 'function') {
-    return { moveEvents: [], moveCount: 0, canUndo: false, canRedo: false }
+    return { moveEvents: [], moveCount: 0, canUndo: false, canRedo: false, hintsUsed: 0, lastSolve: null }
   }
 
   const snapshot = controller.getTrackingState()
@@ -131,6 +130,8 @@ function getTrackingSnapshot(controller) {
     moveCount: Number.isInteger(snapshot?.moveCount) ? snapshot.moveCount : 0,
     canUndo: snapshot?.canUndo === true,
     canRedo: snapshot?.canRedo === true,
+    hintsUsed: Number.isInteger(snapshot?.hintsUsed) ? snapshot.hintsUsed : 0,
+    lastSolve: snapshot?.lastSolve ?? null,
   }
 }
 
@@ -143,7 +144,7 @@ export function getPuzzleObjectiveText(puzzle) {
     const targetColor = typeof puzzle.targetColor === 'string' && puzzle.targetColor.length > 0
       ? puzzle.targetColor
       : 'target'
-    return `Capture all ${targetColor} targets.`
+    return `Capture every ${targetColor} piece.`
   }
 
   if (puzzle.goalType === 'reach-all-goal-squares') {
@@ -151,6 +152,69 @@ export function getPuzzleObjectiveText(puzzle) {
   }
 
   return 'Solve the puzzle objective.'
+}
+
+/**
+ * One-line reminder of who moves and what can be captured, derived from the
+ * puzzle's move/capture policy so authored descriptions don't have to repeat it.
+ */
+export function getPuzzleRulesText(puzzle) {
+  if (!puzzle || typeof puzzle !== 'object') return ''
+
+  const parts = []
+  const controllable = Array.isArray(puzzle.controllableColors) ? puzzle.controllableColors : null
+  const isReach = puzzle.goalType === 'reach-all-goal-squares'
+  const movesBoth = controllable ? controllable.length > 1 : isReach
+  const captures = puzzle.capturableByColor
+  const canCapture = captures
+    ? Object.values(captures).some(list => Array.isArray(list) && list.length > 0)
+    : !isReach
+
+  if (movesBoth) {
+    parts.push(isReach ? 'You can move every piece, white and red.' : 'You can move every piece.')
+  } else if (controllable?.[0] === 'black') {
+    parts.push('You move the black pieces.')
+  } else {
+    parts.push('You move the white pieces.')
+  }
+  if (!canCapture) parts.push('Nothing can be captured.')
+  if (puzzle.promote === true) parts.push('Pawns become queens when they reach the red line at the top.')
+
+  return parts.join(' ')
+}
+
+function pluralMoves(count) {
+  return `${count} ${count === 1 ? 'move' : 'moves'}`
+}
+
+export function getWinStatsText({ moveCount, par }) {
+  if (!Number.isInteger(moveCount) || moveCount <= 0) return ''
+  const base = `Solved in ${pluralMoves(moveCount)}`
+  if (!Number.isInteger(par) || par <= 0) return `${base}.`
+  if (moveCount <= par) return `${base} — the fewest possible!`
+  return `${base}. It can be done in ${par}.`
+}
+
+/**
+ * Score summary for the win dialog, e.g. "★★☆ 80 points" plus what was deducted.
+ */
+export function getWinScoreText(solve) {
+  if (!solve || !Number.isInteger(solve.score)) return { headline: '', detail: '' }
+
+  const deductions = []
+  if (solve.movePenalty > 0) deductions.push(`−${solve.movePenalty} extra moves`)
+  if (solve.hintPenalty > 0) {
+    deductions.push(`−${solve.hintPenalty} ${solve.hintsUsed === 1 ? 'hint' : 'hints'}`)
+  }
+  const notes = [...deductions]
+  if (Number.isInteger(solve.bestScore) && solve.bestScore > solve.score) {
+    notes.push(`your best is ${solve.bestScore}`)
+  }
+
+  return {
+    headline: `${formatStars(solve.stars)} ${solve.score} points`,
+    detail: notes.join(' · '),
+  }
 }
 
 export function getGoalBadgeData(puzzle) {
@@ -164,59 +228,6 @@ export function getPuzzleDescriptionHtml(puzzle) {
   const authoredHtml = typeof puzzle?.descriptionHtml === 'string' ? puzzle.descriptionHtml : ''
   const sanitized = sanitizePuzzleDescription(authoredHtml)
   return sanitized.trim()
-}
-
-function clampBoardSize(value) {
-  if (!Number.isFinite(value)) return 6
-  return Math.max(2, Math.min(12, value))
-}
-
-function clampSolverDepth(value) {
-  if (!Number.isFinite(value)) return 60
-  return Math.max(1, Math.min(200, value))
-}
-
-function createInitialCreatorState() {
-  const width = 6
-  const height = 6
-  return {
-    id: 'draft-puzzle',
-    title: 'Draft Puzzle',
-    descriptionHtml: '',
-    goalType: 'reach-all-goal-squares',
-    targetColor: 'black',
-    promote: false,
-    width,
-    height,
-    selectedPresetId: catalogue[0]?.id ?? '',
-    presetOptions: catalogue.map(entry => ({
-      id: entry.id,
-      label: `${entry.title || entry.id} (${entry.id})`,
-    })),
-    cells: createEmptyCreatorCells(width, height),
-    goalTargets: {},
-    editMode: 'place',
-    placementMode: 'red-piece',
-    pieceType: 'r',
-    exportJson: '',
-    copyStatus: '',
-    solverMaxDepth: 60,
-    solving: false,
-    collapsibleOpen: { settings: true, editor: true, solver: false },
-    message: 'Tip: set board size, paint cells, then export JSON.',
-    replayBoards: [],
-    replayIndex: 0,
-  }
-}
-
-function generateSlugId(title) {
-  return String(title)
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .slice(0, 12)
-    .replace(/-+$/, '')
 }
 
 function isCreatorRoute() {
@@ -261,6 +272,8 @@ export function createGameUiController({
       moveCounterText: `${tracking.moveCount}`,
       canUndo: tracking.canUndo,
       canRedo: tracking.canRedo,
+      hintsUsed: tracking.hintsUsed,
+      lastSolve: tracking.lastSolve,
       historyListRendered: false,
     }
   }
@@ -498,7 +511,13 @@ export function renderToDom(root, model) {
   const descriptionHtml = getPuzzleDescriptionHtml(model.puzzle)
   const badge = getGoalBadgeData(model.puzzle)
   const rawPosition = model.trackPosition ?? (model.puzzleId ? getPuzzlePosition(model.puzzleId) : null)
-  const position = rawPosition && model.trackTitle ? `${rawPosition} · ${model.trackTitle}` : rawPosition
+  const par = Number.isInteger(model?.puzzle?.par) ? model.puzzle.par : null
+  const position = [
+    rawPosition && model.trackTitle ? `${rawPosition} · ${model.trackTitle}` : rawPosition,
+    par ? `Par ${pluralMoves(par)}` : null,
+    Number.isInteger(model.bestScore) ? `Best ${formatStars(starsForScore(model.bestScore))} ${model.bestScore}` : null,
+  ].filter(Boolean).join(' · ')
+  const rulesText = typeof model.rulesText === 'string' ? model.rulesText : ''
 
   const inlineInfo = document.createElement('div')
   inlineInfo.className = 'puzzle-inline-info'
@@ -509,6 +528,14 @@ export function renderToDom(root, model) {
   objective.textContent = model.objectiveText
   inlineInfo.append(objective)
 
+  if (rulesText.length > 0) {
+    const rules = document.createElement('p')
+    rules.className = 'puzzle-rules'
+    rules.setAttribute('data-puzzle-rules', 'true')
+    rules.textContent = rulesText
+    inlineInfo.append(rules)
+  }
+
   if (descriptionHtml.length > 0) {
     const desc = document.createElement('div')
     desc.className = 'puzzle-description'
@@ -516,15 +543,6 @@ export function renderToDom(root, model) {
     desc.innerHTML = descriptionHtml
     inlineInfo.append(desc)
   }
-
-  const goalBadgeInline = document.createElement('div')
-  goalBadgeInline.className = 'goal-badge'
-  goalBadgeInline.setAttribute('data-goal-type', badge.type)
-  const badgeLabelInline = document.createElement('span')
-  badgeLabelInline.className = 'goal-badge-label'
-  badgeLabelInline.textContent = badge.label
-  goalBadgeInline.append(badgeLabelInline)
-  inlineInfo.append(goalBadgeInline)
 
   if (position) {
     const posInline = document.createElement('span')
@@ -535,6 +553,17 @@ export function renderToDom(root, model) {
   }
 
   topbar.append(inlineInfo)
+
+  // Coach line: tutorial guidance, hint feedback, or a stuck warning
+  if (typeof model.coachText === 'string' && model.coachText.length > 0) {
+    const coach = document.createElement('p')
+    coach.className = 'coach-line'
+    coach.setAttribute('data-coach', model.coachKind ?? 'coach')
+    coach.setAttribute('role', 'status')
+    coach.textContent = model.coachText
+    topbar.append(coach)
+  }
+
   app.append(topbar)
 
   // ── Board ──
@@ -560,6 +589,8 @@ export function renderToDom(root, model) {
     cellEl.type = 'button'
     cellEl.setAttribute('data-cell-key', cell.key)
     cellEl.className = [...cell.classes, ...cell.interactionClasses].join(' ')
+    if (model.hintMove?.from === cell.key) cellEl.classList.add('is-hint-from')
+    if (model.hintMove?.to === cell.key) cellEl.classList.add('is-hint-to')
 
     if (cell.piece) {
       const pieceEl = document.createElement('span')
@@ -622,7 +653,25 @@ export function renderToDom(root, model) {
   restartBtn.appendChild(svgIcon(ICONS.restart))
   restartBtn.appendChild(btnLabel('Reset'))
 
-  controls.append(undoBtn, counter, redoBtn, restartBtn)
+  const hintBtn = document.createElement('button')
+  hintBtn.type = 'button'
+  hintBtn.className = 'nav-btn hint-btn'
+  hintBtn.setAttribute('data-hint', 'true')
+  hintBtn.setAttribute('aria-label', `Show a hint (costs ${HINT_PENALTY} points)`)
+  hintBtn.setAttribute('title', `Shows the next move. Costs ${HINT_PENALTY} points.`)
+  hintBtn.disabled = model.hintBusy === true || model.boardClasses.includes('is-won')
+  if (model.hintBusy === true) hintBtn.classList.add('is-busy')
+  hintBtn.appendChild(svgIcon(ICONS.hint))
+  hintBtn.appendChild(btnLabel('Hint'))
+  if (model.hintsUsed > 0) {
+    const used = document.createElement('span')
+    used.className = 'hint-btn-count'
+    used.setAttribute('data-hints-used', String(model.hintsUsed))
+    used.textContent = String(model.hintsUsed)
+    hintBtn.appendChild(used)
+  }
+
+  controls.append(undoBtn, counter, redoBtn, restartBtn, hintBtn)
   app.append(controls)
 
   // ── Win modal overlay (only when won) ──
@@ -636,49 +685,97 @@ export function renderToDom(root, model) {
     const winContent = document.createElement('div')
     winContent.className = 'win-modal-content'
 
+    const headline = document.createElement('p')
+    headline.className = 'win-modal-headline'
+    headline.setAttribute('data-win-headline', 'true')
+    winContent.append(headline)
+
+    const statsText = getWinStatsText({ moveCount: model.moveCount, par })
+    if (statsText.length > 0) {
+      const stats = document.createElement('p')
+      stats.className = 'win-modal-stats'
+      stats.setAttribute('data-win-stats', 'true')
+      stats.textContent = statsText
+      winContent.append(stats)
+    }
+
+    const scoreText = getWinScoreText(model.lastSolve)
+    if (scoreText.headline.length > 0) {
+      const score = document.createElement('p')
+      score.className = 'win-modal-score'
+      score.setAttribute('data-win-score', 'true')
+      score.textContent = scoreText.headline
+      winContent.append(score)
+      if (scoreText.detail.length > 0) {
+        const detail = document.createElement('p')
+        detail.className = 'win-modal-stats'
+        detail.setAttribute('data-win-score-detail', 'true')
+        detail.textContent = scoreText.detail
+        winContent.append(detail)
+      }
+    }
+
+    if (Array.isArray(model.newAchievements) && model.newAchievements.length > 0) {
+      const unlockedList = document.createElement('ul')
+      unlockedList.className = 'win-modal-achievements'
+      unlockedList.setAttribute('data-win-achievements', 'true')
+      model.newAchievements.forEach((entry) => {
+        const item = document.createElement('li')
+        const label = document.createElement('span')
+        label.className = 'win-modal-achievement-label'
+        label.textContent = 'Achievement unlocked'
+        const name = document.createElement('strong')
+        name.textContent = entry.title
+        const copy = document.createElement('span')
+        copy.textContent = Number.isInteger(entry.points)
+          ? `${entry.description} · +${entry.points} points`
+          : entry.description
+        item.append(label, name, copy)
+        unlockedList.append(item)
+      })
+      winContent.append(unlockedList)
+    }
+
+    const actions = document.createElement('div')
+    actions.className = 'win-modal-actions'
+
+    const addAction = (attr, text, primary) => {
+      const btn = document.createElement('button')
+      btn.type = 'button'
+      btn.className = primary ? 'btn-next-puzzle' : 'btn-next-puzzle btn-next-puzzle--ghost'
+      btn.setAttribute(attr, 'true')
+      btn.textContent = text
+      actions.append(btn)
+    }
+
     if (model.nextId) {
       winOverlay.setAttribute('data-win-state', 'puzzle-solved')
-
-      const headline = document.createElement('p')
-      headline.className = 'win-modal-headline'
-      headline.setAttribute('data-win-headline', 'true')
       headline.textContent = 'Puzzle solved!'
-
-      const nextPuzzleBtn = document.createElement('button')
-      nextPuzzleBtn.type = 'button'
-      nextPuzzleBtn.className = 'btn-next-puzzle'
-      nextPuzzleBtn.setAttribute('data-win-next-puzzle', 'true')
-      nextPuzzleBtn.textContent = 'Next Puzzle'
-
-      winContent.append(headline, nextPuzzleBtn)
-    } else if (model.trackId) {
+      addAction('data-win-next-puzzle', 'Next Puzzle', true)
+    } else if (model.trackId && model.nextTrack) {
       winOverlay.setAttribute('data-win-state', 'track-complete')
-
-      const headline = document.createElement('p')
-      headline.className = 'win-modal-headline'
-      headline.setAttribute('data-win-headline', 'true')
-      const label = model.trackTitle ? `${model.trackTitle} complete!` : 'Track complete!'
-      headline.textContent = label
-
-      const backBtn = document.createElement('button')
-      backBtn.type = 'button'
-      backBtn.className = 'btn-next-puzzle'
-      backBtn.setAttribute('data-win-back-to-tracks', 'true')
-      backBtn.textContent = 'Back to Tracks'
-
-      winContent.append(headline, backBtn)
+      headline.textContent = model.trackTitle ? `${model.trackTitle} complete!` : 'Track complete!'
+      addAction('data-win-next-track', `Next: ${model.nextTrack.title}`, true)
+      addAction('data-win-back-to-tracks', 'All tracks', false)
+    } else if (model.trackId && model.hasUnsolvedInTrack) {
+      winOverlay.setAttribute('data-win-state', 'track-end')
+      headline.textContent = 'Puzzle solved!'
+      addAction('data-win-back-to-tracks', 'Back to puzzles', true)
     } else {
       winOverlay.setAttribute('data-win-state', 'all-solved')
-
-      const total = catalogue.length
-      const headline = document.createElement('p')
-      headline.className = 'win-modal-headline'
-      headline.setAttribute('data-win-headline', 'true')
       headline.setAttribute('data-win-all-solved', 'true')
+      const total = Number.isInteger(model.totalPuzzleCount) ? model.totalPuzzleCount : 0
       headline.textContent = total ? `All ${total} puzzles solved!` : 'All puzzles solved!'
-
-      winContent.append(headline)
+      if (model.trackId) addAction('data-win-back-to-tracks', 'All tracks', true)
     }
+
+    // Offer a retry only when there are points left on the table
+    const solveScore = model.lastSolve?.score
+    if (Number.isInteger(solveScore) ? solveScore < 100 : (par && model.moveCount > par)) {
+      addAction('data-win-replay', model.lastSolve?.hintPenalty > 0 ? 'Try again' : 'Try for fewer moves', false)
+    }
+
+    if (actions.children.length > 0) winContent.append(actions)
 
     winOverlay.append(winContent)
     app.append(winOverlay)
@@ -694,6 +791,14 @@ export function renderToDom(root, model) {
   const infoContent = document.createElement('div')
   infoContent.className = 'info-modal-content'
 
+  const goalBadgeModal = document.createElement('div')
+  goalBadgeModal.className = 'goal-badge'
+  goalBadgeModal.setAttribute('data-goal-type', badge.type)
+  const badgeLabelModal = document.createElement('span')
+  badgeLabelModal.className = 'goal-badge-label'
+  badgeLabelModal.textContent = badge.label
+  goalBadgeModal.append(badgeLabelModal)
+
   const infoTitle = document.createElement('h2')
   infoTitle.className = 'info-modal-title'
   infoTitle.textContent = model.puzzleTitle
@@ -702,7 +807,14 @@ export function renderToDom(root, model) {
   infoObjective.className = 'info-modal-objective'
   infoObjective.textContent = model.objectiveText
 
-  infoContent.append(infoTitle, infoObjective)
+  infoContent.append(goalBadgeModal, infoTitle, infoObjective)
+
+  if (rulesText.length > 0) {
+    const infoRules = document.createElement('p')
+    infoRules.className = 'info-modal-objective'
+    infoRules.textContent = rulesText
+    infoContent.append(infoRules)
+  }
 
   if (descriptionHtml.length > 0) {
     const infoDesc = document.createElement('div')
@@ -711,21 +823,19 @@ export function renderToDom(root, model) {
     infoContent.append(infoDesc)
   }
 
-  const goalBadgeModal = document.createElement('div')
-  goalBadgeModal.className = 'goal-badge'
-  goalBadgeModal.setAttribute('data-goal-type', badge.type)
-  const badgeLabelModal = document.createElement('span')
-  badgeLabelModal.className = 'goal-badge-label'
-  badgeLabelModal.textContent = badge.label
-  goalBadgeModal.append(badgeLabelModal)
-  infoContent.append(goalBadgeModal)
-
   if (position) {
     const posModal = document.createElement('span')
     posModal.className = 'puzzle-position'
     posModal.textContent = position
     infoContent.append(posModal)
   }
+
+  const infoClose = document.createElement('button')
+  infoClose.type = 'button'
+  infoClose.className = 'btn-next-puzzle'
+  infoClose.setAttribute('data-info-close', 'true')
+  infoClose.textContent = 'Got it'
+  infoContent.append(infoClose)
 
   infoOverlay.append(infoContent)
   app.append(infoOverlay)
@@ -745,13 +855,19 @@ export function mountGameUi(root = document.querySelector('#app')) {
   let currentPuzzleId = null
   let selectedTrackId = null
   let ui = null
-  let creatorState = createInitialCreatorState()
-  let _solverWorker = null   // active solver Web Worker, or null
+  const creator = createCreatorScreen({ onChange: () => rerender() })
   let _dragCleanup = null    // cleanup fn returned by initDragDrop
   let _chromeObserver = null // ResizeObserver for --play-inner-chrome measurement
   let _isDragging = false    // true once drag threshold exceeded this pointer sequence
   let _suppressTapPointerId = null
   let _isInfoModalOpen = false
+  // Hint shown for one exact position; any board change invalidates it
+  let hintState = { board: null, move: null, message: '', busy: false }
+  let _hintWorker = null
+  let _hintTimer = null
+  let _solutionLine = { puzzleId: null, line: null }
+  // Achievements unlocked by the current win, announced once in the win dialog
+  let winAchievements = { board: null, list: [] }
 
   function bindPrimaryAction(element, onActivate) {
     if (!element) return
@@ -783,22 +899,274 @@ export function mountGameUi(root = document.querySelector('#app')) {
 
   function markTutorialCompleted() {
     if (selectedTrackId !== 'tutorial') return
+    // Only once the whole tutorial is done, not after its first puzzle
+    const tutorial = getTracks().find(track => track.id === 'tutorial')
+    const { solvedIds } = getProgress()
+    if (tutorial && !tutorial.puzzleIds.every(id => solvedIds.includes(id))) return
     saveTutorialOnboarding({ tutorialCompleted: true })
   }
 
+  function getProgress() {
+    const persisted = loadStore()
+    return {
+      persisted,
+      solvedIds: Array.isArray(persisted?.solvedIds) ? persisted.solvedIds : [],
+      bestMoveCounts: persisted?.solvedMoveCounts && typeof persisted.solvedMoveCounts === 'object'
+        ? persisted.solvedMoveCounts
+        : {},
+      bestScores: persisted?.solvedScores && typeof persisted.solvedScores === 'object'
+        ? persisted.solvedScores
+        : {},
+    }
+  }
+
+  function getSolutionLine(puzzle) {
+    if (_solutionLine.puzzleId !== puzzle?.id || !_solutionLine.line) {
+      _solutionLine = { puzzleId: puzzle?.id ?? null, line: createSolutionLine(puzzle) }
+    }
+    return _solutionLine.line
+  }
+
+  function stopHintSearch() {
+    if (_hintWorker) {
+      _hintWorker.terminate()
+      _hintWorker = null
+    }
+    if (_hintTimer) {
+      clearTimeout(_hintTimer)
+      _hintTimer = null
+    }
+  }
+
+  function hasAnyLegalMove(board) {
+    for (const [key, cell] of board) {
+      if (cell.piece && controller.selectPiece(key).length > 0) return true
+    }
+    return false
+  }
+
+  /**
+   * Decide what the coach line says and which move (if any) is highlighted:
+   * a requested hint, free tutorial coaching, or a dead-end warning.
+   */
+  function resolveGuidance(model) {
+    const { board, won } = ui.getState()
+    if (hintState.board !== board) {
+      stopHintSearch()
+      hintState = { board, move: null, message: '', busy: false }
+    }
+    if (won) return { coachText: '', hintMove: null, hintBusy: false, coachedMove: null }
+
+    const onLine = findHintOnLine(getSolutionLine(model.puzzle), board)
+    const coachLines = Array.isArray(model.puzzle?.coach) ? model.puzzle.coach : []
+    const coachEntry = onLine ? coachLines[onLine.step] : null
+    const coachLine = coachEntry?.text || null
+    const coachedMove = coachLine && coachEntry.show ? onLine : null
+
+    let coachText = ''
+    let coachKind = 'coach'
+    if (hintState.busy) {
+      coachText = 'Looking for a way through…'
+      coachKind = 'hint'
+    } else if (hintState.message) {
+      coachText = hintState.message
+      coachKind = 'hint'
+    } else if (!hasAnyLegalMove(board)) {
+      coachText = 'No moves left. Undo or reset to try another way.'
+      coachKind = 'stuck'
+    } else if (coachLine) {
+      coachText = coachLine
+    } else if (coachLines.length > 0 && !onLine && model.moveCount > 0) {
+      coachText = 'That is a different route. Carry on, use Undo, or tap Hint.'
+    }
+
+    return {
+      coachText,
+      coachKind,
+      hintMove: hintState.move ?? coachedMove,
+      hintBusy: hintState.busy,
+      coachedMove,
+    }
+  }
+
+  function showHint(board, move) {
+    if (hintState.board !== board) return
+    controller.useHint()
+    hintState = {
+      board,
+      move: { from: move.from, to: move.to },
+      message: `Hint: move the highlighted piece to the marked square. (−${HINT_PENALTY} points)`,
+      busy: false,
+    }
+    rerender()
+  }
+
+  function setHintMessage(board, message) {
+    if (hintState.board !== board) return
+    hintState = { board, move: null, message, busy: false }
+    rerender()
+  }
+
+  function requestHint() {
+    if (!ui || !currentPuzzleId) return
+    const { board, won } = ui.getState()
+    if (won || hintState.busy) return
+    if (hintState.board === board && hintState.move) return
+
+    const puzzle = ui.getRenderModel().puzzle
+    const onLine = findHintOnLine(getSolutionLine(puzzle), board)
+    if (onLine) {
+      // Tutorial coaching already highlights this move for free
+      const coachEntry = Array.isArray(puzzle?.coach) ? puzzle.coach[onLine.step] : null
+      if (coachEntry?.text && coachEntry.show) return
+      hintState = { board, move: null, message: '', busy: false }
+      showHint(board, onLine)
+      return
+    }
+
+    const raw = catalogue.find(entry => entry.id === currentPuzzleId)
+    if (typeof Worker === 'undefined' || !raw) {
+      hintState = { board, move: null, message: '', busy: false }
+      setHintMessage(board, 'No hint from this position. Undo a few moves and ask again.')
+      return
+    }
+
+    // Off the known solution: search from the current position in the background
+    stopHintSearch()
+    hintState = { board, move: null, message: '', busy: true }
+    rerender()
+
+    const worker = new Worker(
+      new URL('./puzzles/solver.worker.js', import.meta.url),
+      { type: 'module' },
+    )
+    _hintWorker = worker
+    _hintTimer = setTimeout(() => {
+      if (worker !== _hintWorker) return
+      stopHintSearch()
+      setHintMessage(board, 'This position is too tangled for a hint. Undo a few moves and ask again.')
+    }, 8000)
+
+    worker.onmessage = ({ data }) => {
+      if (worker !== _hintWorker) return
+      stopHintSearch()
+      const next = data?.type === 'result' && data.result?.solvable ? data.result.moves[0] : null
+      if (next) showHint(board, next)
+      else setHintMessage(board, 'There is no way to win from here. Undo or reset.')
+    }
+    worker.onerror = () => {
+      if (worker !== _hintWorker) return
+      stopHintSearch()
+      setHintMessage(board, 'No hint from this position. Undo a few moves and ask again.')
+    }
+    worker.postMessage({ raw, boardEntries: Array.from(board.entries()), maxDepth: 60 })
+  }
+
+  // Mirror screen changes into browser history so the system back button /
+  // Android back gesture steps through the app instead of leaving it.
+  function syncHistory() {
+    if (typeof window === 'undefined' || typeof window.history?.pushState !== 'function') return
+    if (screenMode === 'creator') return
+
+    const next = {
+      xess: true,
+      screen: screenMode,
+      trackId: selectedTrackId,
+      puzzleId: screenMode === 'play' ? currentPuzzleId : null,
+    }
+    const current = window.history.state
+    const isXessEntry = current && current.xess === true
+    if (
+      isXessEntry &&
+      current.screen === next.screen &&
+      current.trackId === next.trackId &&
+      current.puzzleId === next.puzzleId
+    ) return
+
+    // Stepping puzzle → puzzle replaces the entry, so Back leaves play in one step
+    if (!isXessEntry || (current.screen === 'play' && next.screen === 'play')) {
+      window.history.replaceState(next, '')
+    } else {
+      window.history.pushState(next, '')
+    }
+  }
+
+  function resolveTrackLaunch(trackId, solvedIds, activePuzzleId) {
+    const track = getTracks().find(entry => entry.id === trackId)
+    if (!track || track.puzzleIds.length === 0) return null
+    if (activePuzzleId && track.puzzleIds.includes(activePuzzleId) && !solvedIds.includes(activePuzzleId)) {
+      return activePuzzleId
+    }
+    return track.puzzleIds.find(id => !solvedIds.includes(id)) ?? track.puzzleIds[0]
+  }
+
+  /** Thumbnail of a puzzle; shows the saved position when that puzzle is in progress. */
+  function renderPuzzlePreview(puzzleId) {
+    const raw = catalogue.find(entry => entry.id === puzzleId)
+    if (!raw) return null
+    try {
+      const puzzle = parsePuzzle(raw)
+      const active = loadStore()?.activeState
+      const board = active?.puzzleId === puzzleId && Array.isArray(active.boardEntries) && active.boardEntries.length > 0
+        ? new Map(active.boardEntries)
+        : puzzle.board
+      return renderMiniBoard({ puzzle, board })
+    } catch {
+      return null
+    }
+  }
+
+  function buildAchievements(trackModels) {
+    const solvedIds = []
+    const scores = {}
+    trackModels.forEach(track => track.puzzles.forEach((entry) => {
+      if (entry.status !== 'solved') return
+      solvedIds.push(entry.id)
+      scores[entry.id] = entry.bestScore ?? 0
+    }))
+    return evaluateAchievements({ tracks: getTracks(), catalogue, solvedIds, scores })
+  }
+
+  /** Puzzle points plus achievement bonuses: the player's global score. */
+  function getPointTotals(trackModels = buildTrackViewModels(), achievements = buildAchievements(trackModels)) {
+    const puzzlePoints = trackModels.reduce((sum, track) => sum + track.score, 0)
+    const bonus = getAchievementPoints(achievements)
+    return {
+      puzzlePoints,
+      bonusPoints: bonus.earned,
+      points: puzzlePoints + bonus.earned,
+      maxPoints: trackModels.reduce((sum, track) => sum + track.maxScore, 0) + bonus.available,
+    }
+  }
+
   function buildTrackViewModels() {
-    const solvedIds = controller
-      .getPuzzleList()
-      .filter(item => item.status === 'solved')
-      .map(item => item.id)
+    // Read persisted progress directly: the controller only loads it once a puzzle is opened
+    const { solvedIds, bestMoveCounts, bestScores, persisted } = getProgress()
+    const activePuzzleId = typeof persisted?.activeState?.puzzleId === 'string'
+      ? persisted.activeState.puzzleId
+      : null
 
     return getTracks().map(track => {
-      const puzzles = getTrackPuzzleList(track.id, solvedIds)
+      const puzzles = getTrackPuzzleList(track.id, solvedIds).map(entry => ({
+        ...entry,
+        bestMoveCount: Number.isInteger(bestMoveCounts[entry.id]) ? bestMoveCounts[entry.id] : null,
+        bestScore: entry.status !== 'solved'
+          ? null
+          : Number.isInteger(bestScores[entry.id])
+            ? bestScores[entry.id]
+            // Solved before scoring existed: derive the score from the best move count
+            : computeScore({ moveCount: bestMoveCounts[entry.id], par: entry.par }).score,
+        inProgress: entry.id === activePuzzleId && entry.status !== 'solved',
+      }))
       return {
         ...track,
         puzzles,
         totalCount: puzzles.length,
         solvedCount: puzzles.filter(entry => entry.status === 'solved').length,
+        score: puzzles.reduce((sum, entry) => sum + (entry.bestScore ?? 0), 0),
+        maxScore: puzzles.length * 100,
+        // The board shown on the track card: the puzzle its main button would open
+        previewPuzzleId: resolveTrackLaunch(track.id, solvedIds, activePuzzleId),
       }
     })
   }
@@ -810,7 +1178,7 @@ export function mountGameUi(root = document.querySelector('#app')) {
     rerender()
   }
 
-  function renderShellView({ mode, title, content, prevId = null, nextId = null }) {
+  function renderShellView({ mode, title, content, prevId = null, nextId = null, position = null }) {
     const shell = renderAppShell({
       mode,
       title,
@@ -818,9 +1186,11 @@ export function mountGameUi(root = document.querySelector('#app')) {
       showTracks: mode !== 'creator',
       hasPrevPuzzle: mode === 'play' ? !!prevId : false,
       hasNextPuzzle: mode === 'play' ? !!nextId : false,
+      position: mode === 'play' ? position : null,
+      points: mode === 'creator' ? null : getPointTotals().points,
       onNavigateHome() {
         if (typeof window !== 'undefined' && window.location.pathname.endsWith('/creator.html')) {
-          window.location.href = '/'
+          window.location.href = './'
           return
         }
         selectedTrackId = null
@@ -839,6 +1209,11 @@ export function mountGameUi(root = document.querySelector('#app')) {
 
 
   function rerender() {
+    renderCurrentScreen()
+    syncHistory()
+  }
+
+  function renderCurrentScreen() {
     if (screenMode === 'play') {
       renderGameScreen()
       return
@@ -857,315 +1232,17 @@ export function mountGameUi(root = document.querySelector('#app')) {
     renderStartScreenView()
   }
 
-  function updateCreator(patch) {
-    creatorState = { ...creatorState, ...patch }
-    rerender()
-  }
-
-  function buildCreatorRawPuzzle() {
-    return toRawPuzzle(creatorState)
-  }
-
-  function buildValidatedCreatorExport() {
-    const raw = buildCreatorRawPuzzle()
-    parsePuzzle(raw)
-    return `${JSON.stringify(raw, null, 2)}\n`
-  }
-
-  function exportCreatorPuzzle() {
-    try {
-      const exportJson = buildValidatedCreatorExport()
-      updateCreator({
-        exportJson,
-        copyStatus: '',
-        message: 'Export successful. JSON is valid against loader rules.',
-      })
-    } catch (error) {
-      updateCreator({
-        copyStatus: '',
-        message: `Export failed: ${error?.message ?? 'invalid puzzle data'}`,
-      })
-    }
-  }
-
-  async function copyCreatorExportJson() {
-    try {
-      const exportJson = buildValidatedCreatorExport()
-      if (typeof navigator === 'undefined' || typeof navigator.clipboard?.writeText !== 'function') {
-        updateCreator({
-          exportJson,
-          copyStatus: 'failed',
-          message: 'Clipboard unavailable in this browser context.',
-        })
-        return
-      }
-
-      await navigator.clipboard.writeText(exportJson)
-      updateCreator({
-        exportJson,
-        copyStatus: 'copied',
-        message: 'Copied JSON to clipboard.',
-      })
-    } catch (error) {
-      updateCreator({
-        copyStatus: 'failed',
-        message: `Copy failed: ${error?.message ?? 'clipboard error'}`,
-      })
-    }
-  }
-
-  function cancelSolverWorker() {
-    if (_solverWorker) {
-      _solverWorker.terminate()
-      _solverWorker = null
-    }
-  }
-
-  function solveCreatorPuzzle() {
-    cancelSolverWorker()
-
-    let raw
-    try {
-      raw = buildCreatorRawPuzzle()
-      parsePuzzle(raw) // validate before dispatching
-    } catch (error) {
-      updateCreator({ message: `Solve failed: ${error?.message ?? 'invalid puzzle data'}` })
-      return
-    }
-
-    updateCreator({ solving: true, message: 'Solving…' })
-
-    const worker = new Worker(
-      new URL('./puzzles/solver.worker.js', import.meta.url),
-      { type: 'module' },
-    )
-    _solverWorker = worker
-
-    worker.onmessage = ({ data }) => {
-      if (worker !== _solverWorker) return // stale
-      _solverWorker = null
-
-      if (data.type === 'error') {
-        updateCreator({ solving: false, message: `Solve failed: ${data.message}` })
-        return
-      }
-
-      const solved = data.result
-      if (!solved.solvable) {
-        updateCreator({
-          solving: false,
-          replayBoards: [],
-          replayIndex: 0,
-          message: `No solution found within ${clampSolverDepth(creatorState.solverMaxDepth)} moves (explored ${solved.statesExplored} states).`,
-        })
-        return
-      }
-
-      const parsed = parsePuzzle(raw)
-      const snapshots = applyMovesToBoard({ board: parsed.board, puzzle: parsed, moves: solved.moves })
-      updateCreator({
-        solving: false,
-        replayBoards: snapshots,
-        replayIndex: 0,
-        copyStatus: '',
-        message: `Solved in ${solved.minMoves} moves. Use Undo/Redo step to inspect sequence.`,
-      })
-    }
-
-    worker.onerror = (err) => {
-      if (worker !== _solverWorker) return
-      _solverWorker = null
-      updateCreator({ solving: false, message: `Solve failed: ${err?.message ?? 'worker error'}` })
-    }
-
-    worker.postMessage({ raw, maxDepth: clampSolverDepth(creatorState.solverMaxDepth) })
-  }
-
-  function cancelSolve() {
-    cancelSolverWorker()
-    updateCreator({ solving: false, message: 'Solve cancelled.' })
-  }
-
   function renderCreatorScreen() {
-    const boardForRender = creatorState.replayBoards.length > 0
-      ? creatorState.replayBoards[creatorState.replayIndex]
-      : toBoardMapFromCells(creatorState.cells)
-
-    const creatorEl = renderPuzzleCreator({
-      model: {
-        ...creatorState,
-        cells: (() => {
-          if (creatorState.replayBoards.length === 0) return creatorState.cells
-          const replayCells = new Map()
-          for (let row = 0; row < creatorState.height; row += 1) {
-            for (let col = 0; col < creatorState.width; col += 1) {
-              const key = `${col},${row}`
-              const src = creatorState.cells.get(key)
-              const replay = boardForRender.get(key)
-              replayCells.set(key, {
-                isVoid: !src || src.isVoid,
-                isGoal: !!replay?.isGoal,
-                pieceChar: replay?.piece
-                  ? (replay.piece.color === 'white' ? replay.piece.type.toUpperCase() : replay.piece.type)
-                  : null,
-              })
-            }
-          }
-          return replayCells
-        })(),
-      },
-      onChangeField(field, value) {
-        if (field === 'selectedPresetId') {
-          updateCreator({ selectedPresetId: value })
-          return
-        }
-
-        const patch = { [field]: value }
-        if (field === 'goalType' && value === 'capture-all-targets') {
-          patch.goalTargets = {}
-          if (creatorState.placementMode === 'red-piece' || creatorState.placementMode === 'red-target') {
-            patch.placementMode = 'black-piece'
-          }
-        }
-        if (field === 'goalType' && value === 'reach-all-goal-squares') {
-          if (creatorState.placementMode === 'black-piece') {
-            patch.placementMode = 'red-piece'
-          }
-        }
-        updateCreator({
-          ...patch,
-          copyStatus: '',
-          replayBoards: [],
-          replayIndex: 0,
-        })
-      },
-      onGenerateId() {
-        updateCreator({ id: generateSlugId(creatorState.title), copyStatus: '' })
-      },
-      onLoadPreset() {
-        const raw = catalogue.find(entry => entry.id === creatorState.selectedPresetId)
-        if (!raw) {
-          updateCreator({ message: 'Preset not found.' })
-          return
-        }
-
-        const loaded = creatorStateFromRawPuzzle(raw)
-        updateCreator({
-          ...loaded,
-          selectedPresetId: raw.id,
-          presetOptions: creatorState.presetOptions,
-          editMode: 'place',
-          placementMode: loaded.goalType === 'capture-all-targets' ? 'black-piece' : 'red-piece',
-          pieceType: 'r',
-          exportJson: '',
-          copyStatus: '',
-          message: `Loaded preset: ${loaded.title || loaded.id}`,
-          replayBoards: [],
-          replayIndex: 0,
-        })
-      },
-      onNewPuzzle() {
-        const fresh = createInitialCreatorState()
-        const nextWidth = creatorState.width
-        const nextHeight = creatorState.height
-        const nextCells = createEmptyCreatorCells(nextWidth, nextHeight)
-        updateCreator({
-          ...fresh,
-          width: nextWidth,
-          height: nextHeight,
-          cells: nextCells,
-          selectedPresetId: creatorState.selectedPresetId,
-          presetOptions: creatorState.presetOptions,
-          message: 'Started a fresh draft puzzle.',
-        })
-      },
-      onCopyExport() {
-        copyCreatorExportJson()
-      },
-      onResize({ width, height }) {
-        const nextWidth = clampBoardSize(width)
-        const nextHeight = clampBoardSize(height)
-        const resizedCells = resizeCreatorCells(creatorState.cells, nextWidth, nextHeight)
-        const nextGoalTargets = {}
-        Object.entries(creatorState.goalTargets).forEach(([key, char]) => {
-          const cell = resizedCells.get(key)
-          if (cell?.isGoal) nextGoalTargets[key] = char
-        })
-        updateCreator({
-          width: nextWidth,
-          height: nextHeight,
-          cells: resizedCells,
-          goalTargets: nextGoalTargets,
-          copyStatus: '',
-          replayBoards: [],
-          replayIndex: 0,
-        })
-      },
-      onChangeSolverDepth(depth) {
-        updateCreator({ solverMaxDepth: clampSolverDepth(depth) })
-      },
-      onSelectEditMode(editMode) {
-        updateCreator({ editMode })
-      },
-      onSelectPlacementMode(placementMode) {
-        updateCreator({ placementMode })
-      },
-      onSelectPieceType(pieceType) {
-        updateCreator({ pieceType })
-      },
-      onCellAction(cellKey) {
-        if (creatorState.replayBoards.length > 0) {
-          updateCreator({
-            replayBoards: [],
-            replayIndex: 0,
-            message: 'Replay cleared after board edit.',
-          })
-        }
-        const next = applyToolToCell({
-          cells: creatorState.cells,
-          goalTargets: creatorState.goalTargets,
-          cellKey,
-          editMode: creatorState.editMode,
-          placementMode: creatorState.placementMode,
-          pieceType: creatorState.pieceType,
-          goalType: creatorState.goalType,
-        })
-        updateCreator({ cells: next.cells, goalTargets: next.goalTargets })
-      },
-      onExport: exportCreatorPuzzle,
-      onSolve: solveCreatorPuzzle,
-      onCancelSolve: cancelSolve,
-      onUndoStep() {
-        if (creatorState.replayIndex <= 0) return
-        updateCreator({ replayIndex: creatorState.replayIndex - 1 })
-      },
-      onRedoStep() {
-        if (creatorState.replayIndex >= creatorState.replayBoards.length - 1) return
-        updateCreator({ replayIndex: creatorState.replayIndex + 1 })
-      },
-      onResetReplay() {
-        updateCreator({ replayBoards: [], replayIndex: 0 })
-      },
-      onToggleCollapsible(section, isOpen) {
-        creatorState = {
-          ...creatorState,
-          collapsibleOpen: { ...creatorState.collapsibleOpen, [section]: isOpen },
-        }
-        // No full rerender — just persist the state change silently
-      },
-    })
-
     renderShellView({
       mode: 'creator',
       title: 'Puzzle Creator',
-      content: creatorEl,
+      content: creator.render(),
     })
   }
 
   function renderStartScreenView() {
     const trackModels = buildTrackViewModels()
-    const persisted = loadStore()
-    const solvedIds = Array.isArray(persisted?.solvedIds) ? persisted.solvedIds : []
+    const { persisted, solvedIds } = getProgress()
     const activePuzzleId = typeof persisted?.activeState?.puzzleId === 'string'
       ? persisted.activeState.puzzleId
       : null
@@ -1182,24 +1259,63 @@ export function mountGameUi(root = document.querySelector('#app')) {
     const totalPuzzleCount = trackModels.reduce((sum, track) => sum + track.totalCount, 0)
     const solvedPuzzleCount = trackModels.reduce((sum, track) => sum + track.solvedCount, 0)
 
-    const chips = [
-      highlightedTrack ? `Track: ${highlightedTrack.title}` : 'Track: All tracks',
-      `Solved ${solvedPuzzleCount}/${totalPuzzleCount}`,
-    ]
+    // The hero eyebrow already names the track; the chip only reports overall progress
+    // Progress now lives in the stats strip; no chips needed
+    const chips = []
 
     const showTutorialCard = !(tutorialDismissed || tutorialCompleted)
 
-    // Build continue label for CTA button
+    // Hero copy depends on where the player is: first visit, mid-way, or done
+    const isFirstVisit = solvedPuzzleCount === 0 && !activePuzzleId
+    let eyebrowLabel = 'Continue'
     let continueLabel = 'Continue'
     let continueTrackTitle = null
     if (continueAction.kind === 'play' && highlightedTrack) {
-      continueTrackTitle = highlightedTrack.title
+      const puzzleEntry = highlightedTrack.puzzles.find(entry => entry.id === continueAction.puzzleId)
       const pos = getTrackPuzzlePosition(continueAction.puzzleId, continueAction.trackId)
-      if (pos) continueLabel = `Continue ${pos}`
+      continueTrackTitle = pos ? `${highlightedTrack.title} ${pos}` : highlightedTrack.title
+      if (isFirstVisit) {
+        eyebrowLabel = 'Start here'
+        continueLabel = 'Start playing'
+      } else if (puzzleEntry?.title) {
+        eyebrowLabel = puzzleEntry.inProgress ? 'In progress' : 'Up next'
+        continueLabel = `Continue: ${puzzleEntry.title}`
+      }
+    } else if (continueAction.allSolved) {
+      eyebrowLabel = `All ${totalPuzzleCount} puzzles solved`
+      continueLabel = 'Replay puzzles'
+    }
+
+    const solvedEntries = trackModels.flatMap(track => track.puzzles).filter(entry => entry.status === 'solved')
+    const achievements = buildAchievements(trackModels)
+    const totals = getPointTotals(trackModels, achievements)
+    const stats = {
+      points: totals.points,
+      maxPoints: totals.maxPoints,
+      bonusPoints: totals.bonusPoints,
+      rank: getRank(totals.points, totals.maxPoints),
+      stars: solvedEntries.reduce((sum, entry) => sum + starsForScore(entry.bestScore), 0),
+      maxStars: totalPuzzleCount * 3,
+      solved: solvedPuzzleCount,
+      total: totalPuzzleCount,
     }
 
     const startEl = renderStartScreen({
+      stats,
+      tracks: trackModels,
+      currentTrackId: continueAction.trackId ?? null,
+      achievements,
+      renderPreview: renderPuzzlePreview,
+      onOpenTrack(trackId) {
+        goToTrackBrowser(trackId)
+      },
+      onResumeTrack(trackId) {
+        const launchId = controller.getTrackLaunchPuzzleId(trackId)
+        if (launchId) loadPuzzle(launchId, { trackId })
+        else goToTrackBrowser(trackId)
+      },
       chips,
+      eyebrowLabel,
       continueLabel,
       continueTrackTitle,
       totalPuzzleCount,
@@ -1244,8 +1360,28 @@ export function mountGameUi(root = document.querySelector('#app')) {
 
     const model = ui.getRenderModel()
     const trackData = selectedTrackId ? getTracks().find(t => t.id === selectedTrackId) : null
+    const { solvedIds, bestScores } = getProgress()
+    const trackPuzzleIds = trackData?.puzzleIds ?? []
+    const hasUnsolvedInTrack = trackPuzzleIds.some(id => !solvedIds.includes(id))
+    const guidance = resolveGuidance(model)
+    const playState = ui.getState()
+    if (playState.won && winAchievements.board !== playState.board) {
+      const seen = new Set(getProgress().persisted?.seenAchievementIds ?? [])
+      const unlocked = buildAchievements(buildTrackViewModels()).filter(entry => entry.unlocked)
+      winAchievements = { board: playState.board, list: unlocked.filter(entry => !seen.has(entry.id)) }
+      if (winAchievements.list.length > 0) {
+        saveSeenAchievements(unlocked.map(entry => entry.id))
+        showAchievementToasts(winAchievements.list)
+      }
+    }
     const extModel = {
       ...model,
+      ...guidance,
+      newAchievements: playState.won && winAchievements.board === playState.board ? winAchievements.list : [],
+      bestScore: Number.isInteger(bestScores[currentPuzzleId]) ? bestScores[currentPuzzleId] : null,
+      hasUnsolvedInTrack,
+      nextTrack: hasUnsolvedInTrack ? null : getNextUnfinishedTrack(selectedTrackId, solvedIds),
+      totalPuzzleCount: getTracks().reduce((sum, track) => sum + track.puzzleIds.length, 0),
       puzzleId: currentPuzzleId,
       prevId: getPrevIdInTrack(currentPuzzleId, selectedTrackId),
       nextId: getNextIdInTrack(currentPuzzleId, selectedTrackId),
@@ -1257,10 +1393,11 @@ export function mountGameUi(root = document.querySelector('#app')) {
     renderToDom(playContent, extModel)
     renderShellView({
       mode: 'play',
-      title: extModel.puzzleTitle,
+      title: extModel.trackTitle ?? 'Xess',
       content: playContent.firstElementChild,
       prevId: extModel.prevId,
       nextId: extModel.nextId,
+      position: extModel.trackPosition,
     })
 
     // Measure actual chrome so --play-inner-chrome is accurate for this render
@@ -1368,12 +1505,28 @@ export function mountGameUi(root = document.querySelector('#app')) {
       if (extModel.nextId) loadPuzzle(extModel.nextId, { trackId: selectedTrackId })
     })
     bindPrimaryAction(root.querySelector('[data-win-back-to-tracks]'), () => {
-      goToTrackBrowser(selectedTrackId)
+      goToTrackBrowser(extModel.hasUnsolvedInTrack ? selectedTrackId : null)
+    })
+    bindPrimaryAction(root.querySelector('[data-win-next-track]'), () => {
+      const nextTrackId = extModel.nextTrack?.id
+      const launchId = nextTrackId ? controller.getTrackLaunchPuzzleId(nextTrackId) : null
+      if (launchId) loadPuzzle(launchId, { trackId: nextTrackId })
+      else goToTrackBrowser(null)
+    })
+    bindPrimaryAction(root.querySelector('[data-hint]'), requestHint)
+    bindPrimaryAction(root.querySelector('[data-win-replay]'), () => {
+      ui.restart()
+      rerender()
+    })
+    bindPrimaryAction(root.querySelector('[data-info-close]'), () => {
+      const modal = root.querySelector('[data-info-modal]')
+      if (modal) modal.hidden = true
     })
   }
 
   function renderTrackBrowserScreen() {
     const trackEl = renderTrackBrowser({
+      renderPreview: renderPuzzlePreview,
       tracks: buildTrackViewModels(),
       selectedTrackId,
       onOpenTrack(trackId) {
@@ -1397,14 +1550,39 @@ export function mountGameUi(root = document.querySelector('#app')) {
 
     renderShellView({
       mode: 'tracks',
-      title: selectedTrackId ? 'Track details' : 'Tracks',
+      title: 'Xess',
       content: trackEl,
     })
+  }
+
+  // Progress made before achievements existed: mark what is already unlocked as
+  // seen, so the next win announces only what that win actually earned.
+  {
+    const { persisted } = getProgress()
+    if ((persisted?.seenAchievementIds ?? []).length === 0) {
+      const alreadyUnlocked = buildAchievements(buildTrackViewModels()).filter(entry => entry.unlocked)
+      if (alreadyUnlocked.length > 0) saveSeenAchievements(alreadyUnlocked.map(entry => entry.id))
+    }
   }
 
   rerender()
 
   if (typeof window !== 'undefined') {
+
+    window.addEventListener('popstate', (event) => {
+      const entry = event.state
+      if (!entry || entry.xess !== true || isCreatorRoute()) return
+
+      selectedTrackId = typeof entry.trackId === 'string' ? entry.trackId : null
+      if (entry.screen === 'play' && catalogue.some(item => item.id === entry.puzzleId)) {
+        ui = createGameUiController({ controller, puzzleId: entry.puzzleId })
+        currentPuzzleId = entry.puzzleId
+        screenMode = 'play'
+      } else {
+        screenMode = entry.screen === 'tracks' ? 'tracks' : 'start'
+      }
+      rerender()
+    })
 
     window.addEventListener('hashchange', () => {
       if (isCreatorRoute()) {
@@ -1463,6 +1641,12 @@ export function mountGameUi(root = document.querySelector('#app')) {
     const tag = e.target.tagName
     if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return
 
+    if (screenMode === 'play' && e.key === 'Escape') {
+      const infoModal = root.querySelector('[data-info-modal]')
+      if (infoModal && !infoModal.hidden) infoModal.hidden = true
+      else root.querySelector('[data-win-dismiss]')?.remove()
+    }
+
     if (screenMode === 'play' && ui) {
       if (e.key === 'z' && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
         e.preventDefault()
@@ -1478,18 +1662,8 @@ export function mountGameUi(root = document.querySelector('#app')) {
       }
     }
 
-    if (screenMode === 'creator' && creatorState.replayBoards.length > 0) {
-      if (e.key === 'ArrowLeft' || e.key === '[') {
-        e.preventDefault()
-        if (creatorState.replayIndex > 0) {
-          updateCreator({ replayIndex: creatorState.replayIndex - 1 })
-        }
-      } else if (e.key === 'ArrowRight' || e.key === ']') {
-        e.preventDefault()
-        if (creatorState.replayIndex < creatorState.replayBoards.length - 1) {
-          updateCreator({ replayIndex: creatorState.replayIndex + 1 })
-        }
-      }
+    if (screenMode === 'creator' && creator.handleKeydown(e)) {
+      e.preventDefault()
     }
   })
 

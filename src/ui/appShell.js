@@ -1,3 +1,5 @@
+import { renderLogo, renderLogoMark } from './logo.js'
+
 function bindActivate(button, callback) {
   if (!button || typeof callback !== 'function') return
 
@@ -24,6 +26,8 @@ export function renderAppShell({
   showTracks = true,
   hasPrevPuzzle = false,
   hasNextPuzzle = false,
+  position = null,
+  points = null,
 }) {
   const shell = document.createElement('section')
   shell.className = 'app-shell'
@@ -34,30 +38,52 @@ export function renderAppShell({
   topbar.className = 'app-shell-topbar'
   topbar.setAttribute('data-shell-topbar', 'true')
 
-  const heading = document.createElement('h1')
-  heading.className = 'app-shell-title'
-  heading.textContent = typeof title === 'string' && title.length > 0 ? title : 'Xess'
+  const titleText = typeof title === 'string' && title.length > 0 ? title : 'Xess'
+  const isAppTitle = titleText === 'Xess'
 
+  // The logo is the way home. With a context title (track, creator) it shrinks to the mark.
   const homeButton = document.createElement('button')
   homeButton.type = 'button'
-  homeButton.className = 'app-shell-nav-action'
+  homeButton.className = 'app-shell-home'
   homeButton.setAttribute('data-shell-nav-home', 'true')
-  homeButton.textContent = 'Home'
+  homeButton.setAttribute('aria-label', 'Xess home')
+  homeButton.setAttribute('title', 'Home')
+  homeButton.append(isAppTitle ? renderLogo() : renderLogoMark())
   bindActivate(homeButton, onNavigateHome)
 
-  topbar.append(heading, homeButton)
+  const heading = document.createElement('h1')
+  heading.className = isAppTitle ? 'app-shell-title sr-only' : 'app-shell-title'
+  heading.textContent = titleText
+
+  const actions = document.createElement('div')
+  actions.className = 'app-shell-actions'
+
+  if (Number.isFinite(points)) {
+    const score = document.createElement('span')
+    score.className = 'app-shell-score'
+    score.setAttribute('data-shell-score', 'true')
+    score.setAttribute('aria-label', `${points} points`)
+    score.setAttribute('title', 'Your total points')
+    score.textContent = `★ ${points.toLocaleString('en-US')}`
+    actions.append(score)
+  }
 
   if (showTracks) {
     const tracksButton = document.createElement('button')
     tracksButton.type = 'button'
     tracksButton.className = 'app-shell-nav-action'
     tracksButton.setAttribute('data-shell-nav-tracks', 'true')
-    tracksButton.textContent = 'Tracks'
+    // From a puzzle this opens the puzzle list of its track
+    tracksButton.textContent = mode === 'play' ? 'Puzzles' : 'Tracks'
+    if (mode === 'tracks') tracksButton.setAttribute('aria-current', 'page')
     bindActivate(tracksButton, onNavigateTracks)
-    topbar.append(tracksButton)
+    actions.append(tracksButton)
   }
 
   if (hasPrevPuzzle !== false || hasNextPuzzle !== false) {
+    const stepper = document.createElement('div')
+    stepper.className = 'app-shell-stepper'
+
     const prevBtn = document.createElement('button')
     prevBtn.type = 'button'
     prevBtn.className = 'app-shell-nav-action'
@@ -74,8 +100,19 @@ export function renderAppShell({
     nextBtn.textContent = '›'
     nextBtn.disabled = !hasNextPuzzle
 
-    topbar.append(prevBtn, nextBtn)
+    stepper.append(prevBtn)
+    if (typeof position === 'string' && position.length > 0) {
+      const where = document.createElement('span')
+      where.className = 'app-shell-position'
+      where.setAttribute('data-shell-position', 'true')
+      where.textContent = position
+      stepper.append(where)
+    }
+    stepper.append(nextBtn)
+    actions.append(stepper)
   }
+
+  topbar.append(homeButton, heading, actions)
 
   shell.append(topbar)
 

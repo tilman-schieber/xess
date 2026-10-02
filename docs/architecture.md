@@ -36,9 +36,13 @@ Puzzle data and navigation logic.
 - `catalogue.js` — static array of all puzzle definitions
 - `loader.js` — parses a puzzle definition (string grid → board `Map`) and validates fields
 - `nav.js` — navigation helpers: track listing, puzzle unlock state, continue-action resolver; also exports `getPrevIdInTrack`, `getNextIdInTrack`, and `getTrackPuzzlePosition` for track-scoped navigation
-- `tracks.js` — track metadata (names, ordering, tutorial designation)
+- `tracks.js` — track metadata; tracks are ordered by difficulty (Tutorial, Warm-up, Tricky, Fiendish)
 - `contentIntegrity.js` — validates catalogue structure at startup
-- `solver.js` — BFS puzzle solver
+- `solver.js` — BFS puzzle solver (from the start position or any given position)
+- `solutions.js` — generated shortest solution per track puzzle (`scripts/generate-solutions.js`); source of par
+- `hints.js` — looks up the next move while the player is on the stored solution
+- `score.js` — scoring rules (par, hint deductions, stars)
+- `achievements.js` — achievements and the points-based rank, derived purely from solved puzzles and best scores
 - `solver.worker.js` — Web Worker wrapper for the solver
 
 ### `ui/`
@@ -46,10 +50,12 @@ Puzzle data and navigation logic.
 Rendering modules. Each is a pure function of its inputs — no internal state, no localStorage access.
 
 - `appShell.js` — persistent topbar rendered across all modes; includes a Home button, a Tracks button, and optional Prev/Next puzzle navigation buttons (added when mode is 'play')
-- `startScreen.js` — landing dashboard with Continue / Tutorial / Browse action cards
-- `trackBrowser.js` — track list with puzzle progress chips
+- `startScreen.js` — landing hub: current position preview, rank and score stats, track cards, achievements
+- `miniBoard.js` — non-interactive board thumbnail used on the hub and in track lists
+- `trackBrowser.js` — track cards (shared with the hub) and the per-track puzzle list with thumbnails and best scores
 - `puzzleList.js` — puzzle list UI component for per-track puzzle browsing
-- `puzzleCreator.js` — hidden visual puzzle creator tool
+- `puzzleCreator.js` — hidden visual puzzle creator: view (palette, board, tabs, export) and pure editing helpers
+- `creatorScreen.js` — creator state: edit undo/redo, auto-solve in a worker, test play, solution replay, draft persistence
 - `boardRenderer.js` — renders the puzzle board as a CSS Grid with piece SVGs
 - `dragDrop.js` — pointer/touch event handling for piece selection and moves
 - `interactionFeedback.js` — selected-piece and legal-move overlay state machine
@@ -62,6 +68,7 @@ Rendering modules. Each is a pure function of its inputs — no internal state, 
 All localStorage access is isolated here. The controller and UI modules never call localStorage directly.
 
 - `store.js` — `loadStore()`, `saveProgress()`, `saveActiveState()`, `clearActiveState()`, tutorial lifecycle helpers
+- `creatorDraft.js` — the creator's work-in-progress draft (separate `xess_creator_v1` key)
 
 ### `styles/`
 
@@ -71,6 +78,7 @@ Vanilla CSS with custom properties. No framework, no utility classes.
 - `board.css` — board grid, cells, piece overlays
 - `start-screen.css` — landing page layout
 - `track-browser.css` — track list layout
+- `hub.css` — landing hub sections and mini boards
 - `puzzle-list.css` — per-track puzzle list
 - `puzzle-creator.css` — puzzle creator tool styles
 - `pwa-prompts.css` — install/update prompt styles

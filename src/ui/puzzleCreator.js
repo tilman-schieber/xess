@@ -3,25 +3,25 @@ import { getPieceSvg } from './pieces.js'
 
 const PIECE_CHARS = ['P', 'N', 'B', 'R', 'Q', 'K', 'p', 'n', 'b', 'r', 'q', 'k']
 const PIECE_TYPES = [
-  { type: 'r', label: 'Rook' },
-  { type: 'n', label: 'Knight' },
   { type: 'q', label: 'Queen' },
-  { type: 'p', label: 'Pawn' },
+  { type: 'r', label: 'Rook' },
   { type: 'b', label: 'Bishop' },
+  { type: 'n', label: 'Knight' },
+  { type: 'p', label: 'Pawn' },
 ]
 
 function placementModesForGoalType(goalType) {
   if (goalType === 'capture-all-targets') {
     return [
-      { value: 'black-piece', label: 'Black pieces' },
-      { value: 'white-piece', label: 'White pieces' },
+      { value: 'white-piece', label: 'White (you move these)' },
+      { value: 'black-piece', label: 'Black (to capture)' },
     ]
   }
 
   return [
+    { value: 'white-piece', label: 'White blockers' },
     { value: 'red-piece', label: 'Red pieces' },
-    { value: 'red-target', label: 'Red targets' },
-    { value: 'white-piece', label: 'White pieces' },
+    { value: 'red-target', label: 'Goal square for' },
   ]
 }
 
@@ -75,113 +75,207 @@ function renderPieceSpan(pieceChar, isReachGoal, className = 'creator-piece') {
   return span
 }
 
-function renderToolButton({ value, label, active, onSelect }) {
-  const button = document.createElement('button')
+function el(tag, className, text) {
+  const node = document.createElement(tag)
+  if (className) node.className = className
+  if (text !== undefined) node.textContent = text
+  return node
+}
+
+function actionButton(label, onActivate, { disabled = false, primary = false, attr = null } = {}) {
+  const button = el('button', primary ? 'creator-action creator-action--primary' : 'creator-action', label)
   button.type = 'button'
-  button.className = active ? 'creator-tool is-active' : 'creator-tool'
-  button.textContent = label
-  button.setAttribute('data-creator-tool', value)
-  bindActivate(button, () => onSelect(value))
+  button.disabled = disabled
+  if (attr) button.setAttribute(attr, 'true')
+  bindActivate(button, onActivate)
   return button
+}
+
+// Drag-painting: the board is re-rendered after every painted cell, so the
+// stroke is tracked at module level and resolved with elementFromPoint.
+const paintStroke = { active: false, lastKey: null, onCell: null }
+let _paintListenersBound = false
+function ensurePaintListeners() {
+  if (_paintListenersBound || typeof window === 'undefined') return
+  _paintListenersBound = true
+
+  window.addEventListener('pointermove', (event) => {
+    if (!paintStroke.active) return
+    const target = document.elementFromPoint(event.clientX, event.clientY)
+    const key = target?.closest?.('[data-creator-cell]')?.getAttribute('data-creator-cell')
+    if (!key || key === paintStroke.lastKey) return
+    // Fast strokes skip squares between pointer events: fill the straight line
+    const [fromCol, fromRow] = parseKey(paintStroke.lastKey ?? key)
+    const [toCol, toRow] = parseKey(key)
+    const steps = Math.max(Math.abs(toCol - fromCol), Math.abs(toRow - fromRow), 1)
+    paintStroke.lastKey = key
+    for (let step = 1; step <= steps; step += 1) {
+      const col = Math.round(fromCol + ((toCol - fromCol) * step) / steps)
+      const row = Math.round(fromRow + ((toRow - fromRow) * step) / steps)
+      paintStroke.onCell?.(posKey(col, row), { drag: true })
+    }
+  })
+
+  const endStroke = () => { paintStroke.active = false }
+  window.addEventListener('pointerup', endStroke)
+  window.addEventListener('pointercancel', endStroke)
+}
+
+function renderField(labelText, control) {
+  const wrap = el('label', 'creator-field', labelText)
+  wrap.append(control)
+  return wrap
+}
+
+function renderPalette({ model, onSelectTool }) {
+  const palette = el('div', 'creator-palette')
+  const isReachGoal = model.goalType === 'reach-all-goal-squares'
+
+  const basics = el('div', 'creator-palette-row')
+  ;[
+    { editMode: 'empty', label: 'Empty square', glyph: '' },
+    { editMode: 'void', label: 'Hole', glyph: '✕' },
+  ].forEach(({ editMode, label, glyph }) => {
+    const button = el('button', 'creator-swatch creator-swatch--wide')
+    button.type = 'button'
+    button.setAttribute('data-creator-tool', editMode)
+    button.setAttribute('aria-pressed', String(model.editMode === editMode))
+    if (model.editMode === editMode) button.classList.add('is-active')
+    const chip = el('span', editMode === 'void' ? 'creator-swatch-chip creator-swatch-chip--void' : 'creator-swatch-chip', glyph)
+    button.append(chip, el('span', 'creator-swatch-label', label))
+    bindActivate(button, () => onSelectTool({ editMode }))
+    basics.append(button)
+  })
+  palette.append(basics)
+
+  placementModesForGoalType(model.goalType).forEach((mode) => {
+    const row = el('div', 'creator-palette-group')
+    row.append(el('span', 'creator-palette-title', mode.label))
+    const swatches = el('div', 'creator-palette-row')
+
+    PIECE_TYPES.forEach(({ type, label }) => {
+      const isTarget = mode.value === 'red-target'
+      const char = mode.value === 'white-piece' ? type.toUpperCase() : type
+      const active = model.editMode === 'place' && model.placementMode === mode.value && model.pieceType === type
+      const button = el('button', 'creator-swatch')
+      button.type = 'button'
+      button.setAttribute('data-creator-tool', `${mode.value}:${type}`)
+      button.setAttribute('aria-label', `${mode.label}: ${label}`)
+      button.setAttribute('title', `${mode.label}: ${label}`)
+      button.setAttribute('aria-pressed', String(active))
+      if (active) button.classList.add('is-active')
+      if (isTarget) button.classList.add('creator-swatch--goal')
+      const piece = renderPieceSpan(char, isReachGoal, isTarget ? 'creator-piece creator-piece--ghost' : 'creator-piece')
+      if (piece) button.append(piece)
+      bindActivate(button, () => onSelectTool({ editMode: 'place', placementMode: mode.value, pieceType: type }))
+      swatches.append(button)
+    })
+
+    row.append(swatches)
+    palette.append(row)
+  })
+
+  return palette
+}
+
+function renderEdgeControls({ model, onResizeEdge }) {
+  const wrap = el('div', 'creator-edges')
+  wrap.append(el('span', 'creator-palette-title', `Board ${model.width} × ${model.height}`))
+
+  const grid = el('div', 'creator-edges-grid')
+  ;[
+    { side: 'top', label: 'Top row' },
+    { side: 'bottom', label: 'Bottom row' },
+    { side: 'left', label: 'Left column' },
+    { side: 'right', label: 'Right column' },
+  ].forEach(({ side, label }) => {
+    const isRow = side === 'top' || side === 'bottom'
+    const size = isRow ? model.height : model.width
+    const row = el('div', 'creator-edge')
+    row.append(el('span', 'creator-edge-label', label))
+
+    const minus = el('button', 'creator-action creator-action--compact', '−')
+    minus.type = 'button'
+    minus.disabled = size <= 1
+    minus.setAttribute('aria-label', `Remove ${label.toLowerCase()}`)
+    minus.setAttribute('data-creator-edge', `${side}:-1`)
+    bindActivate(minus, () => onResizeEdge(side, -1))
+
+    const plus = el('button', 'creator-action creator-action--compact', '+')
+    plus.type = 'button'
+    plus.disabled = size >= 12
+    plus.setAttribute('aria-label', `Add ${label.toLowerCase()}`)
+    plus.setAttribute('data-creator-edge', `${side}:1`)
+    bindActivate(plus, () => onResizeEdge(side, 1))
+
+    row.append(minus, plus)
+    grid.append(row)
+  })
+  wrap.append(grid)
+  return wrap
 }
 
 export function renderPuzzleCreator({
   model,
   onChangeField,
-  onGenerateId,
   onLoadPreset,
   onNewPuzzle,
-  onCopyExport,
-  onResize,
-  onSelectEditMode,
-  onSelectPlacementMode,
-  onSelectPieceType,
+  onSelectTool,
   onCellAction,
-  onExport,
-  onSolve,
-  onCancelSolve,
+  onResizeEdge,
+  onUndoEdit,
+  onRedoEdit,
+  onSetViewMode,
+  onReplayStep,
+  onPlayUndo,
+  onPlayReset,
+  onCopyExport,
   onChangeSolverDepth,
-  onUndoStep,
-  onRedoStep,
-  onResetReplay,
-  onToggleCollapsible,
 }) {
-  const root = document.createElement('section')
-  root.className = 'puzzle-creator'
+  ensurePaintListeners()
 
-  const controls = document.createElement('section')
-  controls.className = 'creator-panel'
+  const root = el('section', 'puzzle-creator')
+  root.setAttribute('data-creator-view', model.viewMode)
 
-  const heading = document.createElement('h2')
-  heading.className = 'creator-heading'
-  heading.textContent = 'Puzzle Creator'
+  // ── Left: puzzle details, palette, board size ──
+  const controls = el('section', 'creator-panel')
 
-  const copy = document.createElement('p')
-  copy.className = 'creator-copy'
-  copy.textContent = 'Draft puzzles visually, export JSON, and verify solvability.'
-
-  const form = document.createElement('div')
-  form.className = 'creator-form'
-
-  const idWrap = document.createElement('label')
-  idWrap.className = 'creator-field'
-  idWrap.textContent = 'ID'
-  const idRow = document.createElement('div')
-  idRow.className = 'creator-inline-field'
-  const idInput = document.createElement('input')
-  idInput.type = 'text'
-  idInput.value = model.id
-  idInput.addEventListener('change', () => onChangeField('id', idInput.value))
-  const uuidButton = document.createElement('button')
-  uuidButton.type = 'button'
-  uuidButton.className = 'creator-action creator-action--compact'
-  uuidButton.textContent = 'Generate ID'
-  bindActivate(uuidButton, onGenerateId)
-  idRow.append(idInput, uuidButton)
-  idWrap.append(idRow)
-  form.append(idWrap)
-
-  const titleWrap = document.createElement('label')
-  titleWrap.className = 'creator-field'
-  titleWrap.textContent = 'Title'
-  const titleInput = document.createElement('input')
-  titleInput.type = 'text'
-  titleInput.value = model.title
-  titleInput.addEventListener('change', () => onChangeField('title', titleInput.value))
-  titleWrap.append(titleInput)
-  form.append(titleWrap)
-
-  const presetWrap = document.createElement('label')
-  presetWrap.className = 'creator-field'
-  presetWrap.textContent = 'Load existing puzzle'
-  const presetRow = document.createElement('div')
-  presetRow.className = 'creator-inline-field'
   const presetSelect = document.createElement('select')
-  model.presetOptions.forEach(option => {
+  const blank = document.createElement('option')
+  blank.value = ''
+  blank.textContent = 'Open an existing puzzle…'
+  presetSelect.append(blank)
+  model.presetOptions.forEach((option) => {
     const opt = document.createElement('option')
     opt.value = option.id
     opt.textContent = option.label
     presetSelect.append(opt)
   })
-  presetSelect.value = model.selectedPresetId
-  presetSelect.addEventListener('change', () => onChangeField('selectedPresetId', presetSelect.value))
-  const loadButton = document.createElement('button')
-  loadButton.type = 'button'
-  loadButton.className = 'creator-action creator-action--compact'
-  loadButton.textContent = 'Load'
-  bindActivate(loadButton, onLoadPreset)
-  presetRow.append(presetSelect, loadButton)
-  presetWrap.append(presetRow)
-  form.append(presetWrap)
+  presetSelect.value = ''
+  presetSelect.setAttribute('aria-label', 'Open an existing puzzle')
+  presetSelect.addEventListener('change', () => {
+    if (presetSelect.value) onLoadPreset(presetSelect.value)
+  })
 
-  const goalWrap = document.createElement('label')
-  goalWrap.className = 'creator-field'
-  goalWrap.textContent = 'Goal type'
+  const fileRow = el('div', 'creator-inline-field')
+  fileRow.append(presetSelect, actionButton('New', onNewPuzzle, { attr: 'data-creator-new' }))
+  controls.append(fileRow)
+
+  const titleInput = document.createElement('input')
+  titleInput.type = 'text'
+  titleInput.value = model.title
+  titleInput.addEventListener('change', () => onChangeField('title', titleInput.value))
+
+  const idInput = document.createElement('input')
+  idInput.type = 'text'
+  idInput.value = model.id
+  idInput.addEventListener('change', () => onChangeField('id', idInput.value))
+
   const goalSelect = document.createElement('select')
   ;[
-    { value: 'reach-all-goal-squares', label: 'Reach all goal squares' },
-    { value: 'capture-all-targets', label: 'Capture all targets' },
-  ].forEach(option => {
+    { value: 'reach-all-goal-squares', label: 'Reach: red pieces to their goal squares' },
+    { value: 'capture-all-targets', label: 'Capture: white takes every black piece' },
+  ].forEach((option) => {
     const opt = document.createElement('option')
     opt.value = option.value
     opt.textContent = option.label
@@ -189,262 +283,80 @@ export function renderPuzzleCreator({
   })
   goalSelect.value = model.goalType
   goalSelect.addEventListener('change', () => onChangeField('goalType', goalSelect.value))
-  goalWrap.append(goalSelect)
-  form.append(goalWrap)
 
-  const promoWrap = document.createElement('label')
-  promoWrap.className = 'creator-checkbox'
+  const promoWrap = el('label', 'creator-checkbox')
   const promoInput = document.createElement('input')
   promoInput.type = 'checkbox'
   promoInput.checked = model.promote
   promoInput.addEventListener('change', () => onChangeField('promote', promoInput.checked))
-  const promoLabel = document.createElement('span')
-  promoLabel.textContent = 'Enable pawn promotion'
-  promoWrap.append(promoInput, promoLabel)
-  form.append(promoWrap)
+  promoWrap.append(promoInput, el('span', null, 'Pawns become queens on the top row'))
 
-  const targetWrap = document.createElement('label')
-  targetWrap.className = 'creator-field'
-  targetWrap.textContent = 'Capture target color'
-  const targetSelect = document.createElement('select')
-  ;[
-    { value: 'black', label: 'black' },
-    { value: 'white', label: 'white' },
-  ].forEach(option => {
-    const opt = document.createElement('option')
-    opt.value = option.value
-    opt.textContent = option.label
-    targetSelect.append(opt)
-  })
-  targetSelect.value = model.targetColor
-  targetSelect.disabled = model.goalType !== 'capture-all-targets'
-  targetSelect.addEventListener('change', () => onChangeField('targetColor', targetSelect.value))
-  targetWrap.append(targetSelect)
-  form.append(targetWrap)
-
-  const descriptionWrap = document.createElement('label')
-  descriptionWrap.className = 'creator-field'
-  descriptionWrap.textContent = 'Description HTML'
-  const descriptionInput = document.createElement('textarea')
-  descriptionInput.className = 'creator-description-input'
+  const descriptionInput = el('textarea', 'creator-description-input')
   descriptionInput.value = model.descriptionHtml
+  descriptionInput.placeholder = '<p>One line that sets the scene.</p>'
   descriptionInput.addEventListener('change', () => onChangeField('descriptionHtml', descriptionInput.value))
-  descriptionWrap.append(descriptionInput)
-  form.append(descriptionWrap)
 
-  const sizeRow = document.createElement('div')
-  sizeRow.className = 'creator-size'
-  const widthInput = document.createElement('input')
-  widthInput.type = 'number'
-  widthInput.min = '2'
-  widthInput.max = '12'
-  widthInput.value = String(model.width)
-  const heightInput = document.createElement('input')
-  heightInput.type = 'number'
-  heightInput.min = '2'
-  heightInput.max = '12'
-  heightInput.value = String(model.height)
-  const resizeBtn = document.createElement('button')
-  resizeBtn.type = 'button'
-  resizeBtn.className = 'creator-action'
-  resizeBtn.textContent = 'Resize board'
-  bindActivate(resizeBtn, () => {
-    onResize({
-      width: Number.parseInt(widthInput.value, 10),
-      height: Number.parseInt(heightInput.value, 10),
-    })
+  const form = el('div', 'creator-form')
+  form.append(
+    renderField('Title', titleInput),
+    renderField('ID (follows the title until you edit it)', idInput),
+    renderField('Goal', goalSelect),
+    promoWrap,
+    renderField('Description (HTML)', descriptionInput),
+  )
+  controls.append(form)
+
+  controls.append(renderPalette({ model, onSelectTool }))
+  controls.append(renderEdgeControls({ model, onResizeEdge }))
+
+  // ── Right: mode tabs, board, status, mode-specific controls, export ──
+  const boardPanel = el('section', 'creator-board-panel')
+
+  const tabs = el('div', 'creator-tabs')
+  tabs.setAttribute('role', 'tablist')
+  ;[
+    { value: 'edit', label: 'Edit', disabled: false },
+    { value: 'play', label: 'Test play', disabled: !model.isValid },
+    { value: 'replay', label: 'Solution', disabled: model.replayCount === 0 },
+  ].forEach((tab) => {
+    const button = el('button', 'creator-tab', tab.label)
+    button.type = 'button'
+    button.disabled = tab.disabled
+    button.setAttribute('role', 'tab')
+    button.setAttribute('data-creator-tab', tab.value)
+    button.setAttribute('aria-selected', String(model.viewMode === tab.value))
+    if (model.viewMode === tab.value) button.classList.add('is-active')
+    bindActivate(button, () => onSetViewMode(tab.value))
+    tabs.append(button)
   })
-  sizeRow.append(document.createTextNode('Size'), widthInput, document.createTextNode('x'), heightInput, resizeBtn)
+  boardPanel.append(tabs)
 
-  const tools = document.createElement('div')
-  tools.className = 'creator-tools'
+  const status = el('p', 'creator-status', model.status?.text ?? '')
+  status.setAttribute('data-creator-status', model.status?.kind ?? 'idle')
+  status.setAttribute('role', 'status')
+  boardPanel.append(status)
 
-  const editModeDefs = [
-    { value: 'place', label: 'Place' },
-    { value: 'empty', label: 'Empty' },
-    { value: 'void', label: 'Impassable' },
-  ]
-
-  editModeDefs.forEach(tool => {
-    tools.append(renderToolButton({
-      value: tool.value,
-      label: tool.label,
-      active: model.editMode === tool.value,
-      onSelect: onSelectEditMode,
-    }))
-  })
-
-  const placementModes = placementModesForGoalType(model.goalType)
-  const placementRow = document.createElement('div')
-  placementRow.className = 'creator-placement-modes'
-  placementModes.forEach(mode => {
-    placementRow.append(renderToolButton({
-      value: mode.value,
-      label: mode.label,
-      active: model.placementMode === mode.value,
-      onSelect: onSelectPlacementMode,
-    }))
-  })
-
-  const piecesRow = document.createElement('div')
-  piecesRow.className = 'creator-piece-types'
-  PIECE_TYPES.forEach(({ type, label }) => {
-    piecesRow.append(renderToolButton({
-      value: type,
-      label,
-      active: model.pieceType === type,
-      onSelect: onSelectPieceType,
-    }))
-  })
-
-  const editorActions = document.createElement('div')
-  editorActions.className = 'creator-actions'
-
-  const solverActions = document.createElement('div')
-  solverActions.className = 'creator-actions'
-
-  const exportBtn = document.createElement('button')
-  exportBtn.type = 'button'
-  exportBtn.className = 'creator-action'
-  exportBtn.textContent = 'Export JSON'
-  bindActivate(exportBtn, onExport)
-
-  const copyBtn = document.createElement('button')
-  copyBtn.type = 'button'
-  copyBtn.className = 'creator-action'
-  copyBtn.textContent = model.copyStatus === 'copied' ? 'Copied' : 'Copy JSON'
-  bindActivate(copyBtn, onCopyExport)
-
-  const newPuzzleBtn = document.createElement('button')
-  newPuzzleBtn.type = 'button'
-  newPuzzleBtn.className = 'creator-action'
-  newPuzzleBtn.textContent = 'New puzzle'
-  bindActivate(newPuzzleBtn, onNewPuzzle)
-
-  const solveBtn = document.createElement('button')
-  solveBtn.type = 'button'
-  solveBtn.className = 'creator-action'
-  if (model.solving) {
-    solveBtn.textContent = 'Cancel'
-    bindActivate(solveBtn, onCancelSolve)
-  } else {
-    solveBtn.textContent = 'Solve'
-    bindActivate(solveBtn, onSolve)
-  }
-
-  const undoBtn = document.createElement('button')
-  undoBtn.type = 'button'
-  undoBtn.className = 'creator-action'
-  undoBtn.textContent = 'Undo step'
-  undoBtn.disabled = model.solving || model.replayIndex <= 0
-  bindActivate(undoBtn, onUndoStep)
-
-  const redoBtn = document.createElement('button')
-  redoBtn.type = 'button'
-  redoBtn.className = 'creator-action'
-  redoBtn.textContent = 'Redo step'
-  redoBtn.disabled = model.solving || model.replayIndex >= (model.replayBoards.length - 1)
-  bindActivate(redoBtn, onRedoStep)
-
-  const resetReplayBtn = document.createElement('button')
-  resetReplayBtn.type = 'button'
-  resetReplayBtn.className = 'creator-action'
-  resetReplayBtn.textContent = 'Reset replay'
-  resetReplayBtn.disabled = model.solving || model.replayBoards.length === 0
-  bindActivate(resetReplayBtn, onResetReplay)
-
-  editorActions.append(exportBtn, copyBtn, newPuzzleBtn)
-  solverActions.append(solveBtn, undoBtn, redoBtn, resetReplayBtn)
-
-  const solverDepthRow = document.createElement('div')
-  solverDepthRow.className = 'creator-size creator-size--solver'
-  const solverDepthLabel = document.createElement('span')
-  solverDepthLabel.textContent = 'Max depth'
-  const solverDepthInput = document.createElement('input')
-  solverDepthInput.type = 'number'
-  solverDepthInput.min = '1'
-  solverDepthInput.max = '200'
-  solverDepthInput.value = String(model.solverMaxDepth)
-  solverDepthInput.disabled = model.solving
-  solverDepthInput.addEventListener('input', () => {
-    onChangeSolverDepth(Number.parseInt(solverDepthInput.value, 10))
-  })
-  solverDepthRow.append(solverDepthLabel, solverDepthInput)
-
-  const message = document.createElement('p')
-  message.className = 'creator-message'
-  message.textContent = model.message
-
-  const exportArea = document.createElement('textarea')
-  exportArea.className = 'creator-export'
-  exportArea.value = model.exportJson
-  exportArea.readOnly = true
-
-  const open = model.collapsibleOpen ?? { settings: true, editor: true, solver: false }
-
-  const settingsDetails = document.createElement('details')
-  settingsDetails.className = 'creator-collapsible'
-  if (open.settings) settingsDetails.open = true
-  settingsDetails.addEventListener('toggle', () => onToggleCollapsible('settings', settingsDetails.open))
-  const settingsSummary = document.createElement('summary')
-  settingsSummary.className = 'creator-collapsible-title'
-  settingsSummary.textContent = 'Puzzle Settings'
-  const settingsContent = document.createElement('div')
-  settingsContent.className = 'creator-collapsible-content'
-  settingsContent.append(form)
-  settingsDetails.append(settingsSummary, settingsContent)
-
-  const editorDetails = document.createElement('details')
-  editorDetails.className = 'creator-collapsible'
-  if (open.editor) editorDetails.open = true
-  editorDetails.addEventListener('toggle', () => onToggleCollapsible('editor', editorDetails.open))
-  const editorSummary = document.createElement('summary')
-  editorSummary.className = 'creator-collapsible-title'
-  editorSummary.textContent = 'Board Editor'
-  const editorContent = document.createElement('div')
-  editorContent.className = 'creator-collapsible-content'
-  editorContent.append(sizeRow, tools)
-  if (model.editMode === 'place') {
-    editorContent.append(placementRow, piecesRow)
-  }
-  editorContent.append(editorActions, exportArea)
-  editorDetails.append(editorSummary, editorContent)
-
-  const solverDetails = document.createElement('details')
-  solverDetails.className = 'creator-collapsible creator-collapsible--solver'
-  if (open.solver) solverDetails.open = true
-  solverDetails.addEventListener('toggle', () => onToggleCollapsible('solver', solverDetails.open))
-  const solverSummary = document.createElement('summary')
-  solverSummary.className = 'creator-collapsible-title'
-  solverSummary.textContent = 'Solver and replay'
-  const solverContent = document.createElement('div')
-  solverContent.className = 'creator-collapsible-content'
-  solverContent.append(solverDepthRow, solverActions, message)
-  solverDetails.append(solverSummary, solverContent)
-
-  controls.append(heading, copy, settingsDetails, editorDetails, solverDetails)
-
-  const boardPanel = document.createElement('section')
-  boardPanel.className = 'creator-board-panel'
-
-  const board = document.createElement('div')
-  board.className = 'board creator-board'
+  const board = el('div', 'board creator-board')
   board.setAttribute('data-promotion-enabled', model.promote === true ? 'true' : 'false')
   board.style.setProperty('--cols', String(model.width))
   board.style.setProperty('--rows', String(model.height))
 
+  paintStroke.onCell = onCellAction
   const isReachGoal = model.goalType === 'reach-all-goal-squares'
+  const legalSet = new Set(model.playLegal ?? [])
   for (let row = 0; row < model.height; row += 1) {
     for (let col = 0; col < model.width; col += 1) {
       const key = posKey(col, row)
-      const cell = model.cells.get(key)
-      const button = document.createElement('button')
+      const cell = model.displayCells.get(key)
+      const button = el('button', ['cell', cell?.isVoid ? 'cell--void' : 'cell--playable', cell?.isGoal ? 'cell--goal' : '']
+        .filter(Boolean)
+        .join(' '))
       button.type = 'button'
       button.setAttribute('data-creator-cell', key)
-      button.className = ['cell', cell?.isVoid ? 'cell--void' : 'cell--playable', cell?.isGoal ? 'cell--goal' : '']
-        .filter(Boolean)
-        .join(' ')
-      button.tabIndex = 0
+      if (model.playSelected === key) button.classList.add('is-selected')
+      if (legalSet.has(key)) button.classList.add('is-legal')
+      if (model.highlight?.from === key) button.classList.add('is-hint-from')
+      if (model.highlight?.to === key) button.classList.add('is-hint-to')
 
       if (!cell?.isVoid && cell?.pieceChar) {
         const pieceEl = renderPieceSpan(cell.pieceChar, isReachGoal)
@@ -460,20 +372,85 @@ export function renderPuzzleCreator({
         }
       }
 
-      bindActivate(button, () => onCellAction(key))
+      button.addEventListener('pointerdown', (event) => {
+        if (event.pointerType === 'mouse' && event.button !== 0) return
+        event.preventDefault()
+        if (document.activeElement && document.activeElement !== button) document.activeElement.blur()
+        // Touch pointers are captured by the pressed element; release so the
+        // stroke can be tracked across cells.
+        if (button.hasPointerCapture?.(event.pointerId)) button.releasePointerCapture(event.pointerId)
+        paintStroke.active = model.viewMode === 'edit'
+        paintStroke.lastKey = key
+        onCellAction(key, { drag: false })
+      })
+      button.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onCellAction(key, { drag: false })
+        }
+      })
       board.append(button)
     }
   }
+  boardPanel.append(board)
 
-  const replayMeta = document.createElement('p')
-  replayMeta.className = 'creator-replay-meta'
-  if (model.replayBoards.length > 0) {
-    replayMeta.textContent = `Replay step ${model.replayIndex}/${model.replayBoards.length - 1}`
+  const modeBar = el('div', 'creator-actions')
+  if (model.viewMode === 'edit') {
+    modeBar.append(
+      actionButton('Undo', onUndoEdit, { disabled: !model.canUndoEdit, attr: 'data-creator-undo' }),
+      actionButton('Redo', onRedoEdit, { disabled: !model.canRedoEdit, attr: 'data-creator-redo' }),
+      el('span', 'creator-hint', 'Click or drag to paint. Click a square again to clear it.'),
+    )
+  } else if (model.viewMode === 'play') {
+    modeBar.append(
+      actionButton('Undo move', onPlayUndo, { disabled: !model.play?.canUndo }),
+      actionButton('Restart', onPlayReset, { disabled: (model.play?.moves ?? 0) === 0 }),
+      el('span', 'creator-hint', model.play?.text ?? ''),
+    )
   } else {
-    replayMeta.textContent = 'No solver replay loaded.'
+    modeBar.append(
+      actionButton('◀ Back', () => onReplayStep(-1), { disabled: model.replayIndex <= 0 }),
+      actionButton('Next ▶', () => onReplayStep(1), { disabled: model.replayIndex >= model.replayCount - 1 }),
+      el('span', 'creator-hint', `Move ${model.replayIndex} of ${Math.max(0, model.replayCount - 1)} · arrow keys also step`),
+    )
   }
+  boardPanel.append(modeBar)
 
-  boardPanel.append(board, replayMeta)
+  // ── Export ──
+  const exportWrap = el('div', 'creator-export-wrap')
+  const exportHead = el('div', 'creator-export-head')
+  exportHead.append(
+    el('span', 'creator-palette-title', 'Catalogue entry'),
+    actionButton(
+      model.copyStatus === 'copied' ? 'Copied ✓' : model.copyStatus === 'failed' ? 'Copy failed' : 'Copy',
+      onCopyExport,
+      { disabled: !model.isValid, primary: true, attr: 'data-creator-copy' },
+    ),
+  )
+  const exportArea = el('textarea', 'creator-export')
+  exportArea.value = model.exportText
+  exportArea.readOnly = true
+  exportArea.setAttribute('data-creator-export', 'true')
+  exportArea.setAttribute('aria-label', 'Catalogue entry for this puzzle')
+  const exportHelp = el(
+    'p',
+    'creator-copy',
+    'Paste into src/puzzles/catalogue.js, add the id to a track in src/puzzles/tracks.js, then run node scripts/generate-solutions.js.',
+  )
+
+  const depthRow = el('label', 'creator-size')
+  depthRow.append(el('span', null, 'Solver gives up after'))
+  const depthInput = document.createElement('input')
+  depthInput.type = 'number'
+  depthInput.min = '1'
+  depthInput.max = '200'
+  depthInput.value = String(model.solverMaxDepth)
+  depthInput.addEventListener('change', () => onChangeSolverDepth(Number.parseInt(depthInput.value, 10)))
+  depthRow.append(depthInput, el('span', null, 'moves'))
+
+  exportWrap.append(exportHead, exportArea, exportHelp, depthRow)
+  boardPanel.append(exportWrap)
+
   root.append(controls, boardPanel)
   return root
 }
@@ -624,8 +601,8 @@ export function toBoardMapFromCells(cells) {
 
 export function creatorStateFromRawPuzzle(raw) {
   const rows = Array.isArray(raw?.grid) ? raw.grid.filter(row => typeof row === 'string') : []
-  const width = Math.max(2, Math.min(12, rows.length > 0 ? Math.max(...rows.map(row => row.length)) : 6))
-  const height = Math.max(2, Math.min(12, rows.length > 0 ? rows.length : 6))
+  const width = Math.max(1, Math.min(12, rows.length > 0 ? Math.max(...rows.map(row => row.length)) : 6))
+  const height = Math.max(1, Math.min(12, rows.length > 0 ? rows.length : 6))
   const cells = createEmptyCreatorCells(width, height)
 
   for (let row = 0; row < height; row += 1) {
@@ -689,4 +666,94 @@ export function applyMovesToBoard({ board, puzzle, moves }) {
   }
 
   return snapshots
+}
+
+/**
+ * Add (+1) or remove (−1) a row/column on one side of the board, shifting the
+ * existing content so nothing else moves relative to the other three edges.
+ */
+export function resizeCreatorEdge({ cells, goalTargets, width, height, side, delta }) {
+  const isRow = side === 'top' || side === 'bottom'
+  const nextWidth = Math.max(1, Math.min(12, width + (isRow ? 0 : delta)))
+  const nextHeight = Math.max(1, Math.min(12, height + (isRow ? delta : 0)))
+  const dx = side === 'left' ? nextWidth - width : 0
+  const dy = side === 'top' ? nextHeight - height : 0
+
+  const nextCells = new Map()
+  const nextGoalTargets = {}
+  for (let row = 0; row < nextHeight; row += 1) {
+    for (let col = 0; col < nextWidth; col += 1) {
+      const sourceKey = posKey(col - dx, row - dy)
+      const source = cells.get(sourceKey)
+      const key = posKey(col, row)
+      nextCells.set(key, source ? { ...source } : { isVoid: false, isGoal: false, pieceChar: null })
+      if (source?.isGoal && goalTargets[sourceKey]) nextGoalTargets[key] = goalTargets[sourceKey]
+    }
+  }
+
+  return { cells: nextCells, goalTargets: nextGoalTargets, width: nextWidth, height: nextHeight }
+}
+
+/** True when applying the current tool to this cell would change nothing. */
+export function cellMatchesTool({ cell, goalTarget, editMode, placementMode, pieceType }) {
+  if (!cell) return false
+  if (editMode === 'void') return cell.isVoid === true
+  if (editMode === 'empty') return !cell.isVoid && !cell.isGoal && !cell.pieceChar
+  if (editMode !== 'place') return false
+  const char = charForPlacement(placementMode, pieceType)
+  if (!char) return false
+  if (placementMode === 'red-target') return cell.isGoal === true && goalTarget === char
+  return !cell.isVoid && !cell.isGoal && cell.pieceChar === char
+}
+
+/** Convert an engine board Map into creator display cells (for test play and replay). */
+export function boardToCreatorCells(board, width, height) {
+  const cells = new Map()
+  for (let row = 0; row < height; row += 1) {
+    for (let col = 0; col < width; col += 1) {
+      const key = posKey(col, row)
+      const cell = board.get(key)
+      if (!cell) {
+        cells.set(key, { isVoid: true, isGoal: false, pieceChar: null })
+        continue
+      }
+      const pieceChar = cell.piece
+        ? (cell.piece.color === 'white' ? cell.piece.type.toUpperCase() : cell.piece.type)
+        : null
+      cells.set(key, { isVoid: false, isGoal: cell.isGoal === true, pieceChar })
+    }
+  }
+  return cells
+}
+
+function jsString(value) {
+  return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n')}'`
+}
+
+/** Format a raw puzzle as an object literal in the style of catalogue.js. */
+export function toCatalogueSnippet(raw) {
+  const lines = ['  {', '    schemaVersion: 1,', `    id: ${jsString(raw.id)},`, `    title: ${jsString(raw.title)},`]
+  if (raw.descriptionHtml) lines.push(`    descriptionHtml: ${jsString(raw.descriptionHtml)},`)
+  lines.push(`    goalType: ${jsString(raw.goalType)},`)
+  if (raw.targetColor) lines.push(`    targetColor: ${jsString(raw.targetColor)},`)
+  lines.push('    grid: [', ...raw.grid.map(row => `      ${jsString(row)},`), '    ],')
+  if (raw.goalTargets && Object.keys(raw.goalTargets).length > 0) {
+    lines.push(
+      '    goalTargets: {',
+      ...Object.entries(raw.goalTargets).map(([key, char]) => `      ${jsString(key)}: ${jsString(char)},`),
+      '    },',
+    )
+  }
+  if (raw.promote) lines.push('    promote: true,')
+  lines.push('  },')
+  return `${lines.join('\n')}\n`
+}
+
+/** Suggest a track from par and solver search size (same scale used to sort the catalogue). */
+export function suggestTrack({ par, statesExplored }) {
+  const weight = par * Math.log10(statesExplored + 10)
+  if (weight < 12) return 'Tutorial'
+  if (weight < 30) return 'Warm-up'
+  if (weight < 60) return 'Tricky'
+  return 'Fiendish'
 }

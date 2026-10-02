@@ -6,6 +6,7 @@ import { getLegalMoves, applyMove } from './engine/index.js'
 import { parsePuzzle, posKey } from './puzzles/loader.js'
 import catalogue from './puzzles/catalogue.js'
 import { loadStore, saveProgress, saveActiveState, clearActiveState } from './store/store.js'
+import { computeScore } from './puzzles/score.js'
 import { isUnlocked, getPuzzlePosition, getPuzzleList, getTrackLaunchPuzzleId as resolveTrackLaunchPuzzleId } from './puzzles/nav.js'
 
 const CATALOGUE_IDS = new Set(catalogue.map(entry => entry.id))
@@ -34,7 +35,10 @@ export function createController() {
     moveEvents: [],     // canonical committed move events
     moveCount: 0,       // applied move index in moveEvents timeline
     solvedIds: [],      // array of solved puzzle IDs (loaded from store on loadPuzzle)
-    solvedMoveCounts: {}, // map puzzleId -> moveCount at solve time
+    solvedMoveCounts: {}, // map puzzleId -> best (lowest) moveCount at solve time
+    solvedScores: {},   // map puzzleId -> best score (0–100)
+    hintsUsed: 0,       // hints requested during the current attempt
+    lastSolve: null,    // score breakdown of the most recent winning move
     won: false,         // true after a winning move until next loadPuzzle
   }
 
@@ -43,6 +47,7 @@ export function createController() {
       moveEvents: state.moveEvents,
       redoEntries: state.redoStack.map(b => Array.from(b.entries())),
       moveCount: state.moveCount,
+      hintsUsed: state.hintsUsed,
     }
   }
 
@@ -92,6 +97,9 @@ export function createController() {
       state.solvedMoveCounts = store.solvedMoveCounts && typeof store.solvedMoveCounts === 'object'
         ? store.solvedMoveCounts
         : {}
+      state.solvedScores = store.solvedScores && typeof store.solvedScores === 'object'
+        ? store.solvedScores
+        : {}
 
       // Re-hydration: only if store has activeState for exactly this puzzle (T-02-10)
       let board = parsed.board
@@ -99,6 +107,7 @@ export function createController() {
       let redoStack = []
       let moveEvents = []
       let moveCount = 0
+      let hintsUsed = 0
       if (store.activeState && store.activeState.puzzleId === puzzleId) {
         try {
           board = new Map(store.activeState.boardEntries)
@@ -108,6 +117,7 @@ export function createController() {
           moveCount = Number.isInteger(store.activeState.moveCount) ? store.activeState.moveCount : 0
           if (moveCount < 0) moveCount = 0
           if (moveCount > moveEvents.length) moveCount = moveEvents.length
+          hintsUsed = Number.isInteger(store.activeState.hintsUsed) ? store.activeState.hintsUsed : 0
         } catch {
           // T-02-10: malformed entries — fall back to fresh start
           board = parsed.board
@@ -115,6 +125,7 @@ export function createController() {
           redoStack = []
           moveEvents = []
           moveCount = 0
+          hintsUsed = 0
         }
       }
 
@@ -124,6 +135,8 @@ export function createController() {
       state.redoStack = redoStack
       state.moveEvents = moveEvents
       state.moveCount = moveCount
+      state.hintsUsed = hintsUsed
+      state.lastSolve = null
       state.won = false
 
       return {
@@ -199,8 +212,23 @@ export function createController() {
       if (won) {
         // Unlock the next puzzle by recording this one as solved
         state.solvedIds = [...new Set([...state.solvedIds, state.puzzle.id])]
-        state.solvedMoveCounts = { ...state.solvedMoveCounts, [state.puzzle.id]: state.moveCount }
-        saveProgress(state.solvedIds, state.solvedMoveCounts)
+        // Keep the player's best (lowest) solve, not the latest one
+        const previousBest = state.solvedMoveCounts[state.puzzle.id]
+        const best = Number.isInteger(previousBest) ? Math.min(previousBest, state.moveCount) : state.moveCount
+        state.solvedMoveCounts = { ...state.solvedMoveCounts, [state.puzzle.id]: best }
+        // Score this attempt and keep the best score ever achieved
+        const solve = computeScore({ moveCount: state.moveCount, par: state.puzzle.par, hintsUsed: state.hintsUsed })
+        const previousScore = state.solvedScores[state.puzzle.id]
+        const bestScore = Number.isInteger(previousScore) ? Math.max(previousScore, solve.score) : solve.score
+        state.solvedScores = { ...state.solvedScores, [state.puzzle.id]: bestScore }
+        state.lastSolve = {
+          ...solve,
+          moveCount: state.moveCount,
+          hintsUsed: state.hintsUsed,
+          bestScore,
+          isNewBest: !Number.isInteger(previousScore) || solve.score > previousScore,
+        }
+        saveProgress(state.solvedIds, state.solvedMoveCounts, state.solvedScores)
         clearActiveState()
       } else {
         _persistActiveState()
@@ -256,9 +284,24 @@ export function createController() {
       state.redoStack = []
       state.moveEvents = []
       state.moveCount = 0
+      state.hintsUsed = 0
+      state.lastSolve = null
       state.won = false
       clearActiveState()
       return { puzzle: state.puzzle, board: state.board }
+    },
+
+    /**
+     * Record that the player asked for a hint in the current attempt.
+     * Hints cost points (see score.js) and survive undo; only reset clears them.
+     *
+     * @returns {number} hints used so far
+     */
+    useHint() {
+      if (!state.puzzle || state.won) return state.hintsUsed
+      state.hintsUsed += 1
+      _persistActiveState()
+      return state.hintsUsed
     },
 
     getTrackingState() {
@@ -267,6 +310,8 @@ export function createController() {
         moveCount: state.moveCount,
         canUndo: state.undoStack.length > 0,
         canRedo: state.redoStack.length > 0,
+        hintsUsed: state.hintsUsed,
+        lastSolve: state.lastSolve,
       }
     },
 

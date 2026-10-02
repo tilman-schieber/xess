@@ -1,68 +1,71 @@
 // src/puzzles/tracks.js
 // Static track metadata for grouped puzzle navigation.
+// Tracks are ordered by difficulty; puzzles within a track are ordered easy → hard.
+
+const guided = (tutorial = false) => ({
+  random: { enabled: false },
+  guided: { enabled: true },
+  tutorial: { enabled: tutorial },
+})
 
 export default [
   {
     id: 'tutorial',
     title: 'Tutorial',
-    subtitle: 'Single placeholder while tutorial content is rebuilt',
-    modes: {
-      random: { enabled: false },
-      guided: { enabled: true },
-      tutorial: { enabled: true },
-    },
+    subtitle: 'Eight short puzzles that teach everything you need',
+    modes: guided(true),
     puzzleIds: [
-      'rook-gauntl',
+      'first-steps',
+      'make-way',
+      'leap',
       'zig-zag',
+      'promotion',
+      'first-catch',
+      'carousel',
+      'no-way-back',
     ],
   },
   {
-    id: 'puzzle-master',
-    title: 'Puzzle Master',
-    subtitle: 'Only the curated real puzzles',
-    modes: {
-      random: { enabled: false },
-      guided: { enabled: true },
-      tutorial: { enabled: false },
-    },
+    id: 'warm-up',
+    title: 'Warm-up',
+    subtitle: 'Short puzzles with one idea each',
+    modes: guided(),
+    puzzleIds: [
+      'late-bloomer',
+      'bishopping',
+      'pawn-storm',
+      'pawn-ascent',
+      'square-dance',
+      'capture-the',
+    ],
+  },
+  {
+    id: 'tricky',
+    title: 'Tricky',
+    subtitle: 'Crowded boards where the order of moves matters',
+    modes: guided(),
+    puzzleIds: [
+      'gatekeepers',
+      'rook-maze',
+      'bishop-swap',
+      'knight-fork',
+      'pawn-walls',
+      'night-stable',
+      'rook-shuffle',
+    ],
+  },
+  {
+    id: 'fiendish',
+    title: 'Fiendish',
+    subtitle: 'Long, tightly packed routing challenges',
+    modes: guided(),
     puzzleIds: [
       'knight-relay',
-      'crown-the-ro',
-    ],
-  },
-  {
-    id: 'reach-the-goal',
-    title: 'Reach the Goal',
-    subtitle: 'No-capture goal-routing puzzles',
-    modes: {
-      random: { enabled: false },
-      guided: { enabled: true },
-      tutorial: { enabled: false },
-    },
-    puzzleIds: [
-      'bishopping',
       'knight-train',
-      'pawn-ascent',
       'route-the-ro',
-      'night-stable',
-      'four-queen-s',
       'boxed-knight',
-      'rook-maze',
-    ],
-  },
-  {
-    id: 'capture-to-win',
-    title: 'Capture to Win',
-    subtitle: 'White pieces must capture the black targets',
-    modes: {
-      random: { enabled: false },
-      guided: { enabled: true },
-      tutorial: { enabled: false },
-    },
-    puzzleIds: [
-      'capture-the',
-      'square-dance',
-      'pawn-wall',
+      'four-queen-s',
+      'crown-the-ro',
     ],
   },
 ]

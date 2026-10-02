@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Xess">
+  <defs>
+    <linearGradient id="xess-tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef1ff"/>
+      <stop offset="1" stop-color="#c3cdf0"/>
+    </linearGradient>
+    <linearGradient id="xess-goal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c9f5d8"/>
+      <stop offset="1" stop-color="#8fdcaa"/>
+    </linearGradient>
+  </defs>
+  <rect x="1.40" y="1.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="81.40" y="1.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="21.40" y="21.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="61.40" y="21.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="41.40" y="41.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-goal)"/>
+  <rect x="21.40" y="61.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="61.40" y="61.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="1.40" y="81.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="81.40" y="81.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+</svg>

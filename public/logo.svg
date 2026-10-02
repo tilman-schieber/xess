@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 330 120" role="img" aria-label="Xess">
+  <defs>
+    <linearGradient id="xess-tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef1ff"/>
+      <stop offset="1" stop-color="#c3cdf0"/>
+    </linearGradient>
+    <linearGradient id="xess-goal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c9f5d8"/>
+      <stop offset="1" stop-color="#8fdcaa"/>
+    </linearGradient>
+  </defs>
+  <rect x="11.40" y="11.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="91.40" y="11.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="31.40" y="31.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="71.40" y="31.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="51.40" y="51.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-goal)"/>
+  <rect x="31.40" y="71.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="71.40" y="71.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="11.40" y="91.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <rect x="91.40" y="91.40" width="17.20" height="17.20" rx="4.40" fill="url(#xess-tile)"/>
+  <text x="118" y="110" font-family="'Inter Tight', Inter, system-ui, -apple-system, sans-serif" font-size="112" font-weight="600" letter-spacing="-4" fill="#f5f7ff">ess</text>
+</svg>

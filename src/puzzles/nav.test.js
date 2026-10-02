@@ -9,6 +9,7 @@ import {
   getTrackPuzzleList,
   getTrackLaunchPuzzleId,
   resolveLandingContinueAction,
+  getNextUnfinishedTrack,
 } from './nav.js'
 import catalogue from './catalogue.js'
 
@@ -153,7 +154,7 @@ describe('track navigation contracts', () => {
 
   it('getTrackLaunchPuzzleId prefers active puzzle when active belongs to selected track', () => {
     const launchId = getTrackLaunchPuzzleId({
-      trackId: 'puzzle-master',
+      trackId: 'fiendish',
       solvedIds: [],
       activePuzzleId: 'knight-relay',
     })
@@ -163,18 +164,18 @@ describe('track navigation contracts', () => {
 
   it('getTrackLaunchPuzzleId falls back to first unsolved puzzle when active is outside track', () => {
     const launchId = getTrackLaunchPuzzleId({
-      trackId: 'puzzle-master',
+      trackId: 'fiendish',
       solvedIds: ['knight-relay'],
-      activePuzzleId: 'rook-gauntl',
+      activePuzzleId: 'first-steps',
     })
 
-    expect(launchId).toBe('crown-the-ro')
+    expect(launchId).toBe('knight-train')
   })
 
   it('getTrackLaunchPuzzleId falls back to first puzzle when track is fully solved', () => {
-    const track = getTracks().find(entry => entry.id === 'puzzle-master')
+    const track = getTracks().find(entry => entry.id === 'fiendish')
     const launchId = getTrackLaunchPuzzleId({
-      trackId: 'puzzle-master',
+      trackId: 'fiendish',
       solvedIds: [...track.puzzleIds],
       activePuzzleId: null,
     })
@@ -246,15 +247,15 @@ describe('track navigation contracts', () => {
 
   it('resolveLandingContinueAction falls back from stale active puzzle to first unsolved in last track', () => {
     const action = resolveLandingContinueAction({
-      lastTrackId: 'puzzle-master',
+      lastTrackId: 'fiendish',
       solvedIds: ['knight-relay'],
       activePuzzleId: 'stale-id',
     })
 
     expect(action).toEqual({
       kind: 'play',
-      trackId: 'puzzle-master',
-      puzzleId: 'crown-the-ro',
+      trackId: 'fiendish',
+      puzzleId: 'knight-train',
     })
   })
 
@@ -266,6 +267,33 @@ describe('track navigation contracts', () => {
     }, [{ id: 'empty', title: 'Empty', puzzleIds: [] }])
 
     expect(action).toEqual({ kind: 'tracks' })
+  })
+
+  const twoTracks = [
+    { id: 'a', title: 'A', puzzleIds: ['first-steps', 'zig-zag'] },
+    { id: 'b', title: 'B', puzzleIds: ['knight-relay'] },
+    { id: 'c', title: 'C', puzzleIds: ['bishopping'] },
+  ]
+
+  it('resolveLandingContinueAction skips a finished last track and moves on to the next unsolved one', () => {
+    const action = resolveLandingContinueAction({ lastTrackId: 'a', solvedIds: ['first-steps', 'zig-zag'] }, twoTracks)
+
+    expect(action).toEqual({ kind: 'play', trackId: 'b', puzzleId: 'knight-relay' })
+  })
+
+  it('resolveLandingContinueAction reports allSolved when nothing is left to play', () => {
+    const action = resolveLandingContinueAction({
+      lastTrackId: 'a',
+      solvedIds: ['first-steps', 'zig-zag', 'knight-relay', 'bishopping'],
+    }, twoTracks)
+
+    expect(action).toEqual({ kind: 'tracks', allSolved: true })
+  })
+
+  it('getNextUnfinishedTrack wraps around and ignores finished tracks', () => {
+    expect(getNextUnfinishedTrack('a', ['first-steps', 'zig-zag', 'knight-relay'], twoTracks)).toEqual({ id: 'c', title: 'C' })
+    expect(getNextUnfinishedTrack('c', ['knight-relay', 'bishopping'], twoTracks)).toEqual({ id: 'a', title: 'A' })
+    expect(getNextUnfinishedTrack('a', ['first-steps', 'zig-zag', 'knight-relay', 'bishopping'], twoTracks)).toBeNull()
   })
 
   it('getTracks exposes a dedicated tutorial track with launchable puzzles', () => {

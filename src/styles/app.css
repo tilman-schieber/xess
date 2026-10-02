@@ -4,6 +4,7 @@
 @import './board.css';
 @import './start-screen.css';
 @import './track-browser.css';
+@import './hub.css';
 
 * {
   box-sizing: border-box;
@@ -63,53 +64,134 @@ body {
 .app-shell-topbar {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  flex-wrap: wrap;
   gap: var(--space-sm);
-  padding: 14px 22px;
+  padding: 8px 12px 8px 10px;
   border-radius: var(--radius-panel);
   border: none;
   background: var(--glass-meta-bg);
   box-shadow: var(--glass-shadow-soft);
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
+  /* Stays reachable on the long landing page */
+  position: sticky;
+  top: var(--space-sm);
+  z-index: 20;
+}
+
+.app-shell-home {
+  display: inline-flex;
+  align-items: center;
+  min-inline-size: var(--touch-target-min, 44px);
+  min-block-size: var(--touch-target-min, 44px);
+  padding: 0 10px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 26px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.app-shell-home:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.app-shell-home > .logo-mark {
+  inline-size: 26px;
+  block-size: 26px;
 }
 
 .app-shell-title {
   margin: 0;
-  margin-inline-end: auto;
   min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: var(--text-heading);
   font-weight: 600;
   letter-spacing: -0.2px;
   color: var(--text-primary);
 }
 
+.app-shell-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-inline-start: auto;
+}
+
+.app-shell-score {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .app-shell-nav-action {
   min-inline-size: var(--touch-target-min, 44px);
-  min-block-size: var(--touch-target-min, 44px);
+  min-block-size: 40px;
   border-radius: var(--radius-pill);
   border: none;
   background: rgba(255, 255, 255, 0.06);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   color: var(--text-primary);
+  font-family: var(--font-sans);
   font-size: var(--text-label);
   font-weight: 500;
-  padding: 7px 14px;
+  padding: 0 16px;
   cursor: pointer;
   transition: background var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .app-shell-nav-action:hover {
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.app-shell-nav-action[aria-current='page'] {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .app-shell-nav-action:disabled {
   opacity: 0.35;
   cursor: default;
+}
+
+/* Previous / position / next as one control */
+.app-shell-stepper {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.app-shell-stepper .app-shell-nav-action {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.app-shell-stepper .app-shell-nav-action:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.app-shell-position {
+  padding: 0 2px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .app-shell-content {
@@ -164,8 +246,15 @@ body {
 
 /* Info button — visible on mobile only */
 .puzzle-info-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 18px;
   font-weight: 700;
   font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 /* ── Inline puzzle info (visible on desktop, hidden on mobile) ──────── */
@@ -310,6 +399,92 @@ body {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.btn-next-puzzle--ghost {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  font-weight: 500;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.win-modal-stats {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: var(--text-secondary);
+  text-wrap: balance;
+}
+
+.win-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.win-modal-score {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-heading);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+}
+
+/* Coach line: tutorial guidance, hint feedback, dead-end warning */
+.coach-line {
+  grid-column: 1 / -1;
+  flex-basis: 100%;
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--accent-dim);
+  color: var(--text-primary);
+  font-size: var(--text-label);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.coach-line[data-coach='stuck'] {
+  background: color-mix(in srgb, var(--destructive) 22%, transparent);
+}
+
+.hint-btn {
+  position: relative;
+}
+
+.hint-btn-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: #052014;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+}
+
+.hint-btn.is-busy svg {
+  animation: hint-busy 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes hint-busy {
+  from { opacity: 0.35; }
+  to { opacity: 1; }
+}
+
+.puzzle-rules {
+  margin: 0;
+  font-size: var(--text-label);
+  line-height: 1.5;
+  color: var(--text-muted);
 }
 
 /* ── Win modal overlay ──────────────────────────────────────────────────── */
@@ -539,25 +714,47 @@ body {
 
 /* Mobile: hide inline info, show info button, compact topbar row */
 @media (max-width: 40rem) {
+  /* Only the one-line objective stays visible; the rest lives behind the info button */
   .puzzle-inline-info {
+    flex-basis: 100%;
+  }
+
+  .puzzle-inline-info > :not(.puzzle-objective) {
     display: none;
   }
 
   .puzzle-topbar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-xs);
-    padding: 12px 14px;
+    padding: 10px 14px;
+  }
+
+  .win-modal-content {
+    inline-size: min(92vw, 24rem);
+    padding: var(--space-lg);
   }
 
   #app[data-screen-mode='play'] .app-shell-topbar {
     border-radius: 0;
     padding: var(--space-xs) var(--space-sm);
+    top: 0;
   }
 
-  #app[data-screen-mode='play'] .app-shell-nav-action {
-    padding-inline: var(--space-sm);
+  .app-shell-home {
+    padding: 0 6px;
+    font-size: 22px;
+  }
+
+  .app-shell-nav-action {
+    padding-inline: 12px;
+  }
+
+  /* Phone play header: room for the track name and the stepper */
+  #app[data-screen-mode='play'] .app-shell-score {
+    display: none;
   }
 
   #app[data-screen-mode='play'] .puzzle-topbar {
@@ -582,6 +779,12 @@ body {
 
   .puzzle-controls {
     gap: 8px;
+  }
+
+  .nav-btn.puzzle-info-btn {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
   }
 }
 
@@ -632,6 +835,7 @@ svg.icon {
 }
 
 /* Focus rings — Liquid accent style */
+.app-shell-home:focus-visible,
 .app-shell-nav-action:focus-visible,
 .nav-btn:focus-visible,
 .sound-toggle:focus-visible,

@@ -31,7 +31,7 @@ function canCapture(puzzle, moverColor, targetColor) {
  * Compact serialisation of piece positions for visited-state deduplication.
  * Goal squares and impassable cells are fixed and excluded.
  */
-function stateKey(board) {
+export function stateKey(board) {
   const parts = []
   for (const [key, cell] of board) {
     if (cell.piece) {
@@ -57,19 +57,34 @@ function stateKey(board) {
  */
 export function solveWithPath(rawPuzzle, maxDepth = DEFAULT_MAX_DEPTH) {
   const puzzle = parsePuzzle(rawPuzzle)
+  return solveFromBoard(puzzle, puzzle.board, maxDepth)
+}
 
+/**
+ * BFS from an arbitrary position of an already parsed puzzle (used for hints).
+ *
+ * @param {Object} puzzle      - parsed puzzle (parsePuzzle output)
+ * @param {Map} startBoard     - position to solve from
+ * @param {number} maxDepth    - give up after this many moves
+ * @returns {{ solvable: boolean, minMoves: number|null, statesExplored: number, moves: Array<{from: string, to: string}> }}
+ */
+export function solveFromBoard(puzzle, startBoard, maxDepth = DEFAULT_MAX_DEPTH) {
   // Depth-0 check: already won (degenerate puzzle)
-  if (checkWin(puzzle.board, puzzle)) {
+  if (checkWin(startBoard, puzzle)) {
     return { solvable: true, minMoves: 0, statesExplored: 1, moves: [] }
   }
 
-  // BFS frontier: each entry is { board, depth, path }
-  const queue   = [{ board: puzzle.board, depth: 0, path: [] }]
-  const visited = new Set([stateKey(puzzle.board)])
+  // BFS frontier: each entry is { board, depth, path }. Read with a moving
+  // head index: Array.shift() is O(n) and dominates on large searches.
+  const queue   = [{ board: startBoard, depth: 0, path: [] }]
+  const visited = new Set([stateKey(startBoard)])
   let statesExplored = 1
+  let head = 0
 
-  while (queue.length > 0) {
-    const { board, depth, path } = queue.shift()
+  while (head < queue.length) {
+    const { board, depth, path } = queue[head]
+    queue[head] = null
+    head += 1
     if (depth >= maxDepth) continue
 
     // moveo — the move relation: enumerate all successor states

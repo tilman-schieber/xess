@@ -67,4 +67,20 @@ describe('renderAppShell', () => {
     expect(view.querySelector('[data-shell-nav-home]')).not.toBeNull()
     expect(view.querySelector('[data-shell-nav-tracks]')).toBeNull()
   })
+
+  it('shows the logo as the home control, the score, and a grouped puzzle stepper in play mode', () => {
+    const home = renderAppShell({ mode: 'start', title: 'Xess', content: buildContent(), points: 1190 })
+    expect(home.querySelector('[data-shell-nav-home] .logo')).not.toBeNull()
+    expect(home.querySelector('[data-shell-score]')?.textContent).toBe('★ 1,190')
+    expect(home.querySelector('[data-shell-nav-tracks]')?.textContent).toBe('Tracks')
+
+    const play = renderAppShell({
+      mode: 'play', title: 'Warm-up', content: buildContent(), hasPrevPuzzle: true, hasNextPuzzle: false, position: '4 / 7',
+    })
+    expect(play.querySelector('.app-shell-title')?.textContent).toBe('Warm-up')
+    expect(play.querySelector('[data-shell-nav-tracks]')?.textContent).toBe('Puzzles')
+    expect(play.querySelector('.app-shell-stepper [data-shell-position]')?.textContent).toBe('4 / 7')
+    expect(play.querySelector('[data-next-puzzle]')?.disabled).toBe(true)
+  })
 })
+

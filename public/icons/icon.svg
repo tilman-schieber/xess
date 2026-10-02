@@ -1,11 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="xess-tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef1ff"/>
+      <stop offset="1" stop-color="#c3cdf0"/>
+    </linearGradient>
+    <linearGradient id="xess-goal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c9f5d8"/>
+      <stop offset="1" stop-color="#8fdcaa"/>
+    </linearGradient>
+  </defs>
   <rect width="512" height="512" rx="96" fill="#090d16"/>
-  <text
-    x="256" y="370"
-    font-family="system-ui, sans-serif"
-    font-size="360"
-    font-weight="700"
-    fill="#61d9a7"
-    text-anchor="middle"
-  >X</text>
+  <rect x="100.48" y="100.48" width="55.04" height="55.04" rx="14.08" fill="url(#xess-tile)"/>
+  <rect x="356.48" y="100.48" width="55.04" height="55.04" rx="14.08" fill="url(#xess-tile)"/>
+  <rect x="164.48" y="164.48" width="55.04" height="55.04" rx="14.08" fill="url(#xess-tile)"/>
+  <rect x="292.48" y="164.48" width="55.04" height="55.04" rx="14.08" fill="url(#xess-tile)"/>
+  <rect x="228.48" y="228.48" width="55.04" height="55.04" rx="14.08" fill="url(#xess-goal)"/>
+  <rect x="164.48" y="292.48" width="55.04" height="55.04" rx="14.08" fill="url(#xess-tile)"/>
+  <rect x="292.48" y="292.48" width="55.04" height="55.04" rx="14.08" fill="url(#xess-tile)"/>
+  <rect x="100.48" y="356.48" width="55.04" height="55.04" rx="14.08" fill="url(#xess-tile)"/>
+  <rect x="356.48" y="356.48" width="55.04" height="55.04" rx="14.08" fill="url(#xess-tile)"/>
 </svg>

@@ -57,8 +57,8 @@ describe('renderTrackBrowser', () => {
     const firstNumber = view.querySelector('[data-puzzle-id="p1"] [data-track-position]')
     const secondNumber = view.querySelector('[data-puzzle-id="p2"] [data-track-position]')
 
-    expect(firstNumber?.textContent).toBe('1 / 2')
-    expect(secondNumber?.textContent).toBe('2 / 2')
+    expect(firstNumber?.textContent).toBe('1')
+    expect(secondNumber?.textContent).toBe('2')
   })
 
   it('dispatches open/resume/select callbacks with track and puzzle payloads', () => {
@@ -94,6 +94,40 @@ describe('renderTrackBrowser', () => {
     puzzle?.dispatchEvent(new Event('pointerdown'))
 
     expect(onSelectPuzzle).toHaveBeenCalledWith({ trackId: 'foundations', puzzleId: 'p2' })
+  })
+
+  it('shows solved state and best score per puzzle', () => {
+    const view = renderTrackBrowser({
+      tracks: [{
+        ...tracks[0],
+        puzzles: [
+          { id: 'p1', title: 'Puzzle 1', status: 'solved', bestScore: 80 },
+          { id: 'p2', title: 'Puzzle 2', status: 'unlocked', inProgress: true },
+        ],
+      }],
+      selectedTrackId: 'foundations',
+      onOpenTrack: () => {},
+      onResumeTrack: () => {},
+      onSelectPuzzle: () => {},
+      onBack: () => {},
+    })
+
+    expect(view.querySelector('[data-puzzle-id="p1"] [data-track-puzzle-status]')?.textContent).toBe('★★☆ 80')
+    expect(view.querySelector('[data-puzzle-id="p2"] [data-track-puzzle-status]')?.textContent).toBe('In progress')
+  })
+
+  it('labels the track action by progress', () => {
+    const view = renderTrackBrowser({
+      tracks,
+      selectedTrackId: null,
+      onOpenTrack: () => {},
+      onResumeTrack: () => {},
+      onSelectPuzzle: () => {},
+      onBack: () => {},
+    })
+
+    expect(view.querySelector('[data-resume-track="foundations"]')?.textContent).toBe('Continue')
+    expect(view.querySelector('[data-resume-track="formations"]')?.textContent).toBe('Start')
   })
 
   it('marks tutorial-enabled tracks with tutorial copy in overview cards', () => {

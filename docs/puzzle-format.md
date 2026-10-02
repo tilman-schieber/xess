@@ -37,6 +37,19 @@ Practical catalogue contract (enforced by `src/puzzles/catalogue.test.js`):
   - each side only keeps `'white'`/`'black'`, with duplicates removed.
   - missing side falls back to default for that side.
 - `promote` (boolean): defaults to `false`; only literal `true` enables promotion.
+- `coach` (array): tutorial coaching lines. Each entry is a string, or `{ text, show: false }` to show advice without highlighting the move. `coach[i]` is shown while the player is on the stored shortest solution with `i` moves played, and the next solution move is highlighted for free. Steps without a line get no highlight, so a puzzle can coach its opening and then let go. Must not be longer than the solution.
+
+## Derived: par, hints and score
+
+`par` is not authored. It is the length of the puzzle's shortest solution in `src/puzzles/solutions.js`, which is generated:
+
+```sh
+node scripts/generate-solutions.js
+```
+
+Run it after adding a puzzle to a track or changing a grid; `hints.test.js` fails if a track puzzle has no solution or the stored one no longer replays to a win. The stored solution also drives the Hint button (instant while the player is on that line, background BFS otherwise) and `coach` indexing.
+
+Scoring (`src/puzzles/score.js`): 100 points per puzzle, −5 per move over par (max −50), −20 per requested hint (max −40), never below 10. Undo, reset and tutorial coaching are free. Three stars at 100, two from 60, one below.
 
 ## Grid Symbol Legend
 

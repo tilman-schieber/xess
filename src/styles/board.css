@@ -118,6 +118,41 @@
   box-shadow: inset 0 0 0 3px rgba(200, 60, 60, 0.6);
 }
 
+/* Hint / tutorial coaching: pulse the piece to move and ring its destination */
+.board {
+  --hint-ring: #1f9d55;
+}
+
+.cell.is-hint-from:not(.is-selected)::after {
+  opacity: 1;
+  background: transparent;
+  box-shadow: inset 0 0 0 4px var(--hint-ring), 0 0 18px rgba(168, 230, 184, 0.7);
+  animation: hint-pulse 1.1s ease-in-out infinite;
+}
+
+.cell.is-hint-to::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: 9px;
+  border: 4px dashed var(--hint-ring);
+  animation: hint-pulse 1.1s ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cell.is-hint-from:not(.is-selected)::after,
+  .cell.is-hint-to::before {
+    animation: none;
+  }
+}
+
 /* Focus ring for cells */
 .cell:focus-visible {
   outline: 2px solid var(--accent);

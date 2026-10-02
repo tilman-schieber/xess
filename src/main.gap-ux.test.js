@@ -180,6 +180,87 @@ describe('gap UX regressions: objective context + static square geometry', () =>
 
   })
 
+  it('win banner reports the move count against par and offers a retry only when beatable', () => {
+    const dom = new JSDOM('<!doctype html><div id="root"></div>')
+    globalThis.document = dom.window.document
+    globalThis.window = dom.window
+
+    const base = {
+      puzzle: { goalType: 'reach-all-goal-squares', descriptionHtml: '', par: 8 },
+      puzzleTitle: 'Solved Puzzle',
+      objectiveText: 'The red pieces have to reach their goal squares.',
+      boardClasses: ['is-won'],
+      animationMs: 180,
+      cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
+      width: 1,
+      height: 1,
+      puzzleId: 'rook-maze',
+      nextId: 'boxed-knight',
+    }
+    const root = dom.window.document.querySelector('#root')
+
+    renderToDom(root, { ...base, moveCount: 10 })
+    expect(root.querySelector('[data-win-stats]')?.textContent).toBe('Solved in 10 moves. It can be done in 8.')
+    expect(root.querySelector('[data-win-replay]')).not.toBeNull()
+
+    renderToDom(root, { ...base, moveCount: 8 })
+    expect(root.querySelector('[data-win-stats]')?.textContent).toBe('Solved in 8 moves — the fewest possible!')
+    expect(root.querySelector('[data-win-replay]')).toBeNull()
+  })
+
+  it('announces newly unlocked achievements in the win banner', () => {
+    const dom = new JSDOM('<!doctype html><div id="root"></div>')
+    globalThis.document = dom.window.document
+    globalThis.window = dom.window
+
+    const root = dom.window.document.querySelector('#root')
+    renderToDom(root, {
+      puzzle: { goalType: 'reach-all-goal-squares', descriptionHtml: '' },
+      puzzleTitle: 'Solved',
+      objectiveText: '',
+      boardClasses: ['is-won'],
+      animationMs: 180,
+      cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
+      width: 1,
+      height: 1,
+      puzzleId: 'first-steps',
+      nextId: 'make-way',
+      newAchievements: [{ id: 'first-solve', title: 'First Move', description: 'Solve your first puzzle' }],
+    })
+
+    const unlocked = root.querySelector('[data-win-achievements]')
+    expect(unlocked?.querySelector('strong')?.textContent).toBe('First Move')
+    expect(unlocked?.textContent).toContain('Achievement unlocked')
+  })
+
+  it('offers the next unfinished track when a track is completed', () => {
+    const dom = new JSDOM('<!doctype html><div id="root"></div>')
+    globalThis.document = dom.window.document
+    globalThis.window = dom.window
+
+    const root = dom.window.document.querySelector('#root')
+    renderToDom(root, {
+      puzzle: { goalType: 'reach-all-goal-squares', descriptionHtml: '' },
+      puzzleTitle: 'Last One',
+      objectiveText: '',
+      boardClasses: ['is-won'],
+      animationMs: 180,
+      cells: [{ key: '0,0', classes: ['cell'], interactionClasses: [], pieceClasses: [], piece: null }],
+      width: 1,
+      height: 1,
+      puzzleId: 'zig-zag',
+      nextId: null,
+      trackId: 'tutorial',
+      trackTitle: 'Tutorial',
+      nextTrack: { id: 'reach-the-goal', title: 'Reach the Goal' },
+    })
+
+    const winBanner = root.querySelector('[data-win-banner]')
+    expect(winBanner?.getAttribute('data-win-state')).toBe('track-complete')
+    expect(winBanner?.querySelector('[data-win-headline]')?.textContent).toBe('Tutorial complete!')
+    expect(winBanner?.querySelector('[data-win-next-track]')?.textContent).toBe('Next: Reach the Goal')
+  })
+
   it('renders terminal solved banner as distinct all-solved state block', () => {
     const dom = new JSDOM('<!doctype html><div id="root"></div>')
     globalThis.document = dom.window.document

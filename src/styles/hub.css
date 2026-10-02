@@ -1,0 +1,500 @@
+/* Landing hub: hero stage, stats strip, track grid, achievements, mini boards */
+
+/* ── Mini board thumbnail ─────────────────────────────────────────────── */
+
+.mini-board {
+  --mini-size: 120px;
+  --mini-cell: min(calc(var(--mini-size) / var(--cols, 1)), calc(var(--mini-size) / var(--rows, 1)));
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 1), var(--mini-cell));
+  grid-template-rows: repeat(var(--rows, 1), var(--mini-cell));
+  gap: 0;
+  inline-size: fit-content;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+}
+
+.mini-cell {
+  display: grid;
+  place-items: center;
+  margin: max(1px, calc(var(--mini-cell) * 0.03));
+  border-radius: calc(var(--mini-cell) * 0.16);
+  background: linear-gradient(180deg, var(--cell-playable-start) 0%, var(--cell-playable-end) 100%);
+}
+
+.mini-cell--goal {
+  background: linear-gradient(180deg, var(--cell-goal-start) 0%, var(--cell-goal-end) 100%);
+}
+
+.mini-cell--void {
+  visibility: hidden;
+}
+
+.mini-cell svg {
+  inline-size: 80%;
+  block-size: 80%;
+}
+
+.mini-cell svg.mini-ghost {
+  opacity: 0.3;
+}
+
+/* ── Hero artwork (generated with scripts/generate-image.js) ─────────── */
+
+.start-screen-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-block-size: 300px;
+  align-content: center;
+}
+
+.start-screen-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, #0a1020 0%, #0a1020 30%, rgba(10, 16, 32, 0.75) 46%, rgba(10, 16, 32, 0) 80%),
+    url('../assets/hero.webp') right center / auto 135% no-repeat,
+    #0a1020;
+}
+
+/* ── Logo ─────────────────────────────────────────────────────────────── */
+
+.logo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.06em;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.logo-mark {
+  inline-size: 0.82em;
+  block-size: 0.82em;
+  flex-shrink: 0;
+}
+
+/* ── Stats strip ──────────────────────────────────────────────────────── */
+
+.hub-stats {
+  inline-size: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.hub-rank,
+.hub-stat {
+  border-radius: var(--radius-card);
+  background: var(--glass-meta-bg);
+  box-shadow: var(--glass-shadow-soft);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  padding: 14px 16px;
+}
+
+.hub-rank {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.hub-rank-body {
+  display: grid;
+  gap: 4px;
+}
+
+.hub-stat {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+}
+
+.hub-stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.hub-rank-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+}
+
+.hub-rank-next {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.hub-stat-value {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.hub-stat-of {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.hub-piece {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 46px;
+  block-size: 46px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--cell-playable-start) 0%, var(--cell-playable-end) 100%);
+}
+
+.hub-piece svg {
+  inline-size: 80%;
+  block-size: 80%;
+}
+
+/* ── Sections ─────────────────────────────────────────────────────────── */
+
+.hub-section {
+  inline-size: 100%;
+  display: grid;
+  gap: 12px;
+}
+
+.hub-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-inline: 4px;
+}
+
+.hub-section-title {
+  margin: 0;
+  font-size: var(--text-heading);
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--text-primary);
+}
+
+.hub-section-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.hub-tracks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+  gap: 14px;
+}
+
+/* ── Achievements ─────────────────────────────────────────────────────── */
+
+.hub-achievements {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 10px;
+}
+
+.hub-achievement {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.hub-achievement-body {
+  display: grid;
+  gap: 3px;
+}
+
+.hub-achievement-title {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.hub-achievement-copy {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.hub-achievement-progress {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.hub-achievement[data-unlocked='false'] .hub-piece {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.hub-achievement[data-unlocked='false'] .hub-piece svg {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+
+.hub-achievement[data-unlocked='true'] {
+  background: var(--accent-dim);
+}
+
+.hub-achievement[data-unlocked='true'] .hub-achievement-progress {
+  color: var(--accent);
+}
+
+/* ── Win dialog: newly unlocked achievements ──────────────────────────── */
+
+.win-modal-achievements {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+  inline-size: 100%;
+}
+
+.win-modal-achievements li {
+  display: grid;
+  gap: 2px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--accent-dim);
+  color: var(--text-secondary);
+  font-size: var(--text-label);
+}
+
+.win-modal-achievements strong {
+  color: var(--text-primary);
+  font-size: var(--text-body);
+}
+
+.win-modal-achievement-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+
+@media (max-width: 700px) {
+  .start-screen-hero::before {
+    background:
+      linear-gradient(180deg, rgba(7, 10, 18, 0.88) 0%, rgba(7, 10, 18, 0.6) 55%, rgba(7, 10, 18, 0.35) 100%),
+      url('../assets/hero.webp') center / cover no-repeat;
+  }
+
+  .hub-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .hub-rank {
+    grid-column: 1 / -1;
+  }
+
+  .hub-stat {
+    padding: 10px 12px;
+  }
+
+  .hub-stat-value {
+    font-size: 18px;
+  }
+
+  .hub-tracks {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── Achievement popup ────────────────────────────────────────────────── */
+
+.achievement-toasts {
+  position: fixed;
+  inset: 16px 0 auto 0;
+  z-index: 1100;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding-inline: 12px;
+  pointer-events: none;
+}
+
+.achievement-toast {
+  pointer-events: auto;
+  inline-size: min(100%, 26rem);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px 14px 14px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(160deg, #1d3a34 0%, #12233a 100%);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(168, 230, 184, 0.6),
+    0 0 36px rgba(168, 230, 184, 0.35),
+    0 18px 40px rgba(0, 0, 0, 0.55);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  text-align: start;
+  cursor: pointer;
+  animation: achievement-in 620ms cubic-bezier(0.2, 1.4, 0.4, 1) var(--delay, 0ms) both;
+}
+
+.achievement-toast.is-leaving {
+  animation: achievement-out 300ms ease-in forwards;
+}
+
+.achievement-toast-badge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 56px;
+  block-size: 56px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--cell-goal-start) 0%, var(--cell-goal-end) 100%);
+  animation: achievement-badge 900ms cubic-bezier(0.2, 1.6, 0.4, 1) calc(var(--delay, 0ms) + 200ms) both;
+}
+
+/* Expanding ring behind the badge */
+.achievement-toast-badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 2px var(--accent);
+  opacity: 0;
+  animation: achievement-ring 900ms ease-out calc(var(--delay, 0ms) + 350ms) both;
+}
+
+.achievement-toast-badge svg {
+  inline-size: 78%;
+  block-size: 78%;
+}
+
+.achievement-toast-spark {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  inline-size: 6px;
+  block-size: 6px;
+  margin: -3px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  animation: achievement-spark 800ms ease-out calc(var(--delay, 0ms) + 380ms) both;
+}
+
+.achievement-toast-spark:nth-child(odd) {
+  background: #fff3b0;
+}
+
+.achievement-toast-body {
+  display: grid;
+  gap: 2px;
+}
+
+.achievement-toast-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.achievement-toast-title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.achievement-toast-copy {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.achievement-toast-points {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+  animation: achievement-points 700ms cubic-bezier(0.2, 1.6, 0.4, 1) calc(var(--delay, 0ms) + 550ms) both;
+}
+
+@keyframes achievement-in {
+  from { opacity: 0; transform: translateY(-28px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes achievement-out {
+  to { opacity: 0; transform: translateY(-16px) scale(0.96); }
+}
+
+@keyframes achievement-badge {
+  0% { transform: scale(0.3) rotate(-25deg); }
+  60% { transform: scale(1.15) rotate(6deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes achievement-ring {
+  0% { opacity: 0.9; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.1); }
+}
+
+@keyframes achievement-spark {
+  0% { opacity: 1; transform: rotate(var(--angle)) translateY(0) scale(1); }
+  100% { opacity: 0; transform: rotate(var(--angle)) translateY(calc(var(--reach) * -1)) scale(0.3); }
+}
+
+@keyframes achievement-points {
+  0% { opacity: 0; transform: scale(0.4); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .achievement-toast,
+  .achievement-toast-badge,
+  .achievement-toast-points {
+    animation: none;
+  }
+
+  .achievement-toast-badge::after,
+  .achievement-toast-spark {
+    display: none;
+  }
+}
+
+.hub-achievement-points {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.hub-achievement[data-unlocked='false'] .hub-achievement-points {
+  color: var(--text-muted);
+}
+
+.hub-achievement-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}

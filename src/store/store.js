@@ -21,6 +21,8 @@ function _defaultStore() {
     schemaVersion: CURRENT_SCHEMA_VERSION,
     solvedIds: [],
     solvedMoveCounts: {},
+    solvedScores: {},
+    seenAchievementIds: [],
     activeState: null,
     tutorialDismissed: false,
     tutorialCompleted: false,
@@ -68,7 +70,12 @@ function _sanitizeActiveState(activeState) {
       ? activeState.moveCount
       : 0
 
-  return { puzzleId, boardEntries, undoEntries, moveEvents, redoEntries, moveCount }
+  const hintsUsed =
+    Number.isInteger(activeState.hintsUsed) && activeState.hintsUsed >= 0
+      ? activeState.hintsUsed
+      : 0
+
+  return { puzzleId, boardEntries, undoEntries, moveEvents, redoEntries, moveCount, hintsUsed }
 }
 
 function _sanitizeStore(parsed) {
@@ -84,10 +91,23 @@ function _sanitizeStore(parsed) {
       )
     : {}
 
+  const solvedScores = parsed?.solvedScores && typeof parsed.solvedScores === 'object'
+    ? Object.fromEntries(
+        Object.entries(parsed.solvedScores).filter(
+          ([puzzleId, score]) =>
+            VALID_PUZZLE_IDS.has(puzzleId) && Number.isInteger(score) && score >= 0 && score <= 100,
+        ),
+      )
+    : {}
+
   return {
     schemaVersion: CURRENT_SCHEMA_VERSION,
     solvedIds,
     solvedMoveCounts,
+    solvedScores,
+    seenAchievementIds: Array.isArray(parsed?.seenAchievementIds)
+      ? [...new Set(parsed.seenAchievementIds.filter(id => typeof id === 'string'))]
+      : [],
     activeState: _sanitizeActiveState(parsed?.activeState),
     tutorialDismissed: parsed?.tutorialDismissed === true,
     tutorialCompleted: parsed?.tutorialCompleted === true,
@@ -145,8 +165,9 @@ function _write(patch) {
  *
  * @param {string[]} solvedIds
  * @param {Record<string, number>} [solvedMoveCounts]
+ * @param {Record<string, number>} [solvedScores] - best score (0–100) per puzzle
  */
-export function saveProgress(solvedIds, solvedMoveCounts) {
+export function saveProgress(solvedIds, solvedMoveCounts, solvedScores) {
   const patch = { solvedIds: [...new Set(solvedIds)] }
   if (solvedMoveCounts && typeof solvedMoveCounts === 'object') {
     patch.solvedMoveCounts = Object.fromEntries(
@@ -156,7 +177,26 @@ export function saveProgress(solvedIds, solvedMoveCounts) {
       ),
     )
   }
+  if (solvedScores && typeof solvedScores === 'object') {
+    patch.solvedScores = Object.fromEntries(
+      Object.entries(solvedScores).filter(
+        ([puzzleId, score]) =>
+          VALID_PUZZLE_IDS.has(puzzleId) && Number.isInteger(score) && score >= 0 && score <= 100,
+      ),
+    )
+  }
   _write(patch)
+}
+
+/**
+ * Remember which achievements the player has already been shown, so each one
+ * is announced only once. (Unlocking itself is derived from progress.)
+ *
+ * @param {string[]} achievementIds
+ */
+export function saveSeenAchievements(achievementIds) {
+  if (!Array.isArray(achievementIds)) return
+  _write({ seenAchievementIds: [...new Set(achievementIds.filter(id => typeof id === 'string'))] })
 }
 
 /**
@@ -199,8 +239,9 @@ export function saveActiveState(puzzleId, board, undoStack, tracking = {}) {
   const moveEvents = Array.isArray(tracking.moveEvents) ? tracking.moveEvents : []
   const redoEntries = Array.isArray(tracking.redoEntries) ? tracking.redoEntries : []
   const moveCount = Number.isInteger(tracking.moveCount) && tracking.moveCount >= 0 ? tracking.moveCount : 0
+  const hintsUsed = Number.isInteger(tracking.hintsUsed) && tracking.hintsUsed >= 0 ? tracking.hintsUsed : 0
 
-  pendingWrite = { puzzleId, boardEntries, undoEntries, moveEvents, redoEntries, moveCount }
+  pendingWrite = { puzzleId, boardEntries, undoEntries, moveEvents, redoEntries, moveCount, hintsUsed }
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
     _writeActive(pendingWrite)

@@ -22,29 +22,29 @@ export default defineConfig({
         background_color: '#090d16',
         display: 'standalone',
         orientation: 'portrait-primary',
-        start_url: '/',
-        scope: '/',
+        start_url: './',
+        scope: './',
         icons: [
           {
-            src: '/icons/icon-192.png',
+            src: 'icons/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: '/icons/icon-192.png',
+            src: 'icons/icon-192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'maskable',
           },
           {
-            src: '/icons/icon-512.png',
+            src: 'icons/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any',
           },
           {
-            src: '/icons/icon-512.png',
+            src: 'icons/icon-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
@@ -54,7 +54,7 @@ export default defineConfig({
       workbox: {
         // Precache everything Vite emits. The glob patterns below cover JS
         // chunks, CSS, SVG pieces, font files, and puzzle data.
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,ico,woff,woff2}'],
         // Do not skip waiting — plan 05-02 controls activation via prompt.
         skipWaiting: false,
         clientsClaim: true,

@@ -134,6 +134,7 @@ describe('makeMove policy and invariants', () => {
     expect(saveProgress).toHaveBeenCalledWith(
       expect.arrayContaining(['knight-leap']),
       expect.objectContaining({ 'knight-leap': 1 }),
+      expect.objectContaining({ 'knight-leap': 100 }),
     )
     expect(clearActiveState).toHaveBeenCalledTimes(1)
     expect(saveActiveState).not.toHaveBeenCalled()
@@ -302,6 +303,7 @@ describe('undo/redo divergence and tracking rehydration', () => {
     expect(saveProgress).toHaveBeenCalledWith(
       expect.arrayContaining(['corner-trap', 'knight-leap']),
       expect.objectContaining({ 'corner-trap': 4, 'knight-leap': expect.any(Number) }),
+      expect.objectContaining({ 'knight-leap': expect.any(Number) }),
     )
   })
 })
@@ -388,5 +390,44 @@ describe('undo/reset and nav delegation', () => {
       solvedIds: ['corner-trap'],
       activePuzzleId: 'knight-leap',
     })
+  })
+})
+
+describe('hints and scoring', () => {
+  it('counts hints, deducts them from the score, and clears them on reset', () => {
+    const ctrl = createController()
+    ctrl.loadPuzzle('knight-leap')
+
+    expect(ctrl.useHint()).toBe(1)
+    expect(ctrl.getTrackingState().hintsUsed).toBe(1)
+
+    ctrl.makeMove('0,0', '1,2')
+    const solve = ctrl.getTrackingState().lastSolve
+    expect(solve.hintsUsed).toBe(1)
+    expect(solve.hintPenalty).toBe(20)
+    expect(solve.score).toBe(80)
+
+    ctrl.reset()
+    expect(ctrl.getTrackingState().hintsUsed).toBe(0)
+    expect(ctrl.getTrackingState().lastSolve).toBeNull()
+  })
+
+  it('keeps the best score across repeated solves', () => {
+    loadStore.mockReturnValue({
+      schemaVersion: 1,
+      solvedIds: ['knight-leap'],
+      solvedMoveCounts: { 'knight-leap': 1 },
+      solvedScores: { 'knight-leap': 100 },
+      activeState: null,
+    })
+    const ctrl = createController()
+    ctrl.loadPuzzle('knight-leap')
+    ctrl.useHint()
+    ctrl.makeMove('0,0', '1,2')
+
+    const solve = ctrl.getTrackingState().lastSolve
+    expect(solve.score).toBe(80)
+    expect(solve.bestScore).toBe(100)
+    expect(solve.isNewBest).toBe(false)
   })
 })
